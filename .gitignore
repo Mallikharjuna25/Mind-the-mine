@@ -14,11 +14,25 @@ ENV/
 *.sqlite3
 *.db-journal
 
+# Environment
+.env
+.env.*
+!.env.example
+
 # Storage uploads (transient test uploads)
+backend/storage/uploads/*
+!backend/storage/uploads/.gitkeep
+backend/storage/synthetic_assets/*
+!backend/storage/synthetic_assets/.gitkeep
 storage/uploads/*
 !storage/uploads/.gitkeep
 storage/synthetic_assets/*
 !storage/synthetic_assets/.gitkeep
+
+# Documents & Presentation binaries
+*.docx
+*.pptx
+*.pdf
 
 # Pytest & IDE
 .pytest_cache/
