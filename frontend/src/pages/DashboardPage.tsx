@@ -11,6 +11,8 @@ import {
 import dayjs from 'dayjs';
 import type { Alert, RiskScore, EnvironmentalReading } from '../types';
 import { riskApi, workflowApi, environmentApi, cctvApi, demoApi } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 const { Title, Text } = Typography;
 
@@ -23,6 +25,8 @@ const SEV_COLOR: Record<string, string> = {
 };
 
 export const DashboardPage: React.FC = () => {
+  const { user, isAdmin } = useAuth();
+  const navigate = useNavigate();
   const [riskScores, setRiskScores] = useState<RiskScore[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [readings, setReadings] = useState<EnvironmentalReading[]>([]);
@@ -107,17 +111,30 @@ export const DashboardPage: React.FC = () => {
       {/* Header row */}
       <Row justify="space-between" align="middle" style={{ marginBottom: 20 }}>
         <Col>
-          <Title level={4} style={{ margin: 0 }}>Executive Command Dashboard</Title>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <Title level={4} style={{ margin: 0 }}>
+              {isAdmin ? 'Executive Governance & Command Dashboard' : 'Field Safety & Operations Dashboard'}
+            </Title>
+            <Tag color={isAdmin ? '#18181b' : 'blue'} style={{ fontSize: 11, fontWeight: 600 }}>
+              {isAdmin ? 'ADMIN AUTHORITY' : 'SAFETY OFFICER'}
+            </Tag>
+          </div>
           <Text type="secondary" style={{ fontSize: 13 }}>
-            Kusmunda Mega Opencast Project · SECL · Live View
+            Kusmunda Mega Opencast Project · SECL · {user?.full_name || 'Active Operator'} ({user?.designation || 'On-Duty'})
           </Text>
         </Col>
         <Col>
           <Space>
             <Button icon={<ReloadOutlined />} onClick={fetchAll} loading={loading}>Refresh</Button>
-            <Button type="primary" loading={seeding} onClick={handleSeed}>
-              Seed Demo Data
-            </Button>
+            {isAdmin ? (
+              <Button type="primary" loading={seeding} onClick={handleSeed} style={{ background: '#18181b', borderColor: '#18181b' }}>
+                Seed Demo Data
+              </Button>
+            ) : (
+              <Button type="primary" onClick={() => navigate('/workflows')} style={{ background: '#0284c7', borderColor: '#0284c7' }}>
+                View Action Items
+              </Button>
+            )}
           </Space>
         </Col>
       </Row>

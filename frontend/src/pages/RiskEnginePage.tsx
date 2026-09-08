@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import {
   Row, Col, Card, Table, Tag, Button, Space, Typography, Statistic,
-  Slider, Divider, Progress, notification, Empty,
+  Slider, Divider, Progress, notification, Empty, Alert,
 } from 'antd';
-import { ThunderboltOutlined, ReloadOutlined, BugOutlined } from '@ant-design/icons';
+import { ThunderboltOutlined, ReloadOutlined, BugOutlined, LockOutlined, SafetyCertificateOutlined } from '@ant-design/icons';
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar, Legend,
@@ -11,6 +11,7 @@ import {
 import dayjs from 'dayjs';
 import type { RiskScore, Anomaly } from '../types';
 import { riskApi, mineApi } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 
 const { Title, Text } = Typography;
 
@@ -46,7 +47,16 @@ export const RiskEnginePage: React.FC = () => {
 
   useEffect(() => { fetchData(); }, []);
 
+  const { isAdmin } = useAuth();
+
   const handleRecompute = async () => {
+    if (!isAdmin) {
+      notification.warning({
+        message: 'Admin Privilege Required',
+        description: 'Recomputing statutory risk scores across mine zones requires Administrator authority.',
+      });
+      return;
+    }
     if (!mines[0]) return;
     setRecomputing(true);
     try {
@@ -132,8 +142,16 @@ export const RiskEnginePage: React.FC = () => {
         <Col>
           <Space>
             <Button icon={<ReloadOutlined />} onClick={fetchData} loading={loading}>Refresh</Button>
-            <Button type="primary" icon={<ThunderboltOutlined />} loading={recomputing} onClick={handleRecompute}>
-              Recompute All Zone Scores
+            <Button
+              type="primary"
+              icon={isAdmin ? <ThunderboltOutlined /> : <LockOutlined />}
+              loading={recomputing}
+              onClick={handleRecompute}
+              disabled={!isAdmin}
+              title={isAdmin ? 'Recompute All Zone Scores' : 'Admin privilege required to recompute scores'}
+              style={isAdmin ? {} : { opacity: 0.6 }}
+            >
+              Recompute All Zone Scores {!isAdmin && '(Admin Only)'}
             </Button>
           </Space>
         </Col>
@@ -143,10 +161,29 @@ export const RiskEnginePage: React.FC = () => {
         {/* Interactive formula calculator */}
         <Col xs={24} lg={10}>
           <Card
-            title={<Space><ThunderboltOutlined />Interactive Risk Calculator</Space>}
+            title={
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Space><ThunderboltOutlined />Interactive Risk Calculator</Space>
+                {isAdmin ? (
+                  <Tag color="#18181b" icon={<SafetyCertificateOutlined />}>Admin Editable</Tag>
+                ) : (
+                  <Tag color="default" icon={<LockOutlined />}>Read Only (Officer)</Tag>
+                )}
+              </div>
+            }
             bordered
             style={{ borderRadius: 10 }}
           >
+            {!isAdmin && (
+              <Alert
+                message="Statutory Weight Controls Locked"
+                description="Logged in as Safety Officer / User. You are viewing active DGMS statutory risk parameters in read-only mode. Administrator authority is required to modify weights."
+                type="info"
+                showIcon
+                style={{ marginBottom: 14, fontSize: 12, borderRadius: 8 }}
+              />
+            )}
+
             <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 12, fontFamily: 'monospace' }}>
               R = ({weights.wv}%·V) + ({weights.we}%·E) + ({weights.wp}%·P) + ({weights.ws}%·S)
             </div>
@@ -165,6 +202,7 @@ export const RiskEnginePage: React.FC = () => {
                 <Slider
                   min={0}
                   max={100}
+                  disabled={!isAdmin}
                   value={weights[item.key as keyof typeof weights]}
                   onChange={(v) => setWeights((prev) => ({ ...prev, [item.key]: v }))}
                   trackStyle={{ backgroundColor: item.color }}

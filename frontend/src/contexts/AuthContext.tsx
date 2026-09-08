@@ -15,6 +15,7 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
+  isAdmin: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
@@ -66,8 +67,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setUser(null);
   };
 
+  const isAdmin = Boolean(user && (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN'));
+
   return (
-    <AuthContext.Provider value={{ user, token, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, token, isAdmin, login, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

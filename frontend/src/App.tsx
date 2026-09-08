@@ -2,9 +2,10 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { ConfigProvider, App as AntApp, Spin } from 'antd';
 import { StyleProvider } from '@ant-design/cssinjs';
-import useShadcnTheme from './theme/shadcnTheme';
+import { ThemeProvider, useTheme } from './contexts/ThemeContext';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { AppLayout } from './components/AppLayout';
+import { LandingPage } from './pages/LandingPage';
 import { LoginPage } from './pages/LoginPage';
 import { DashboardPage } from './pages/DashboardPage';
 import { DigitalTwinPage } from './pages/DigitalTwinPage';
@@ -14,9 +15,11 @@ import { EnvironmentalPage } from './pages/EnvironmentalPage';
 import { RiskEnginePage } from './pages/RiskEnginePage';
 import { WorkflowsPage } from './pages/WorkflowsPage';
 import { CompliancePage } from './pages/CompliancePage';
+import { ModuleStandbyPage } from './pages/ModuleStandbyPage';
 
-const ROUTES = [
+const PROTECTED_ROUTES = [
   { path: '/', element: <DashboardPage /> },
+  { path: '/dashboard', element: <DashboardPage /> },
   { path: '/digital-twin', element: <DigitalTwinPage /> },
   { path: '/cctv', element: <CCTVMonitoringPage /> },
   { path: '/equipment', element: <EquipmentOCRPage /> },
@@ -24,6 +27,8 @@ const ROUTES = [
   { path: '/risk-engine', element: <RiskEnginePage /> },
   { path: '/workflows', element: <WorkflowsPage /> },
   { path: '/compliance', element: <CompliancePage /> },
+  { path: '/module-2', element: <ModuleStandbyPage moduleNumber={2} /> },
+  { path: '/module-3', element: <ModuleStandbyPage moduleNumber={3} /> },
 ];
 
 const AppRoutes: React.FC = () => {
@@ -37,31 +42,56 @@ const AppRoutes: React.FC = () => {
     );
   }
 
-  if (!user) return <LoginPage />;
-
-  return (
-    <AppLayout>
+  // When not logged in:
+  if (!user) {
+    return (
       <Routes>
-        {ROUTES.map((r) => <Route key={r.path} path={r.path} element={r.element} />)}
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/landing" element={<LandingPage />} />
+        <Route path="/login" element={<LoginPage />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
-    </AppLayout>
+    );
+  }
+
+  // When logged in:
+  return (
+    <Routes>
+      <Route path="/landing" element={<LandingPage />} />
+      <Route path="/login" element={<Navigate to="/" replace />} />
+      {PROTECTED_ROUTES.map((r) => (
+        <Route
+          key={r.path}
+          path={r.path}
+          element={<AppLayout>{r.element}</AppLayout>}
+        />
+      ))}
+      <Route path="*" element={<Navigate to="/" replace />} />
+    </Routes>
+  );
+};
+
+const ConfiguredApp: React.FC = () => {
+  const { configProps } = useTheme();
+
+  return (
+    <ConfigProvider {...configProps}>
+      <AntApp>
+        <AuthProvider>
+          <AppRoutes />
+        </AuthProvider>
+      </AntApp>
+    </ConfigProvider>
   );
 };
 
 const App: React.FC = () => {
-  const configProps = useShadcnTheme();
-
   return (
     <BrowserRouter>
       <StyleProvider hashPriority="high">
-        <ConfigProvider {...configProps}>
-          <AntApp>
-            <AuthProvider>
-              <AppRoutes />
-            </AuthProvider>
-          </AntApp>
-        </ConfigProvider>
+        <ThemeProvider>
+          <ConfiguredApp />
+        </ThemeProvider>
       </StyleProvider>
     </BrowserRouter>
   );

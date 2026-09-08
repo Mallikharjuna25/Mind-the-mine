@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Layout, Menu, Badge, Button, Avatar, Dropdown, Space, Tag, notification } from 'antd';
+import { Layout, Menu, Badge, Button, Avatar, Dropdown, Space, Tag, notification, Tooltip } from 'antd';
 import type { MenuProps } from 'antd';
 import {
   DashboardOutlined,
@@ -16,31 +16,20 @@ import {
   BellOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  CarOutlined,
+  CompassOutlined,
+  SafetyCertificateOutlined,
+  HomeOutlined,
+  CheckCircleFilled,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme } from '../contexts/ThemeContext';
+import { ThemeToggle } from './ThemeToggle';
 import { demoApi } from '../services/api';
 import logo from '../assets/logo.svg';
 
 const { Header, Sider, Content } = Layout;
-
-const menuItems: MenuProps['items'] = [
-  { key: '/', icon: <DashboardOutlined />, label: 'Executive Dashboard' },
-  { key: '/digital-twin', icon: <GlobalOutlined />, label: 'GIS Digital Twin' },
-  {
-    key: 'module1',
-    label: 'Module 1 — AI Compliance',
-    type: 'group',
-    children: [
-      { key: '/cctv', icon: <CameraOutlined />, label: 'CCTV Monitoring' },
-      { key: '/equipment', icon: <ToolOutlined />, label: 'Equipment & OCR' },
-      { key: '/environmental', icon: <AreaChartOutlined />, label: 'Gas Telemetry' },
-      { key: '/risk-engine', icon: <ThunderboltOutlined />, label: 'Risk Engine' },
-      { key: '/workflows', icon: <AlertOutlined />, label: 'Alerts & SLA' },
-      { key: '/compliance', icon: <FileProtectOutlined />, label: 'Compliance Reports' },
-    ],
-  },
-];
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -51,9 +40,17 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const [simulating, setSimulating] = useState<string | null>(null);
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, logout } = useAuth();
+  const { user, isAdmin, logout } = useAuth();
+  const { isDark } = useTheme();
 
   const runSimulation = async (type: 'violation' | 'ocr' | 'gas') => {
+    if (!isAdmin) {
+      notification.warning({
+        message: 'Admin Privilege Required',
+        description: 'Demo simulation triggers are restricted to Administrator accounts.',
+      });
+      return;
+    }
     setSimulating(type);
     try {
       if (type === 'violation') await demoApi.simulateViolation();
@@ -77,13 +74,73 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       label: (
         <Space direction="vertical" size={0}>
           <span style={{ fontWeight: 600 }}>{user?.full_name}</span>
-          <span style={{ color: '#737373', fontSize: 12 }}>{user?.designation}</span>
+          <span style={{ color: '#71717a', fontSize: 12 }}>
+            {isAdmin ? '👑 Administrator / Super Admin' : '👷 Authorized Safety Officer'}
+          </span>
+          <span style={{ color: '#a1a1aa', fontSize: 11 }}>{user?.designation}</span>
         </Space>
       ),
       disabled: true,
     },
     { type: 'divider' },
+    {
+      key: 'landing',
+      icon: <HomeOutlined />,
+      label: 'View Public Landing Page',
+    },
+    { type: 'divider' },
     { key: 'logout', icon: <LogoutOutlined />, label: 'Logout', danger: true },
+  ];
+
+  // Sidebar Menu items including Module 1, Module 2 (button only), and Module 3 (button only)
+  const menuItems: MenuProps['items'] = [
+    { key: '/', icon: <DashboardOutlined />, label: 'Executive Dashboard' },
+    { key: '/digital-twin', icon: <GlobalOutlined />, label: 'GIS Digital Twin' },
+    {
+      key: 'module1_group',
+      label: (
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 8 }}>
+          <span>Module 1 — AI Compliance</span>
+          <Tag color="green" style={{ fontSize: 9, margin: 0, padding: '0 4px', lineHeight: '16px' }}>ACTIVE</Tag>
+        </div>
+      ),
+      type: 'group',
+      children: [
+        { key: '/cctv', icon: <CameraOutlined />, label: 'CCTV Monitoring' },
+        { key: '/equipment', icon: <ToolOutlined />, label: 'Equipment & OCR' },
+        { key: '/environmental', icon: <AreaChartOutlined />, label: 'Gas Telemetry' },
+        { key: '/risk-engine', icon: <ThunderboltOutlined />, label: 'Risk Engine' },
+        { key: '/workflows', icon: <AlertOutlined />, label: 'Alerts & SLA' },
+        { key: '/compliance', icon: <FileProtectOutlined />, label: 'Compliance Reports' },
+      ],
+    },
+    {
+      key: 'planned_modules',
+      label: 'Future SIH Modules',
+      type: 'group',
+      children: [
+        {
+          key: '/module-2',
+          icon: <CarOutlined style={{ color: '#2563eb' }} />,
+          label: (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Module 2: Fleet Dispatch</span>
+              <Tag color="blue" style={{ fontSize: 9, margin: 0, padding: '0 4px', lineHeight: '16px' }}>STANDBY</Tag>
+            </div>
+          ),
+        },
+        {
+          key: '/module-3',
+          icon: <CompassOutlined style={{ color: '#9333ea' }} />,
+          label: (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <span>Module 3: Geotechnical</span>
+              <Tag color="purple" style={{ fontSize: 9, margin: 0, padding: '0 4px', lineHeight: '16px' }}>STANDBY</Tag>
+            </div>
+          ),
+        },
+      ],
+    },
   ];
 
   return (
@@ -94,10 +151,10 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         collapsed={collapsed}
         onCollapse={setCollapsed}
         trigger={null}
-        width={240}
+        width={250}
         style={{
-          borderRight: '1px solid #f0f0f0',
-          background: '#fff',
+          borderRight: isDark ? '1px solid #27272a' : '1px solid #e4e4e7',
+          background: isDark ? '#050505' : '#ffffff',
           position: 'fixed',
           left: 0,
           top: 0,
@@ -107,30 +164,35 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           overflowX: 'hidden',
         }}
       >
-        {/* Logo */}
+        {/* Brand Header */}
         <div
           style={{
             height: 64,
             display: 'flex',
             alignItems: 'center',
-            padding: collapsed ? '0 20px' : '0 20px',
-            borderBottom: '1px solid #f0f0f0',
+            padding: '0 18px',
+            borderBottom: isDark ? '1px solid #27272a' : '1px solid #e4e4e7',
             gap: 10,
             overflow: 'hidden',
             whiteSpace: 'nowrap',
+            cursor: 'pointer',
           }}
+          onClick={() => navigate('/')}
         >
           <img src={logo} alt="logo" style={{ width: 28, height: 28, flexShrink: 0 }} />
           {!collapsed && (
             <div>
-              <div style={{ fontWeight: 700, fontSize: 13, color: '#18181b', lineHeight: 1.3 }}>
+              <div style={{ fontWeight: 700, fontSize: 14, color: isDark ? '#ffffff' : '#18181b', lineHeight: 1.2 }}>
                 AI MineGuard
               </div>
-              <div style={{ fontSize: 10, color: '#737373' }}>SIH 2026 · Module 1</div>
+              <div style={{ fontSize: 10, color: isDark ? 'rgba(255, 255, 255, 0.55)' : '#71717a', fontWeight: 500 }}>
+                {isAdmin ? '🛡️ Admin Authority Portal' : '👷 Safety Officer Portal'}
+              </div>
             </div>
           )}
         </div>
 
+        {/* Sidebar Menu */}
         <Menu
           mode="inline"
           selectedKeys={[location.pathname]}
@@ -140,86 +202,164 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         />
       </Sider>
 
-      <Layout style={{ marginLeft: collapsed ? 80 : 240, transition: 'margin 0.2s' }}>
+      {/* MAIN LAYOUT */}
+      <Layout style={{ marginLeft: collapsed ? 80 : 250, transition: 'margin 0.2s' }}>
         {/* HEADER */}
         <Header
           style={{
-            background: '#fff',
-            padding: '0 24px',
+            background: isDark ? '#111111' : '#ffffff',
+            padding: '0 20px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
-            borderBottom: '1px solid #f0f0f0',
+            borderBottom: isDark ? '1px solid #27272a' : '1px solid #e4e4e7',
             position: 'sticky',
             top: 0,
             zIndex: 99,
             gap: 12,
+            height: 64,
           }}
         >
-          <Button
-            type="text"
-            icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={() => setCollapsed(!collapsed)}
-            style={{ width: 40, height: 40 }}
-          />
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <Button
+              type="text"
+              icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+              onClick={() => setCollapsed(!collapsed)}
+              style={{ width: 36, height: 36 }}
+            />
 
-          {/* Live simulation toolbar */}
-          <Space size={8} wrap style={{ flex: 1 }}>
-            <Tag
-              color="default"
-              style={{ fontWeight: 600, fontSize: 11, letterSpacing: 0.5 }}
-            >
-              DEMO CONTROLS
-            </Tag>
-            <Button
-              size="small"
-              icon={<PlayCircleOutlined />}
-              loading={simulating === 'violation'}
-              onClick={() => runSimulation('violation')}
-            >
-              PPE Violation
-            </Button>
-            <Button
-              size="small"
-              icon={<PlayCircleOutlined />}
-              loading={simulating === 'ocr'}
-              onClick={() => runSimulation('ocr')}
-            >
-              OCR Scan
-            </Button>
-            <Button
-              size="small"
-              danger
-              icon={<PlayCircleOutlined />}
-              loading={simulating === 'gas'}
-              onClick={() => runSimulation('gas')}
-            >
-              Gas Breach
-            </Button>
-          </Space>
+            {/* Top Module Switcher Buttons */}
+            <Space size={6} wrap>
+              <Button
+                size="small"
+                type={location.pathname !== '/module-2' && location.pathname !== '/module-3' ? 'primary' : 'default'}
+                onClick={() => navigate('/')}
+                style={
+                  location.pathname !== '/module-2' && location.pathname !== '/module-3'
+                    ? { background: isDark ? '#27272a' : '#18181b', borderColor: isDark ? '#3f3f46' : '#18181b', color: '#fff', fontWeight: 600, fontSize: 11 }
+                    : { fontSize: 11 }
+                }
+              >
+                Module 1 (Active)
+              </Button>
+              <Tooltip title="Scheduled for Phase 2 · Features not implemented on this branch">
+                <Button
+                  size="small"
+                  type={location.pathname === '/module-2' ? 'primary' : 'dashed'}
+                  onClick={() => navigate('/module-2')}
+                  style={{ fontSize: 11, borderColor: '#bfdbfe', color: '#2563eb' }}
+                >
+                  Module 2 (Standby)
+                </Button>
+              </Tooltip>
+              <Tooltip title="Scheduled for Phase 3 · Features not implemented on this branch">
+                <Button
+                  size="small"
+                  type={location.pathname === '/module-3' ? 'primary' : 'dashed'}
+                  onClick={() => navigate('/module-3')}
+                  style={{ fontSize: 11, borderColor: '#e9d5ff', color: '#9333ea' }}
+                >
+                  Module 3 (Standby)
+                </Button>
+              </Tooltip>
+            </Space>
+          </div>
 
-          <Space size={16}>
-            <Badge count={3} size="small">
-              <Button type="text" icon={<BellOutlined style={{ fontSize: 18 }} />} />
+          {/* Center: Admin Simulation Controls OR User Status */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'center' }}>
+            {isAdmin ? (
+              <Space size={6} wrap>
+                <Tag color="#18181b" style={{ fontWeight: 600, fontSize: 10, letterSpacing: 0.5, margin: 0 }}>
+                  <SafetyCertificateOutlined /> ADMIN CONTROLS
+                </Tag>
+                <Button
+                  size="small"
+                  icon={<PlayCircleOutlined />}
+                  loading={simulating === 'violation'}
+                  onClick={() => runSimulation('violation')}
+                  style={{ fontSize: 11 }}
+                >
+                  PPE Violation
+                </Button>
+                <Button
+                  size="small"
+                  icon={<PlayCircleOutlined />}
+                  loading={simulating === 'ocr'}
+                  onClick={() => runSimulation('ocr')}
+                  style={{ fontSize: 11 }}
+                >
+                  OCR Scan
+                </Button>
+                <Button
+                  size="small"
+                  danger
+                  icon={<PlayCircleOutlined />}
+                  loading={simulating === 'gas'}
+                  onClick={() => runSimulation('gas')}
+                  style={{ fontSize: 11 }}
+                >
+                  Gas Breach
+                </Button>
+              </Space>
+            ) : (
+              <Space size={8}>
+                <Tag color="green" icon={<CheckCircleFilled />} style={{ fontSize: 11, fontWeight: 500, margin: 0 }}>
+                  Active Surveillance Stream
+                </Tag>
+                <Tag color="blue" style={{ fontSize: 11, fontWeight: 500, margin: 0 }}>
+                  Shift: General 08:00 - 16:00
+                </Tag>
+              </Space>
+            )}
+          </div>
+
+          {/* Right: User Role Badge, Theme Toggle & Dropdown */}
+          <Space size={12} style={{ flexShrink: 0 }}>
+            <ThemeToggle size="middle" />
+
+            {isAdmin ? (
+              <Tag color={isDark ? '#27272a' : '#18181b'} style={{ fontWeight: 600, fontSize: 11, margin: 0, padding: '2px 8px' }}>
+                👑 Admin Authority
+              </Tag>
+            ) : (
+              <Tag color="blue" style={{ fontWeight: 600, fontSize: 11, margin: 0, padding: '2px 8px' }}>
+                👷 Safety Officer
+              </Tag>
+            )}
+
+            <Badge count={2} size="small">
+              <Button
+                type="text"
+                icon={<BellOutlined style={{ fontSize: 17 }} />}
+                onClick={() => navigate('/workflows')}
+              />
             </Badge>
+
             <Dropdown
               menu={{
                 items: userMenu,
-                onClick: ({ key }) => key === 'logout' && logout(),
+                onClick: ({ key }) => {
+                  if (key === 'logout') logout();
+                  if (key === 'landing') navigate('/landing');
+                },
               }}
               placement="bottomRight"
             >
               <Avatar
                 size={32}
                 icon={<UserOutlined />}
-                style={{ background: '#18181b', cursor: 'pointer' }}
+                style={{
+                  background: isAdmin ? (isDark ? '#27272a' : '#18181b') : '#0284c7',
+                  cursor: 'pointer',
+                  border: isDark ? '1px solid #3f3f46' : '1px solid #e4e4e7',
+                }}
               />
             </Dropdown>
           </Space>
         </Header>
 
         {/* PAGE CONTENT */}
-        <Content style={{ padding: 24, background: '#fafafa', minHeight: 'calc(100vh - 64px)' }}>
+        <Content style={{ padding: 24, background: isDark ? '#050505' : '#fafafa', minHeight: 'calc(100vh - 64px)' }}>
           {children}
         </Content>
       </Layout>
