@@ -4,10 +4,10 @@ import {
   ArrowLeftOutlined,
   CheckCircleFilled,
   ClockCircleOutlined,
-  CarOutlined,
-  CompassOutlined,
   ThunderboltOutlined,
   SafetyCertificateOutlined,
+  FileDoneOutlined,
+  AuditOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
@@ -25,25 +25,25 @@ export const ModuleStandbyPage: React.FC<ModuleStandbyPageProps> = ({ moduleNumb
   const isModule2 = moduleNumber === 2;
 
   const title = isModule2
-    ? 'Module 2 — AI Mine Production, Fleet Optimization & Dispatch'
-    : 'Module 3 — Geotechnical, Structural & Eco-Restoration';
+    ? 'Module 2 — Field Operations and Inspection Management'
+    : 'Module 3 — Contractor Governance Management';
 
   const subtitle = isModule2
-    ? 'Dynamic shovel-dumper allocation, cycle time optimization, and haul road safety analytics.'
-    : 'Slope stability radar integration, subsidence forecasting, and progressive ecological restoration telemetry.';
+    ? 'Standardized digital pit checklists, pre-shift mobile equipment roadworthiness, and geo-tagged hazard logs.'
+    : 'Contractor agency onboarding, worker biometric verification, statutory wage compliance, and safety induction tracking.';
 
   const features = isModule2
     ? [
-        { title: 'Dynamic Dispatch Engine', desc: 'Real-time linear programming & genetic algorithms for optimal hauler routing between blast faces and crushers.' },
-        { title: 'Cycle-Time Bottleneck Analysis', desc: 'GPS telematics tracking loading, hauling, dumping, and queuing durations to eliminate idle time.' },
-        { title: 'Haul Road Speed & Proximity Compliance', desc: 'CV and telematics alerting drivers to overspeeding, steep gradients, and collision proximity zones.' },
-        { title: 'Fuel & Carbon Footprint Optimization', desc: 'AI-assisted gear/speed advisory models minimizing diesel burn per ton of coal extracted.' },
+        { title: 'Digital Pit Pre-Shift Checklists', desc: 'Overman digital sign-off on ventilation, roof/wall soundness, and electrical grounding before worker entry.' },
+        { title: 'Mobile Equipment Pre-Operation Inspection', desc: 'Dumper, shovel, and drill operator walkaround checklists verifying brakes, lights, and steering systems.' },
+        { title: 'Geo-Tagged Hazard & Danger Zone Tagging', desc: 'Field safety officers pinning geo-referenced danger areas and blast radius clearance buffers on the digital twin.' },
+        { title: 'Drone Bench & Highwall Survey Logs', desc: 'Periodic aerial photographic inspection logs identifying overhangs, loose boulders, and haul road erosion.' },
       ]
     : [
-        { title: 'Slope Stability & Bench Failure Radar', desc: 'Interferometric radar & micro-seismic sensor integration for pit wall displacement early warning.' },
-        { title: 'Subsurface InSAR Subsidence Tracking', desc: 'Satellite InSAR interferometry detecting millimeter-level ground subsidence over underground workings.' },
-        { title: 'Acid Mine Drainage (AMD) Detection', desc: 'pH, heavy metal, and sulfate runoff forecasting across mine sumps and sedimentation ponds.' },
-        { title: 'Eco-Restoration Vegetation Index (NDVI)', desc: 'Multispectral drone imagery computing vegetation health indices over reclaimed overburden dumps.' },
+        { title: 'Contractor Worker Biometric Identity & Gate Pass', desc: 'Fingerprint and facial biometric access control cross-referencing valid medical fitness and statutory training.' },
+        { title: 'Statutory Wage & PF/ESI Compliance Audit', desc: 'Automated escrow verification ensuring contracted laborers receive mandated statutory minimum wages and social security.' },
+        { title: 'Mandatory Safety Induction & Badge Tracking', desc: 'Digital tracking of Vocational Training (VT) center certifications, refresher safety drills, and badge validity.' },
+        { title: 'Contractor Safety Rating & Blacklisting Matrix', desc: 'Dynamic penalty point scoring blacklisting agencies with repeated unverified PPE breaches or statutory non-compliance.' },
       ];
 
   return (
@@ -53,7 +53,7 @@ export const ModuleStandbyPage: React.FC<ModuleStandbyPageProps> = ({ moduleNumb
         <div>
           <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 8 }}>
             <Tag color={isModule2 ? 'blue' : 'purple'} style={{ fontSize: 12, padding: '2px 8px', fontWeight: 600 }}>
-              {isModule2 ? 'PHASE 2 ROADMAP' : 'PHASE 3 ROADMAP'}
+              {isModule2 ? 'MODULE 2 · PHASE 2 ROADMAP' : 'MODULE 3 · PHASE 3 ROADMAP'}
             </Tag>
             <Tag color="default" style={{ fontSize: 12 }}>STANDBY MODE</Tag>
           </div>
@@ -73,8 +73,8 @@ export const ModuleStandbyPage: React.FC<ModuleStandbyPageProps> = ({ moduleNumb
 
       {/* Notice Banner */}
       <Alert
-        message="Architecture Specification Notice"
-        description="Per system guidelines, only Module 1 (AI Statutory Safety & Compliance Engine) is actively implemented on this branch. Module 2 and Module 3 navigation buttons are included in the centralized platform for architectural review and future milestone integration."
+        message="Module Status: Standby Roadmap"
+        description="Per system specifications, only Module 1 (AI Compliance and Risk Engine) is actively operational. Buttons for Module 2 and Module 3 are provided for complete navigation and worker workflow visibility, but backend features are on standby."
         type="info"
         showIcon
         style={{ marginBottom: 24, borderRadius: 10 }}
@@ -90,23 +90,23 @@ export const ModuleStandbyPage: React.FC<ModuleStandbyPageProps> = ({ moduleNumb
           borderColor: isDark ? '#27272a' : '#e4e4e7',
         }}
       >
-        <Title level={5} style={{ marginBottom: 16, color: isDark ? '#ffffff' : '#18181b' }}>Centralized Platform Implementation Roadmap</Title>
+        <Title level={5} style={{ marginBottom: 16, color: isDark ? '#ffffff' : '#18181b' }}>Platform Module Status Overview</Title>
         <Steps
           current={isModule2 ? 1 : 2}
           items={[
             {
-              title: 'Module 1: AI Safety & Statutory Compliance',
-              description: 'Active & Deployed (CCTV Vision, OCR, Gas Telemetry, Risk Engine, DGMS SLA)',
+              title: 'Module 1: AI Compliance and Risk Engine',
+              description: 'ACTIVE & WORKING (CCTV Vision, OCR, Gas Telemetry, Risk Scoring, SLA Alerts)',
               icon: <CheckCircleFilled style={{ color: '#16a34a' }} />,
             },
             {
-              title: 'Module 2: Fleet & Dispatch Optimization',
-              description: 'Scheduled Phase 2 (Shovel-Dumper Dispatch, Fuel Analytics, Cycle Times)',
+              title: 'Module 2: Field Operations & Inspection',
+              description: 'SCHEDULED PHASE 2 (Digital Pit Checklists, Pre-Shift Inspections, Geo-Hazards)',
               icon: isModule2 ? <ThunderboltOutlined style={{ color: '#2563eb' }} /> : <ClockCircleOutlined />,
             },
             {
-              title: 'Module 3: Geotechnical & Eco-Restoration',
-              description: 'Scheduled Phase 3 (Slope Radar, Subsidence InSAR, Overburden NDVI)',
+              title: 'Module 3: Contractor Governance',
+              description: 'SCHEDULED PHASE 3 (Biometric Gates, Wage Compliance, Safety Training Badges)',
               icon: !isModule2 ? <ThunderboltOutlined style={{ color: '#9333ea' }} /> : <ClockCircleOutlined />,
             },
           ]}
@@ -115,7 +115,7 @@ export const ModuleStandbyPage: React.FC<ModuleStandbyPageProps> = ({ moduleNumb
 
       {/* Planned Feature Specifications (Design Only) */}
       <Title level={4} style={{ marginBottom: 16, color: isDark ? '#ffffff' : '#18181b' }}>
-        {isModule2 ? 'Planned Fleet & Dispatch Specifications' : 'Planned Geotechnical & Restoration Specifications'}
+        {isModule2 ? 'Planned Field Operations & Inspection Specifications' : 'Planned Contractor Governance Specifications'}
       </Title>
       <Row gutter={[16, 16]}>
         {features.map((f, i) => (
@@ -132,9 +132,9 @@ export const ModuleStandbyPage: React.FC<ModuleStandbyPageProps> = ({ moduleNumb
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 10 }}>
                 {isModule2 ? (
-                  <CarOutlined style={{ fontSize: 20, color: '#2563eb' }} />
+                  <FileDoneOutlined style={{ fontSize: 20, color: '#2563eb' }} />
                 ) : (
-                  <CompassOutlined style={{ fontSize: 20, color: '#9333ea' }} />
+                  <AuditOutlined style={{ fontSize: 20, color: '#9333ea' }} />
                 )}
                 <Text strong style={{ fontSize: 15, color: isDark ? '#ffffff' : '#18181b' }}>{f.title}</Text>
               </div>
@@ -142,7 +142,7 @@ export const ModuleStandbyPage: React.FC<ModuleStandbyPageProps> = ({ moduleNumb
                 {f.desc}
               </Paragraph>
               <div style={{ marginTop: 14 }}>
-                <Tag color="default" style={{ fontSize: 11 }}>Feature Reserved</Tag>
+                <Tag color="default" style={{ fontSize: 11 }}>Feature Standby</Tag>
               </div>
             </Card>
           </Col>
@@ -162,9 +162,9 @@ export const ModuleStandbyPage: React.FC<ModuleStandbyPageProps> = ({ moduleNumb
         }}
       >
         <SafetyCertificateOutlined style={{ fontSize: 36, color: isDark ? '#ffffff' : '#18181b', marginBottom: 12 }} />
-        <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Looking for Active Operational Systems?</Title>
+        <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Need Active Safety Systems?</Title>
         <Paragraph type="secondary" style={{ maxWidth: 540, margin: '8px auto 16px', color: isDark ? '#a1a1aa' : '#71717a' }}>
-          Module 1 is fully operational with live computer vision hazard detection, real-time gas telemetry, explainable risk scoring, and DGMS statutory escalation workflows.
+          Module 1 is fully operational with live CCTV computer vision, continuous multi-gas telemetry, explainable risk calculations, and DGMS SLA corrective workflows.
         </Paragraph>
         <Button
           type="primary"

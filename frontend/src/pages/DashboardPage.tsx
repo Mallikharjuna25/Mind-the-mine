@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import {
-  Row, Col, Card, Statistic, Table, Tag, Progress, Timeline, Typography, Button, Spin, Space,
+  Row, Col, Card, Statistic, Table, Tag, Progress, Timeline, Typography, Button, Spin, Space, Alert as AntAlert,
 } from 'antd';
 import {
   AlertOutlined, SafetyOutlined, ThunderboltOutlined, CameraOutlined, ReloadOutlined, RiseOutlined,
@@ -9,7 +9,7 @@ import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend,
 } from 'recharts';
 import dayjs from 'dayjs';
-import type { Alert, RiskScore, EnvironmentalReading } from '../types';
+import type { Alert as AlertType, RiskScore, EnvironmentalReading } from '../types';
 import { riskApi, workflowApi, environmentApi, cctvApi, demoApi } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
@@ -28,7 +28,7 @@ export const DashboardPage: React.FC = () => {
   const { user, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [riskScores, setRiskScores] = useState<RiskScore[]>([]);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const [alerts, setAlerts] = useState<AlertType[]>([]);
   const [readings, setReadings] = useState<EnvironmentalReading[]>([]);
   const [loading, setLoading] = useState(true);
   const [seeding, setSeeding] = useState(false);
@@ -116,7 +116,7 @@ export const DashboardPage: React.FC = () => {
               {isAdmin ? 'Executive Governance & Command Dashboard' : 'Field Safety & Operations Dashboard'}
             </Title>
             <Tag color={isAdmin ? '#18181b' : 'blue'} style={{ fontSize: 11, fontWeight: 600 }}>
-              {isAdmin ? 'ADMIN AUTHORITY' : 'SAFETY OFFICER'}
+              {isAdmin ? 'ADMIN AUTHORITY' : 'WORKER ACCESS'}
             </Tag>
           </div>
           <Text type="secondary" style={{ fontSize: 13 }}>
@@ -132,12 +132,22 @@ export const DashboardPage: React.FC = () => {
               </Button>
             ) : (
               <Button type="primary" onClick={() => navigate('/workflows')} style={{ background: '#0284c7', borderColor: '#0284c7' }}>
-                View Action Items
+                My Action Items
               </Button>
             )}
           </Space>
         </Col>
       </Row>
+
+      {!isAdmin && (
+        <AntAlert
+          message="Worker Safety Shift Status — Module 1 Active & Working"
+          description="You are viewing the on-ground Worker Safety Dashboard. Module 1 CCTV computer vision, live gas telemetry, and DGMS SLA alerts are actively protecting your pit zone. Navigation buttons for Module 2 (Field Operations) and Module 3 (Contractor Governance) are visible on standby roadmap."
+          type="info"
+          showIcon
+          style={{ marginBottom: 20, borderRadius: 10 }}
+        />
+      )}
 
       {loading ? (
         <div style={{ textAlign: 'center', padding: 80 }}><Spin size="large" /></div>

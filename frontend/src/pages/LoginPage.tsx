@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Form, Input, Card, Typography, Space, Divider, notification, Tag, Segmented, Alert } from 'antd';
 import {
-  SafetyOutlined,
   SafetyCertificateOutlined,
   UserOutlined,
   ArrowLeftOutlined,
@@ -20,33 +19,34 @@ export const LoginPage: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [form] = Form.useForm();
-
-  const [portalType, setPortalType] = useState<'admin' | 'user'>('admin');
-  const [loading, setLoading] = useState(false);
-  const [seeding, setSeeding] = useState(false);
   const { isDark } = useTheme();
 
-  // Parse query params to auto-switch tab if specified
+  // Exactly two login types: 'worker' | 'admin'
+  const [portalType, setPortalType] = useState<'worker' | 'admin'>('worker');
+  const [loading, setLoading] = useState(false);
+  const [seeding, setSeeding] = useState(false);
+
+  // Parse query params to auto-switch tab if specified (?role=admin or ?role=worker)
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const roleParam = params.get('role');
-    if (roleParam === 'user') {
-      setPortalType('user');
-      form.setFieldsValue({
-        email: 'safety@mineguard.in',
-        password: 'Safety@12345',
-      });
-    } else {
+    if (roleParam === 'admin') {
       setPortalType('admin');
       form.setFieldsValue({
         email: 'admin@mineguard.in',
         password: 'Admin@12345',
       });
+    } else {
+      setPortalType('worker');
+      form.setFieldsValue({
+        email: 'safety@mineguard.in',
+        password: 'Safety@12345',
+      });
     }
   }, [location.search, form]);
 
   const handlePortalSwitch = (val: string | number) => {
-    const nextType = val as 'admin' | 'user';
+    const nextType = val as 'worker' | 'admin';
     setPortalType(nextType);
     if (nextType === 'admin') {
       form.setFieldsValue({
@@ -70,13 +70,13 @@ export const LoginPage: React.FC = () => {
     }
   };
 
-  const handleSeedAndLogin = async (asRole: 'admin' | 'user') => {
+  const handleSeedAndLogin = async (asRole: 'worker' | 'admin') => {
     setSeeding(true);
     try {
       await demoApi.seed();
       notification.success({
         message: 'Demo Data Initialized',
-        description: `Synthetic mine data ready. Logging in as ${asRole === 'admin' ? 'Super Admin' : 'Safety Officer'}...`,
+        description: `Kusmunda Coal Mine test assets seeded. Logging in as ${asRole === 'admin' ? 'Super Admin' : 'Worker / Safety Officer'}...`,
       });
       const creds = asRole === 'admin'
         ? { email: 'admin@mineguard.in', pwd: 'Admin@12345' }
@@ -104,7 +104,7 @@ export const LoginPage: React.FC = () => {
         transition: 'background-color 0.2s ease',
       }}
     >
-      {/* Top action row: Back to landing link + Theme Toggle */}
+      {/* Top action row */}
       <div style={{ width: '100%', maxWidth: 460, marginBottom: 16, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Button
           type="link"
@@ -119,7 +119,7 @@ export const LoginPage: React.FC = () => {
 
       <div style={{ width: '100%', maxWidth: 460 }}>
         {/* Header Branding */}
-        <div style={{ textAlign: 'center', marginBottom: 24 }}>
+        <div style={{ textAlign: 'center', marginBottom: 20 }}>
           <div
             style={{
               width: 52,
@@ -136,11 +136,11 @@ export const LoginPage: React.FC = () => {
           </div>
           <Title level={3} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>AI MineGuard Portal</Title>
           <Text type="secondary" style={{ fontSize: 13, color: isDark ? '#a1a1aa' : '#71717a' }}>
-            Statutory Safety & Compliance · Smart India Hackathon 2026
+            Smart Statutory Safety & Compliance · Smart India Hackathon 2026
           </Text>
         </div>
 
-        {/* Role Selector Segmented */}
+        {/* The Two Distinct Login Portals */}
         <div style={{ marginBottom: 16 }}>
           <Segmented
             block
@@ -151,40 +151,40 @@ export const LoginPage: React.FC = () => {
               {
                 label: (
                   <div style={{ padding: '6px 0', fontWeight: 600 }}>
+                    <UserOutlined style={{ marginRight: 6 }} />
+                    Worker Login
+                  </div>
+                ),
+                value: 'worker',
+              },
+              {
+                label: (
+                  <div style={{ padding: '6px 0', fontWeight: 600 }}>
                     <SafetyCertificateOutlined style={{ marginRight: 6 }} />
                     Admin Login
                   </div>
                 ),
                 value: 'admin',
               },
-              {
-                label: (
-                  <div style={{ padding: '6px 0', fontWeight: 600 }}>
-                    <UserOutlined style={{ marginRight: 6 }} />
-                    User / Officer Login
-                  </div>
-                ),
-                value: 'user',
-              },
             ]}
           />
         </div>
 
-        {/* Role Permission Guidance Notice */}
+        {/* Role Notice */}
         <Alert
           message={
-            portalType === 'admin'
-              ? '👑 Administrator Privileges'
-              : '👷 Authorized Safety Officer / User Privileges'
+            portalType === 'worker'
+              ? '👷 Worker & Field Operations Portal'
+              : '👑 Administrator Governance Portal'
           }
           description={
-            portalType === 'admin'
-              ? 'Enables risk engine dynamic weight tuning, demo simulation controls, statutory violation overrides, and managerial SLA recomputations.'
-              : 'Enables live CCTV hazard monitoring, equipment fitness inspection, continuous gas telemetry review, and on-ground SLA corrective action submissions.'
+            portalType === 'worker'
+              ? 'Active worker surveillance access. Module 1 features (CCTV Vision, Gas Telemetry, Equipment OCR, Risk Scoring) are fully active and working. Module 2 (Field Operations) & Module 3 (Contractor Governance) buttons are available on standby.'
+              : 'Full administrative access: global risk weight tuning, live simulation drill controls (PPE breaches, gas leaks, OCR certs), statutory violation verification/overrides, and system database seeding.'
           }
-          type={portalType === 'admin' ? 'info' : 'success'}
+          type={portalType === 'worker' ? 'info' : 'success'}
           showIcon
-          icon={portalType === 'admin' ? <SafetyCertificateOutlined /> : <SafetyOutlined />}
+          icon={portalType === 'worker' ? <UserOutlined /> : <SafetyCertificateOutlined />}
           style={{ marginBottom: 16, borderRadius: 10, fontSize: 12 }}
         />
 
@@ -199,13 +199,13 @@ export const LoginPage: React.FC = () => {
         >
           <Form form={form} layout="vertical" onFinish={handleLogin} autoComplete="off">
             <Form.Item
-              label="Authorized Email"
+              label={portalType === 'worker' ? 'Worker / Officer Email' : 'Administrator Email'}
               name="email"
               rules={[{ required: true, type: 'email', message: 'Enter a valid email' }]}
             >
               <Input
                 size="large"
-                placeholder={portalType === 'admin' ? 'admin@mineguard.in' : 'safety@mineguard.in'}
+                placeholder={portalType === 'worker' ? 'safety@mineguard.in' : 'admin@mineguard.in'}
                 autoComplete="email"
               />
             </Form.Item>
@@ -231,19 +231,20 @@ export const LoginPage: React.FC = () => {
               style={{
                 height: 44,
                 fontWeight: 600,
-                background: portalType === 'admin' ? '#18181b' : '#0284c7',
-                borderColor: portalType === 'admin' ? '#18181b' : '#0284c7',
+                background: portalType === 'worker' ? '#0284c7' : '#18181b',
+                borderColor: portalType === 'worker' ? '#0284c7' : '#18181b',
+                color: '#ffffff',
               }}
             >
-              Sign In to {portalType === 'admin' ? 'Admin Dashboard' : 'Safety Portal'}
+              Sign In to {portalType === 'worker' ? 'Worker Dashboard' : 'Admin Portal'}
             </Button>
           </Form>
 
-          <Divider style={{ fontSize: 12, color: '#a3a3a3', margin: '20px 0 16px' }}>
+          <Divider style={{ fontSize: 12, color: isDark ? '#52525b' : '#a3a3a3', margin: '20px 0 16px' }}>
             DEMO INSTANT ACCESS
           </Divider>
 
-          <Paragraph style={{ fontSize: 12, textAlign: 'center', color: '#71717a', marginBottom: 12 }}>
+          <Paragraph style={{ fontSize: 12, textAlign: 'center', color: isDark ? '#a1a1aa' : '#71717a', marginBottom: 12 }}>
             One-click initialization with synthetic Kusmunda Coal Mine test assets:
           </Paragraph>
 
@@ -252,9 +253,15 @@ export const LoginPage: React.FC = () => {
             size="large"
             loading={seeding}
             onClick={() => handleSeedAndLogin(portalType)}
-            style={{ height: 42, fontWeight: 600 }}
+            style={{
+              height: 42,
+              fontWeight: 600,
+              background: isDark ? '#1f1f23' : '#fafafa',
+              borderColor: isDark ? '#27272a' : '#e4e4e7',
+              color: isDark ? '#ffffff' : '#18181b',
+            }}
           >
-            🚀 Seed & Login as {portalType === 'admin' ? 'Super Admin' : 'Safety Officer'}
+            🚀 Seed & Login as {portalType === 'worker' ? 'Worker / Safety Officer' : 'Super Admin'}
           </Button>
 
           <Divider style={{ margin: '16px 0 12px' }} />
@@ -266,9 +273,9 @@ export const LoginPage: React.FC = () => {
             </Text>
             <Space direction="vertical" size={4} style={{ width: '100%' }}>
               {[
+                { role: 'Worker / Safety Officer', email: 'safety@mineguard.in', pwd: 'Safety@12345', type: 'worker' },
                 { role: 'Super Admin', email: 'admin@mineguard.in', pwd: 'Admin@12345', type: 'admin' },
                 { role: 'Mine Manager', email: 'manager@mineguard.in', pwd: 'Manager@12345', type: 'admin' },
-                { role: 'Safety Officer', email: 'safety@mineguard.in', pwd: 'Safety@12345', type: 'user' },
               ].map((u) => (
                 <div
                   key={u.role}
@@ -284,7 +291,7 @@ export const LoginPage: React.FC = () => {
                     transition: 'all 0.15s ease',
                   }}
                   onClick={() => {
-                    setPortalType(u.type as 'admin' | 'user');
+                    setPortalType(u.type as 'worker' | 'admin');
                     form.setFieldsValue({ email: u.email, password: u.pwd });
                   }}
                 >
@@ -292,7 +299,7 @@ export const LoginPage: React.FC = () => {
                     <Tag color={u.type === 'admin' ? 'default' : 'blue'} style={{ fontSize: 10 }}>
                       {u.role}
                     </Tag>
-                    <Text style={{ fontSize: 11 }}>{u.email}</Text>
+                    <Text style={{ fontSize: 11, color: isDark ? '#ffffff' : '#18181b' }}>{u.email}</Text>
                   </Space>
                   <Text code style={{ fontSize: 10 }}>{u.pwd}</Text>
                 </div>

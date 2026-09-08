@@ -16,11 +16,13 @@ import {
   BellOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
-  CarOutlined,
-  CompassOutlined,
   SafetyCertificateOutlined,
   HomeOutlined,
   CheckCircleFilled,
+  FileDoneOutlined,
+  AuditOutlined,
+  InfoCircleOutlined,
+  PhoneOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
@@ -86,7 +88,17 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     {
       key: 'landing',
       icon: <HomeOutlined />,
-      label: 'View Public Landing Page',
+      label: 'Public Overview',
+    },
+    {
+      key: 'about',
+      icon: <InfoCircleOutlined />,
+      label: 'About Platform',
+    },
+    {
+      key: 'contact',
+      icon: <PhoneOutlined />,
+      label: 'Contact & Safety Desk',
     },
     { type: 'divider' },
     { key: 'logout', icon: <LogoutOutlined />, label: 'Logout', danger: true },
@@ -116,25 +128,25 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     },
     {
       key: 'planned_modules',
-      label: 'Future SIH Modules',
+      label: 'Standby Modules',
       type: 'group',
       children: [
         {
           key: '/module-2',
-          icon: <CarOutlined style={{ color: '#2563eb' }} />,
+          icon: <FileDoneOutlined style={{ color: '#2563eb' }} />,
           label: (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span>Module 2: Fleet Dispatch</span>
+              <span>Module 2: Field Operations</span>
               <Tag color="blue" style={{ fontSize: 9, margin: 0, padding: '0 4px', lineHeight: '16px' }}>STANDBY</Tag>
             </div>
           ),
         },
         {
           key: '/module-3',
-          icon: <CompassOutlined style={{ color: '#9333ea' }} />,
+          icon: <AuditOutlined style={{ color: '#9333ea' }} />,
           label: (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span>Module 3: Geotechnical</span>
+              <span>Module 3: Contractor Gov</span>
               <Tag color="purple" style={{ fontSize: 9, margin: 0, padding: '0 4px', lineHeight: '16px' }}>STANDBY</Tag>
             </div>
           ),
@@ -242,24 +254,24 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               >
                 Module 1 (Active)
               </Button>
-              <Tooltip title="Scheduled for Phase 2 · Features not implemented on this branch">
+              <Tooltip title="Module 2: Field Operations & Inspection Management · Features on standby">
                 <Button
                   size="small"
                   type={location.pathname === '/module-2' ? 'primary' : 'dashed'}
                   onClick={() => navigate('/module-2')}
                   style={{ fontSize: 11, borderColor: '#bfdbfe', color: '#2563eb' }}
                 >
-                  Module 2 (Standby)
+                  Module 2: Field Ops (Standby)
                 </Button>
               </Tooltip>
-              <Tooltip title="Scheduled for Phase 3 · Features not implemented on this branch">
+              <Tooltip title="Module 3: Contractor Governance Management · Features on standby">
                 <Button
                   size="small"
                   type={location.pathname === '/module-3' ? 'primary' : 'dashed'}
                   onClick={() => navigate('/module-3')}
                   style={{ fontSize: 11, borderColor: '#e9d5ff', color: '#9333ea' }}
                 >
-                  Module 3 (Standby)
+                  Module 3: Contractor Gov (Standby)
                 </Button>
               </Tooltip>
             </Space>
@@ -323,7 +335,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               </Tag>
             ) : (
               <Tag color="blue" style={{ fontWeight: 600, fontSize: 11, margin: 0, padding: '2px 8px' }}>
-                👷 Safety Officer
+                👷 Worker Access
               </Tag>
             )}
 
@@ -341,6 +353,8 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 onClick: ({ key }) => {
                   if (key === 'logout') logout();
                   if (key === 'landing') navigate('/landing');
+                  if (key === 'about') navigate('/about');
+                  if (key === 'contact') navigate('/contact');
                 },
               }}
               placement="bottomRight"

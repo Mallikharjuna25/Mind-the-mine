@@ -6,14 +6,14 @@ import {
   ToolOutlined,
   ThunderboltOutlined,
   AlertOutlined,
-  CarOutlined,
-  CompassOutlined,
   UserOutlined,
   ArrowRightOutlined,
   CheckCircleFilled,
   ClockCircleOutlined,
   FireOutlined,
-  RocketOutlined,
+  FileDoneOutlined,
+  AuditOutlined,
+  InfoCircleOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
@@ -22,23 +22,9 @@ import logo from '../assets/logo.svg';
 
 const { Title, Paragraph, Text } = Typography;
 
-interface LandingPageProps {
-  onSelectRole?: (role: 'admin' | 'safety' | 'manager') => void;
-}
-
-export const LandingPage: React.FC<LandingPageProps> = () => {
+export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const { isDark } = useTheme();
-
-  const handleLoginNav = (role?: 'admin' | 'user') => {
-    if (role === 'admin') {
-      navigate('/login?role=admin');
-    } else if (role === 'user') {
-      navigate('/login?role=user');
-    } else {
-      navigate('/login');
-    }
-  };
 
   return (
     <div
@@ -78,17 +64,23 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
           </div>
         </div>
 
-        {/* Center links */}
+        {/* Center navigation links */}
         <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
+          <Button type="link" onClick={() => navigate('/')} style={{ color: isDark ? '#ffffff' : '#18181b', fontWeight: 600, padding: 0, fontSize: 14 }}>
+            Home
+          </Button>
+          <Button type="link" onClick={() => navigate('/about')} style={{ color: isDark ? '#a1a1aa' : '#52525b', padding: 0, fontSize: 14 }}>
+            About Platform
+          </Button>
           <a href="#modules" style={{ color: isDark ? '#a1a1aa' : '#52525b', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
             Modules
           </a>
           <a href="#roles" style={{ color: isDark ? '#a1a1aa' : '#52525b', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
-            Role Access
+            Worker vs Admin
           </a>
-          <a href="#compliance" style={{ color: isDark ? '#a1a1aa' : '#52525b', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
-            Statutory Standards
-          </a>
+          <Button type="link" onClick={() => navigate('/contact')} style={{ color: isDark ? '#a1a1aa' : '#52525b', padding: 0, fontSize: 14 }}>
+            Contact & Support
+          </Button>
           <Tag color="green" style={{ margin: 0, fontWeight: 600 }}>Module 1 Active</Tag>
         </div>
 
@@ -97,7 +89,7 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
           <ThemeToggle size="middle" />
 
           <Button
-            onClick={() => handleLoginNav('user')}
+            onClick={() => navigate('/login?role=worker')}
             style={{
               fontWeight: 500,
               borderColor: isDark ? '#27272a' : '#e4e4e7',
@@ -105,12 +97,12 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
               color: isDark ? '#ffffff' : '#18181b',
             }}
           >
-            <UserOutlined /> Safety User Login
+            <UserOutlined /> Worker Login
           </Button>
 
           <Button
             type="primary"
-            onClick={() => handleLoginNav('admin')}
+            onClick={() => navigate('/login?role=admin')}
             style={{
               background: isDark ? '#27272a' : '#18181b',
               borderColor: isDark ? '#3f3f46' : '#18181b',
@@ -119,7 +111,7 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
               boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
             }}
           >
-            <SafetyCertificateOutlined /> Admin Portal
+            <SafetyCertificateOutlined /> Admin Login
           </Button>
         </Space>
       </nav>
@@ -177,48 +169,48 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
           A unified, centralized intelligence platform orchestrating edge CCTV computer vision, continuous multi-gas sensor telemetry, automated DGMS statutory form compliance, and an explainable multi-factor dynamic risk engine.
         </Paragraph>
 
-        {/* Action Buttons */}
+        {/* Action Buttons: Worker Login & Admin Login */}
         <Space size={16} wrap style={{ justifyContent: 'center', marginBottom: 48 }}>
           <Button
             type="primary"
             size="large"
-            onClick={() => handleLoginNav('admin')}
+            onClick={() => navigate('/login?role=worker')}
             style={{
               height: 52,
               padding: '0 32px',
               fontSize: 16,
               fontWeight: 600,
-              background: isDark ? '#27272a' : '#18181b',
-              borderColor: isDark ? '#3f3f46' : '#18181b',
+              background: '#0284c7',
+              borderColor: '#0284c7',
               color: '#ffffff',
               borderRadius: 10,
-              boxShadow: '0 4px 12px rgba(0, 0, 0, 0.25)',
+              boxShadow: '0 4px 12px rgba(2, 132, 199, 0.3)',
             }}
           >
-            <SafetyCertificateOutlined /> Launch Admin Portal <ArrowRightOutlined />
+            <UserOutlined /> Worker Portal Login <ArrowRightOutlined />
           </Button>
 
           <Button
             size="large"
-            onClick={() => handleLoginNav('user')}
+            onClick={() => navigate('/login?role=admin')}
             style={{
               height: 52,
               padding: '0 28px',
               fontSize: 16,
               fontWeight: 600,
               borderRadius: 10,
-              borderColor: isDark ? '#27272a' : '#e4e4e7',
-              background: isDark ? '#111111' : '#ffffff',
-              color: isDark ? '#ffffff' : '#18181b',
+              background: isDark ? '#27272a' : '#18181b',
+              borderColor: isDark ? '#3f3f46' : '#18181b',
+              color: '#ffffff',
             }}
           >
-            <UserOutlined /> Field Officer / User Login
+            <SafetyCertificateOutlined /> Admin Portal Login
           </Button>
 
           <Button
             type="dashed"
             size="large"
-            onClick={() => navigate('/login')}
+            onClick={() => navigate('/about')}
             style={{
               height: 52,
               padding: '0 24px',
@@ -229,7 +221,7 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
               color: isDark ? 'rgba(255, 255, 255, 0.88)' : 'inherit',
             }}
           >
-            <RocketOutlined /> 1-Click Demo Access
+            <InfoCircleOutlined /> About Platform
           </Button>
         </Space>
 
@@ -273,15 +265,15 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
             CENTRALIZED PLATFORM ARCHITECTURE
           </Tag>
           <Title level={2} style={{ marginTop: 12, marginBottom: 8, fontWeight: 800, color: isDark ? '#ffffff' : '#18181b' }}>
-            Tri-Module Autonomous Mining Ecosystem
+            The 3 Mining Operations Modules
           </Title>
-          <Paragraph type="secondary" style={{ fontSize: 16, maxWidth: 640, margin: '0 auto', color: isDark ? '#a1a1aa' : '#71717a' }}>
-            Built according to SIH 2026 specifications. Module 1 is fully active on this branch, with dedicated navigation access to planned Modules 2 & 3.
+          <Paragraph type="secondary" style={{ fontSize: 16, maxWidth: 680, margin: '0 auto', color: isDark ? '#a1a1aa' : '#71717a' }}>
+            Module 1 is fully active and working on this branch. Module 2 and Module 3 buttons are accessible in the UI on standby roadmap.
           </Paragraph>
         </div>
 
         <Row gutter={[24, 24]}>
-          {/* MODULE 1 (ACTIVE) */}
+          {/* MODULE 1 (ACTIVE & WORKING) */}
           <Col xs={24} lg={8}>
             <Card
               bordered
@@ -290,7 +282,7 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                border: isDark ? '2px solid #3f3f46' : '2px solid #18181b',
+                border: isDark ? '2px solid #16a34a' : '2px solid #16a34a',
                 background: isDark ? '#111111' : '#ffffff',
                 boxShadow: '0 8px 30px rgba(0, 0, 0, 0.1)',
                 position: 'relative',
@@ -298,18 +290,18 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
             >
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
                 <Tag color="success" icon={<CheckCircleFilled />} style={{ fontWeight: 600, padding: '2px 8px' }}>
-                  ACTIVE & DEPLOYED
+                  ACTIVE & WORKING
                 </Tag>
-                <Text code style={{ fontSize: 11 }}>BRANCH: module-1</Text>
+                <Text code style={{ fontSize: 11 }}>BRANCH: malli</Text>
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                <SafetyCertificateOutlined style={{ fontSize: 26, color: isDark ? '#ffffff' : '#18181b' }} />
-                <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Module 1: AI Statutory Safety & Compliance</Title>
+                <SafetyCertificateOutlined style={{ fontSize: 26, color: '#16a34a' }} />
+                <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Module 1: AI Compliance & Risk Engine</Title>
               </div>
 
               <Paragraph type="secondary" style={{ fontSize: 13, lineHeight: 1.6, color: isDark ? '#a1a1aa' : '#71717a' }}>
-                The core statutory engine monitoring personnel PPE, machinery fitness certificates, underground toxic gas telemetry, explainable risk calculation, and DGMS SLA escalations.
+                Operational AI safety core: real-time YOLOv8 PPE detection, heavy equipment DGMS certificate OCR extraction, continuous underground toxic gas telemetry, explainable risk calculation ($R = w_v V + w_e E + w_p P + w_s S$), and SLA corrective escalations.
               </Paragraph>
 
               <Divider style={{ margin: '12px 0', borderColor: isDark ? '#27272a' : '#e4e4e7' }} />
@@ -317,23 +309,23 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
               <Space direction="vertical" size={8} style={{ width: '100%', marginBottom: 20 }}>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
                   <EyeOutlined style={{ color: '#16a34a', marginTop: 3 }} />
-                  <span><strong>AI CCTV Vision:</strong> Real-time helmet & safety vest violation promotion.</span>
+                  <span><strong>AI CCTV Vision:</strong> Live worker helmet & vest compliance.</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
                   <ToolOutlined style={{ color: '#2563eb', marginTop: 3 }} />
-                  <span><strong>Equipment OCR:</strong> DGMS certificate expiry tracking & document extraction.</span>
+                  <span><strong>Equipment OCR:</strong> DGMS machinery fitness verification.</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
                   <FireOutlined style={{ color: '#dc2626', marginTop: 3 }} />
-                  <span><strong>Gas Telemetry:</strong> Multi-gas sensor stream ($CH_4, CO, O_2$) & automatic alarm triggers.</span>
+                  <span><strong>Gas Telemetry:</strong> Multi-gas ($CH_4, CO, O_2$) breach alarms.</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
                   <ThunderboltOutlined style={{ color: '#d97706', marginTop: 3 }} />
-                  <span><strong>Dynamic Risk Engine:</strong> Explainable composite formula ($R = w_v V + w_e E + w_p P + w_s S$).</span>
+                  <span><strong>Dynamic Risk Engine:</strong> Explainable composite risk formula.</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
                   <AlertOutlined style={{ color: '#9333ea', marginTop: 3 }} />
-                  <span><strong>DGMS SLA Workflows:</strong> Statutory countdown timers & managerial escalation logs.</span>
+                  <span><strong>DGMS SLA Workflows:</strong> Statutory countdowns & escalation logs.</span>
                 </div>
               </Space>
 
@@ -342,10 +334,10 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
                   type="primary"
                   block
                   size="large"
-                  onClick={() => handleLoginNav('admin')}
-                  style={{ background: isDark ? '#27272a' : '#18181b', borderColor: isDark ? '#3f3f46' : '#18181b', color: '#fff', fontWeight: 600 }}
+                  onClick={() => navigate('/login?role=worker')}
+                  style={{ background: '#16a34a', borderColor: '#16a34a', color: '#fff', fontWeight: 600 }}
                 >
-                  Enter Module 1 System <ArrowRightOutlined />
+                  Launch Module 1 (Active) <ArrowRightOutlined />
                 </Button>
               </div>
             </Card>
@@ -372,12 +364,12 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                <CarOutlined style={{ fontSize: 26, color: '#2563eb' }} />
-                <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Module 2: Fleet & Dispatch Optimization</Title>
+                <FileDoneOutlined style={{ fontSize: 26, color: '#2563eb' }} />
+                <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Module 2: Field Operations & Inspection Management</Title>
               </div>
 
               <Paragraph type="secondary" style={{ fontSize: 13, lineHeight: 1.6, color: isDark ? '#a1a1aa' : '#71717a' }}>
-                Next-phase intelligent dispatch framework maximizing tons moved per hour while enforcing haul road proximity and fuel conservation.
+                Comprehensive pit inspection framework including digital pre-shift overman sign-offs, heavy machinery roadworthiness inspections, geo-tagged hazard logging, and drone bench inspection uploads.
               </Paragraph>
 
               <Divider style={{ margin: '12px 0', borderColor: isDark ? '#27272a' : '#e4e4e7' }} />
@@ -385,26 +377,26 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
               <Space direction="vertical" size={8} style={{ width: '100%', marginBottom: 20 }}>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
                   <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Dynamic Shovel-Dumper Linear Programming Dispatch.</span>
+                  <span>Digital Pit Pre-Shift Safety Walkaround Checklists.</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
                   <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Cycle-Time Bottleneck & Crusher Queue Tracking.</span>
+                  <span>Mobile Equipment Roadworthiness Pre-Operation Logs.</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
                   <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Haul Road Speed & Heavy Vehicle Collision Avoidance.</span>
+                  <span>Geo-Tagged Danger Zones & Blast Clearance Buffers.</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
                   <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Diesel Consumption & Carbon Footprint Reduction.</span>
+                  <span>Drone Aerial Bench Highwall Stability Photo Logs.</span>
                 </div>
               </Space>
 
               <div style={{ marginTop: 'auto' }}>
                 <Alert
-                  message="Navigation Button Available"
-                  description="Module 2 button is present in the navigation bar. Features reserved for Phase 2."
+                  message="Navigation Button Active"
+                  description="Module 2 button is present in the navigation bar. Features are on standby roadmap."
                   type="info"
                   showIcon
                   style={{ marginBottom: 12, fontSize: 12, padding: '8px 12px' }}
@@ -412,7 +404,7 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
                 <Button
                   block
                   size="large"
-                  onClick={() => handleLoginNav('admin')}
+                  onClick={() => navigate('/login?role=worker')}
                   style={{ borderColor: isDark ? '#27272a' : '#e4e4e7', color: isDark ? '#a1a1aa' : '#52525b', fontWeight: 500 }}
                 >
                   View Module 2 Specs in Portal
@@ -442,12 +434,12 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
               </div>
 
               <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                <CompassOutlined style={{ fontSize: 26, color: '#9333ea' }} />
-                <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Module 3: Geotechnical & Eco-Restoration</Title>
+                <AuditOutlined style={{ fontSize: 26, color: '#9333ea' }} />
+                <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Module 3: Contractor Governance Management</Title>
               </div>
 
               <Paragraph type="secondary" style={{ fontSize: 13, lineHeight: 1.6, color: isDark ? '#a1a1aa' : '#71717a' }}>
-                Comprehensive slope stability radar integration, satellite InSAR ground subsidence monitoring, and post-mining ecological reclamation analysis.
+                End-to-end contractor workforce governance including biometric gate pass verification, statutory PF/ESI minimum wage escrow audits, safety training tracking, and agency blacklisting matrix.
               </Paragraph>
 
               <Divider style={{ margin: '12px 0', borderColor: isDark ? '#27272a' : '#e4e4e7' }} />
@@ -455,26 +447,26 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
               <Space direction="vertical" size={8} style={{ width: '100%', marginBottom: 20 }}>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
                   <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Interferometric Radar Bench Wall Failure Early Warning.</span>
+                  <span>Contractor Worker Biometric Identity Gate Access.</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
                   <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Subsurface InSAR Subsidence & Micro-seismic Telemetry.</span>
+                  <span>Statutory Wage, PF & ESI Escrow Compliance Audits.</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
                   <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Acid Mine Drainage (AMD) Watershed Quality Sensors.</span>
+                  <span>Mandatory Vocational Safety Induction (VT) Records.</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
                   <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Drone Multispectral NDVI Overburden Revegetation Index.</span>
+                  <span>Contractor Agency Safety Rating & Blacklisting Matrix.</span>
                 </div>
               </Space>
 
               <div style={{ marginTop: 'auto' }}>
                 <Alert
-                  message="Navigation Button Available"
-                  description="Module 3 button is present in the navigation bar. Features reserved for Phase 3."
+                  message="Navigation Button Active"
+                  description="Module 3 button is present in the navigation bar. Features are on standby roadmap."
                   type="info"
                   showIcon
                   style={{ marginBottom: 12, fontSize: 12, padding: '8px 12px' }}
@@ -482,7 +474,7 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
                 <Button
                   block
                   size="large"
-                  onClick={() => handleLoginNav('admin')}
+                  onClick={() => navigate('/login?role=worker')}
                   style={{ borderColor: isDark ? '#27272a' : '#e4e4e7', color: isDark ? '#a1a1aa' : '#52525b', fontWeight: 500 }}
                 >
                   View Module 3 Specs in Portal
@@ -493,22 +485,87 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
         </Row>
       </section>
 
-      {/* ── ROLE-BASED ACCESS GOVERNANCE SECTION ──────────────────────────── */}
+      {/* ── ROLE-BASED ACCESS GOVERNANCE SECTION (WORKER VS ADMIN) ────────── */}
       <section id="roles" style={{ padding: '60px 24px', background: isDark ? '#09090b' : '#f4f4f5' }}>
         <div style={{ maxWidth: 1100, margin: '0 auto' }}>
           <div style={{ textAlign: 'center', marginBottom: 40 }}>
             <Tag color="default" style={{ fontSize: 12, fontWeight: 600, padding: '2px 10px' }}>
-              ACCESS CONTROL MATRIX
+              WORKER VS ADMIN GOVERNANCE
             </Tag>
             <Title level={2} style={{ marginTop: 12, marginBottom: 8, fontWeight: 800, color: isDark ? '#ffffff' : '#18181b' }}>
-              Admin Access vs. Authorized User Features
+              Worker Features vs. Admin Authority
             </Title>
             <Paragraph type="secondary" style={{ fontSize: 16, color: isDark ? '#a1a1aa' : '#71717a' }}>
-              Granular role-based security separating high-privilege statutory governance from day-to-day operational field safety.
+              Two distinct operational portals tailored for on-ground workforce safety and executive compliance governance.
             </Paragraph>
           </div>
 
           <Row gutter={[24, 24]}>
+            {/* WORKER ROLE */}
+            <Col xs={24} md={12}>
+              <Card
+                bordered
+                style={{
+                  borderRadius: 16,
+                  height: '100%',
+                  background: isDark ? '#111111' : '#ffffff',
+                  border: isDark ? '1px solid #27272a' : '1px solid #d4d4d8',
+                }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                  <div
+                    style={{
+                      width: 44,
+                      height: 44,
+                      background: '#0284c7',
+                      borderRadius: 10,
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <UserOutlined style={{ fontSize: 24, color: '#ffffff' }} />
+                  </div>
+                  <div>
+                    <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Worker Portal</Title>
+                    <Tag color="blue" style={{ fontSize: 11, marginTop: 2 }}>SAFETY_OFFICER / MINE_WORKER / OPERATOR</Tag>
+                  </div>
+                </div>
+
+                <Paragraph style={{ fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
+                  Tailored for on-ground mine workers, pit operators, overmen, and safety inspectors:
+                </Paragraph>
+
+                <Space direction="vertical" size={10} style={{ width: '100%', marginBottom: 24 }}>
+                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
+                    <CheckCircleFilled style={{ color: '#0284c7', marginTop: 2 }} />
+                    <span><strong>Module 1 Active & Working:</strong> Live CCTV PPE detection feed, continuous gas sensor threshold alerts, and machinery fitness checks.</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
+                    <CheckCircleFilled style={{ color: '#0284c7', marginTop: 2 }} />
+                    <span><strong>Shift Safety Checklist:</strong> Complete digital pre-shift checks and submit field safety notes directly from the pit.</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
+                    <CheckCircleFilled style={{ color: '#0284c7', marginTop: 2 }} />
+                    <span><strong>Module 2 & 3 Visibility:</strong> Labeled buttons for Field Operations and Contractor Governance available on standby.</span>
+                  </div>
+                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
+                    <CheckCircleFilled style={{ color: '#0284c7', marginTop: 2 }} />
+                    <span><strong>Safety Protected:</strong> Restricted from accidental mathematical weight recalibration and system simulation controls.</span>
+                  </div>
+                </Space>
+
+                <Button
+                  block
+                  size="large"
+                  onClick={() => navigate('/login?role=worker')}
+                  style={{ borderColor: '#0284c7', color: '#0284c7', fontWeight: 600, background: isDark ? '#111111' : '#ffffff' }}
+                >
+                  Sign In as Worker / Safety Officer
+                </Button>
+              </Card>
+            </Col>
+
             {/* ADMIN ROLE */}
             <Col xs={24} md={12}>
               <Card
@@ -535,7 +592,7 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
                     <SafetyCertificateOutlined style={{ fontSize: 24, color: '#ffffff' }} />
                   </div>
                   <div>
-                    <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Administrator Access</Title>
+                    <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Admin Portal</Title>
                     <Tag color={isDark ? '#27272a' : '#18181b'} style={{ fontSize: 11, marginTop: 2 }}>SUPER_ADMIN / MINE_MANAGER</Tag>
                   </div>
                 </div>
@@ -567,75 +624,10 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
                   type="primary"
                   block
                   size="large"
-                  onClick={() => handleLoginNav('admin')}
+                  onClick={() => navigate('/login?role=admin')}
                   style={{ background: isDark ? '#27272a' : '#18181b', borderColor: isDark ? '#3f3f46' : '#18181b', color: '#fff', fontWeight: 600 }}
                 >
                   Sign In as Administrator
-                </Button>
-              </Card>
-            </Col>
-
-            {/* AUTHORIZED USER / SAFETY OFFICER */}
-            <Col xs={24} md={12}>
-              <Card
-                bordered
-                style={{
-                  borderRadius: 16,
-                  height: '100%',
-                  background: isDark ? '#111111' : '#ffffff',
-                  border: isDark ? '1px solid #27272a' : '1px solid #d4d4d8',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                  <div
-                    style={{
-                      width: 44,
-                      height: 44,
-                      background: '#0284c7',
-                      borderRadius: 10,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <UserOutlined style={{ fontSize: 24, color: '#ffffff' }} />
-                  </div>
-                  <div>
-                    <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Authorized User Access</Title>
-                    <Tag color="blue" style={{ fontSize: 11, marginTop: 2 }}>SAFETY_OFFICER / FIELD_OPERATOR</Tag>
-                  </div>
-                </div>
-
-                <Paragraph style={{ fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
-                  Tailored for on-ground Safety Officers, Overmen, and Pit Shift Supervisors responsible for operational hazard mitigation:
-                </Paragraph>
-
-                <Space direction="vertical" size={10} style={{ width: '100%', marginBottom: 24 }}>
-                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
-                    <CheckCircleFilled style={{ color: '#0284c7', marginTop: 2 }} />
-                    <span><strong>Live Video & Threat Feeds:</strong> Continuous surveillance across haul roads, faces, and loading points.</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
-                    <CheckCircleFilled style={{ color: '#0284c7', marginTop: 2 }} />
-                    <span><strong>Gas Telemetry Alerts:</strong> Immediate mobile & desktop alerts when methane or CO levels exceed statutory norms.</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
-                    <CheckCircleFilled style={{ color: '#0284c7', marginTop: 2 }} />
-                    <span><strong>SLA Action Execution:</strong> Record corrective field actions and verify on-ground safety remediation.</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
-                    <CheckCircleFilled style={{ color: '#0284c7', marginTop: 2 }} />
-                    <span><strong>Restricted Privileges:</strong> Protected against accidental weight recalibration and system configuration changes.</span>
-                  </div>
-                </Space>
-
-                <Button
-                  block
-                  size="large"
-                  onClick={() => handleLoginNav('user')}
-                  style={{ borderColor: '#0284c7', color: '#0284c7', fontWeight: 600, background: isDark ? '#111111' : '#ffffff' }}
-                >
-                  Sign In as Safety Officer / User
                 </Button>
               </Card>
             </Col>
@@ -664,8 +656,16 @@ export const LandingPage: React.FC<LandingPageProps> = () => {
             <img src={logo} alt="logo" style={{ width: 24, height: 24 }} />
             <Text strong style={{ fontSize: 13, color: isDark ? '#ffffff' : '#18181b' }}>AI MineGuard · Smart India Hackathon 2026</Text>
           </div>
+          <Space size={16}>
+            <Button type="link" onClick={() => navigate('/about')} style={{ color: isDark ? '#a1a1aa' : '#71717a', padding: 0 }}>
+              About
+            </Button>
+            <Button type="link" onClick={() => navigate('/contact')} style={{ color: isDark ? '#a1a1aa' : '#71717a', padding: 0 }}>
+              Contact
+            </Button>
+          </Space>
           <Text type="secondary" style={{ fontSize: 12, color: isDark ? '#a1a1aa' : '#71717a' }}>
-            Branch: <Text code>module-1</Text> · Module 1 AI Safety & Statutory Compliance Centralized Engine
+            Branch: <Text code>malli</Text> · Module 1 AI Compliance and Risk Engine
           </Text>
         </div>
       </section>
