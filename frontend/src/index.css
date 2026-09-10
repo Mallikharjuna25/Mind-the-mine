@@ -1,13 +1,32 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  
+  /* Command Center Color Palette */
+  --bg-base: #0d1117;          /* Deepest background */
+  --bg-surface: #161b22;       /* Panels and Cards */
+  --bg-elevated: #21262d;      /* Modals, Dropdowns */
+  
+  --border-color: #30363d;
+  --border-highlight: #484f58;
+  
+  --text-primary: #f0f6fc;
+  --text-secondary: #8b949e;
+  
+  /* Professional Safety Indicators (No neon) */
+  --status-critical: #da3633;  /* Red */
+  --status-warning: #d29922;   /* Amber */
+  --status-success: #238636;   /* Green */
+  --status-info: #388bfd;      /* Blue */
+  
+  --primary-accent: #388bfd;
+}
 
 *,
 *::before,
 *::after {
   box-sizing: border-box;
-}
-
-:root {
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 html,
@@ -17,56 +36,48 @@ body {
   font-family: var(--font-sans);
   font-size: 14px;
   line-height: 1.5;
-  color: #262626;
-  background: #fafafa;
+  color: var(--text-primary);
+  background: var(--bg-base);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar - Professional Dark */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--bg-elevated);
+  border: 2px solid var(--bg-base);
+  border-radius: 6px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-highlight);
+}
+
+/* Layout overrides */
+.ant-layout {
+  background: var(--bg-base) !important;
 }
 
 /* Leaflet map fix inside card */
 .leaflet-container {
   font-family: var(--font-sans) !important;
   z-index: 0;
-}
-
-/* Ant Design override — remove default body bg */
-.ant-layout {
-  background: #fafafa;
-}
-
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
-}
-::-webkit-scrollbar-track {
-  background: #f5f5f5;
-}
-::-webkit-scrollbar-thumb {
-  background: #d4d4d4;
-  border-radius: 3px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #a3a3a3;
+  border-radius: 8px;
+  border: 1px solid var(--border-color);
 }
 
 /* Smooth page transitions */
 .ant-layout-content > div {
-  animation: fadeIn 0.2s ease-out;
+  animation: fadeIn 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(6px); }
+  from { opacity: 0; transform: translateY(4px); }
   to   { opacity: 1; transform: translateY(0); }
-}
-
-/* Table row hover */
-.ant-table-tbody > tr:hover > td {
-  background: #fafafa !important;
-}
-
-/* Recharts tooltip */
-.recharts-tooltip-wrapper {
-  border-radius: 8px !important;
-  box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1) !important;
 }
