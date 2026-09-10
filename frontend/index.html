@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI MineGuard — Governance, Contractor & Worker Management Operating System</title>
+    <!-- Modern Typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <!-- Main Container -->
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand-header">
+                <div class="brand-logo">
+                    <i class="fa-solid fa-helmet-safety"></i>
+                </div>
+                <div class="brand-title">
+                    <h2>AI MineGuard</h2>
+                    <span>SIH26024 • Coal Governance</span>
+                </div>
+            </div>
+
+            <nav class="nav-menu">
+                <div class="nav-section-label">CONTRACTOR MANAGEMENT</div>
+                <button class="nav-item active" data-view="dashboard" id="nav-dashboard">
+                    <i class="fa-solid fa-chart-pie"></i>
+                    <span>Contractor Dashboard</span>
+                </button>
+                <button class="nav-item" data-view="contractors" id="nav-contractors">
+                    <i class="fa-solid fa-users-gear"></i>
+                    <span>Contractor Registry</span>
+                </button>
+                <button class="nav-item" data-view="contracts" id="nav-contracts">
+                    <i class="fa-solid fa-file-signature"></i>
+                    <span>Contract Lifecycle</span>
+                </button>
+
+                <div class="nav-section-label">WORKFORCE & COMPLIANCE</div>
+                <button class="nav-item" data-view="worker-dashboard" id="nav-worker-dashboard">
+                    <i class="fa-solid fa-id-card-clip"></i>
+                    <span>Worker Dashboard</span>
+                </button>
+                <button class="nav-item" data-view="workers" id="nav-workers">
+                    <i class="fa-solid fa-user-check"></i>
+                    <span>Worker Registry</span>
+                </button>
+                <button class="nav-item" data-view="attendance" id="nav-attendance">
+                    <i class="fa-solid fa-clipboard-user"></i>
+                    <span>Attendance Management</span>
+                </button>
+                <button class="nav-item" data-view="trainings" id="nav-trainings">
+                    <i class="fa-solid fa-graduation-cap"></i>
+                    <span>Training Management</span>
+                </button>
+                <button class="nav-item" data-view="certifications" id="nav-certifications">
+                    <i class="fa-solid fa-certificate"></i>
+                    <span>Certification Tracker</span>
+                </button>
+                <button class="nav-item" data-view="ppe" id="nav-ppe">
+                    <i class="fa-solid fa-vest"></i>
+                    <span>PPE Eligibility</span>
+                </button>
+                <button class="nav-item" data-view="authorizations" id="nav-authorizations">
+                    <i class="fa-solid fa-key"></i>
+                    <span>Work Authorizations</span>
+                </button>
+
+                <div class="nav-section-label">CENTRAL GOVERNANCE</div>
+                <button class="nav-item" data-view="governance-dashboard" id="nav-governance-dashboard">
+                    <i class="fa-solid fa-gavel"></i>
+                    <span>Governance Dashboard</span>
+                </button>
+                <button class="nav-item" data-view="grievances" id="nav-grievances">
+                    <i class="fa-solid fa-scale-balanced"></i>
+                    <span>Grievances & Complaints</span>
+                </button>
+                <button class="nav-item" data-view="approvals" id="nav-approvals">
+                    <i class="fa-solid fa-stamp"></i>
+                    <span>Approval Center</span>
+                </button>
+                <button class="nav-item" data-view="escalations" id="nav-escalations">
+                    <i class="fa-solid fa-arrow-up-right-dots"></i>
+                    <span>Escalation Engine</span>
+                </button>
+                <button class="nav-item" data-view="audit" id="nav-audit">
+                    <i class="fa-solid fa-shield-halved"></i>
+                    <span>Audit Trail</span>
+                </button>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="mine-selector-box">
+                    <i class="fa-solid fa-mountain"></i>
+                    <select id="mine-select">
+                        <option value="">All Mines (Corporate HQ)</option>
+                        <option value="MINE-001" selected>Singareni Colliery Pit-03</option>
+                        <option value="MINE-002">Korba OpenCast Mine-01</option>
+                    </select>
+                </div>
+                <div class="user-profile">
+                    <div class="avatar">MM</div>
+                    <div class="profile-info">
+                        <span class="user-name">Mine Manager</span>
+                        <span class="user-role">Role: SUPER_ADMIN</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Top App Bar -->
+            <header class="topbar">
+                <div class="topbar-title">
+                    <h1 id="page-title">Contractor Dashboard</h1>
+                    <p id="page-subtitle">Real-time statutory compliance, contract lifecycle & safety scorecards</p>
+                </div>
+
+                <div class="topbar-actions">
+                    <div class="search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text" id="global-search" placeholder="Search contractor, worker, ID...">
+                    </div>
+                    <button class="btn btn-secondary" id="btn-refresh">
+                        <i class="fa-solid fa-rotate"></i> Sync
+                    </button>
+                    <button class="btn btn-primary" id="btn-add-worker-top">
+                        <i class="fa-solid fa-user-plus"></i> New Worker
+                    </button>
+                </div>
+            </header>
+
+            <!-- Alerts Banner Ticker -->
+            <div class="alert-ticker-container" id="alert-ticker-box">
+                <div class="ticker-badge"><i class="fa-solid fa-bell"></i> WORKFORCE ALERTS</div>
+                <div class="ticker-content" id="alert-ticker-text">
+                    <span class="text-warning"><i class="fa-solid fa-triangle-exclamation"></i> 2 Workers have expired DGMS VTC Safety Training cards.</span>
+                    <span class="text-danger"><i class="fa-solid fa-circle-xmark"></i> Work permit REVOKED for Ramesh Kumar (Zone-Pitface-04).</span>
+                </div>
+            </div>
+
+            <!-- VIEW 1: CONTRACTOR DASHBOARD -->
+            <section class="view-panel active" id="view-dashboard">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-blue"><i class="fa-solid fa-building"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Total Contractors</span>
+                            <h3 class="kpi-value" id="kpi-total-contractors">--</h3>
+                            <span class="kpi-sub"><span id="kpi-active-contractors">--</span> Active Companies</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-purple"><i class="fa-solid fa-file-contract"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Active Contracts</span>
+                            <h3 class="kpi-value" id="kpi-active-contracts">--</h3>
+                            <span class="kpi-sub">Total Value: ₹<span id="kpi-contract-val">--</span> Cr</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-amber"><i class="fa-solid fa-clock-rotate-left"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Expiring Soon (30d)</span>
+                            <h3 class="kpi-value text-amber" id="kpi-expiring-contracts">--</h3>
+                            <span class="kpi-sub">Action required for renewal</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-emerald"><i class="fa-solid fa-shield-halved"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Avg Compliance Score</span>
+                            <h3 class="kpi-value text-emerald" id="kpi-avg-compliance">--%</h3>
+                            <span class="kpi-sub"><span id="kpi-non-compliant-count">0</span> Non-Compliant</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="dashboard-grid">
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-list-check"></i> High Priority Contractor Index</h3>
+                            <button class="btn btn-sm btn-outline" onclick="switchView('contractors')">View All</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="custom-table" id="dashboard-contractors-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Company Name</th>
+                                            <th>Reg #</th>
+                                            <th>Work Scope</th>
+                                            <th>Compliance</th>
+                                            <th>Status</th>
+                                            <th>Action</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dashboard-contractors-tbody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-triangle-exclamation text-amber"></i> Contract Renewal Alerts</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert-list" id="dashboard-expiring-list"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 2: CONTRACTOR REGISTRY -->
+            <section class="view-panel" id="view-contractors">
+                <div class="card glass-card">
+                    <div class="card-header flex-header">
+                        <h2>Contractor Registry & Lifecycle Management</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="custom-table" id="contractors-full-table">
+                                <thead>
+                                    <tr>
+                                        <th>Company Name</th>
+                                        <th>Registration No</th>
+                                        <th>Contact Person</th>
+                                        <th>Scope</th>
+                                        <th>Compliance</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contractors-full-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 3: CONTRACT LIFECYCLE -->
+            <section class="view-panel" id="view-contracts">
+                <div class="card glass-card">
+                    <div class="card-header flex-header">
+                        <h2>Contract Lifecycle & Renewal Management</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="custom-table" id="contracts-table">
+                                <thead>
+                                    <tr>
+                                        <th>Contract #</th>
+                                        <th>Title</th>
+                                        <th>Type</th>
+                                        <th>End Date</th>
+                                        <th>Value</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="contracts-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 4: WORKER DASHBOARD (MODULE 3 -> TASK 2) -->
+            <section class="view-panel" id="view-worker-dashboard">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-blue"><i class="fa-solid fa-users"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Total Workforce</span>
+                            <h3 class="kpi-value" id="wk-kpi-total">--</h3>
+                            <span class="kpi-sub"><span id="wk-kpi-active">--</span> Active Workers</span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-amber"><i class="fa-solid fa-graduation-cap"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Pending Training</span>
+                            <h3 class="kpi-value text-amber" id="wk-kpi-pending-tr">--</h3>
+                            <span class="kpi-sub">Requires mandatory VTC refresh</span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-purple"><i class="fa-solid fa-certificate"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Expired Certs</span>
+                            <h3 class="kpi-value text-purple" id="wk-kpi-expired-certs">--</h3>
+                            <span class="kpi-sub">Statutory fitness/medical</span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-emerald"><i class="fa-solid fa-vest"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">PPE Compliance</span>
+                            <h3 class="kpi-value text-emerald" id="wk-kpi-ppe-pct">--%</h3>
+                            <span class="kpi-sub">Standard IS-2925 Verified</span>
+                        </div>
+                    </div>
+
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-cyan"><i class="fa-solid fa-key"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Work Permits Granted</span>
+                            <h3 class="kpi-value text-cyan" id="wk-kpi-auth-pct">--%</h3>
+                            <span class="kpi-sub">Restricted Zone Authorizations</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Reports Summary Split -->
+                <div class="dashboard-grid">
+                    <div class="card glass-card">
+                        <div class="card-header flex-header">
+                            <h3><i class="fa-solid fa-chart-line text-cyan"></i> Workforce & Compliance Summary Report</h3>
+                            <button class="btn btn-sm btn-outline" id="btn-export-report"><i class="fa-solid fa-download"></i> Export PDF Summary</button>
+                        </div>
+                        <div class="card-body">
+                            <div class="report-summary-grid">
+                                <div class="report-box">
+                                    <span class="lbl"><i class="fa-solid fa-user-check text-emerald"></i> Attendance Today</span>
+                                    <h4 class="val" id="rep-att-val">-- / -- Present</h4>
+                                    <span class="sub">Shift Morning / Afternoon / Night</span>
+                                </div>
+
+                                <div class="report-box">
+                                    <span class="lbl"><i class="fa-solid fa-certificate text-purple"></i> Active Statutory Certs</span>
+                                    <h4 class="val" id="rep-cert-val">-- Active</h4>
+                                    <span class="sub" id="rep-cert-sub">-- expiring within 30 days</span>
+                                </div>
+
+                                <div class="report-box">
+                                    <span class="lbl"><i class="fa-solid fa-graduation-cap text-amber"></i> Safety Trainings</span>
+                                    <h4 class="val" id="rep-train-val">-- Completed</h4>
+                                    <span class="sub" id="rep-train-sub">-- pending VTC refresh</span>
+                                </div>
+
+                                <div class="report-box">
+                                    <span class="lbl"><i class="fa-solid fa-vest text-emerald"></i> PPE Issuance</span>
+                                    <h4 class="val" id="rep-ppe-val">-- Compliant</h4>
+                                    <span class="sub" id="rep-ppe-sub">-- replacement needed</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card glass-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-triangle-exclamation text-amber"></i> Workforce Safety Alerts</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="alert-list" id="worker-alerts-list">
+                                <!-- Dynamic alerts -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 5: WORKER REGISTRY TABLE -->
+            <section class="view-panel" id="view-workers">
+                <div class="card glass-card">
+                    <div class="card-header flex-header">
+                        <div>
+                            <h2>Mine Worker Registry & Profiles</h2>
+                            <p>Directory of employee IDs, departments, statutory roles, emergency contacts, and compliance status</p>
+                        </div>
+                        <div class="filter-controls">
+                            <select id="filter-worker-dept" class="form-control-sm">
+                                <option value="">All Departments</option>
+                                <option value="UNDERGROUND_OPS">Underground Operations</option>
+                                <option value="EXCAVATION">Excavation</option>
+                                <option value="TRANSPORT">Transport</option>
+                                <option value="MAINTENANCE">Maintenance</option>
+                                <option value="SAFETY">Safety Inspection</option>
+                            </select>
+
+                            <select id="filter-worker-status" class="form-control-sm">
+                                <option value="">All Statuses</option>
+                                <option value="ACTIVE">Active</option>
+                                <option value="INACTIVE">Inactive</option>
+                                <option value="SUSPENDED">Suspended</option>
+                                <option value="UNAUTHORIZED">Unauthorized</option>
+                            </select>
+
+                            <button class="btn btn-primary" id="btn-add-worker-main">
+                                <i class="fa-solid fa-user-plus"></i> Add Worker
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="custom-table" id="workers-full-table">
+                                <thead>
+                                    <tr>
+                                        <th>Employee ID</th>
+                                        <th>Full Name</th>
+                                        <th>Department</th>
+                                        <th>Role</th>
+                                        <th>Phone / Emergency</th>
+                                        <th>Joining Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="workers-full-tbody">
+                                    <!-- Dynamic rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 6: ATTENDANCE MANAGEMENT PAGE -->
+            <section class="view-panel" id="view-attendance">
+                <div class="card glass-card">
+                    <div class="card-header flex-header">
+                        <div>
+                            <h2>Attendance Management & Shift Logging</h2>
+                            <p>Track daily shift check-ins, check-outs, attendance status, and overtime hours</p>
+                        </div>
+                        <div class="filter-controls">
+                            <select id="filter-att-shift" class="form-control-sm">
+                                <option value="">All Shifts</option>
+                                <option value="MORNING">Morning Shift (06:00 - 14:00)</option>
+                                <option value="AFTERNOON">Afternoon Shift (14:00 - 22:00)</option>
+                                <option value="NIGHT">Night Shift (22:00 - 06:00)</option>
+                            </select>
+                            <button class="btn btn-primary" id="btn-mark-att-main">
+                                <i class="fa-solid fa-user-check"></i> Mark Attendance
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="custom-table" id="attendance-logs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Worker Name</th>
+                                        <th>Employee ID</th>
+                                        <th>Shift</th>
+                                        <th>Check-In Time</th>
+                                        <th>Check-Out Time</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="attendance-logs-tbody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 7: TRAINING MANAGEMENT PAGE -->
+            <section class="view-panel" id="view-trainings">
+                <div class="card glass-card">
+                    <div class="card-header flex-header">
+                        <div>
+                            <h2>Statutory & VTC Training Management</h2>
+                            <p>Track vocational safety training programs, completion certificates, and renewal countdowns</p>
+                        </div>
+                        <button class="btn btn-primary" id="btn-assign-training-main">
+                            <i class="fa-solid fa-graduation-cap"></i> Assign Training Program
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="custom-table" id="training-logs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Worker Name</th>
+                                        <th>Program Name</th>
+                                        <th>Trainer / Inspector</th>
+                                        <th>Completed Date</th>
+                                        <th>Expiry Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="training-logs-tbody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 8: CERTIFICATION TRACKER -->
+            <section class="view-panel" id="view-certifications">
+                <div class="card glass-card">
+                    <div class="card-header flex-header">
+                        <div>
+                            <h2>Statutory Certification Tracker</h2>
+                            <p>DGMS qualifications, periodic medical examinations (PME), and heavy machinery licenses</p>
+                        </div>
+                        <button class="btn btn-primary" id="btn-reg-cert-main">
+                            <i class="fa-solid fa-certificate"></i> Register Certificate
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="custom-table" id="cert-logs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Worker Name</th>
+                                        <th>Certificate Name</th>
+                                        <th>Certificate #</th>
+                                        <th>Issuing Authority</th>
+                                        <th>Valid Until</th>
+                                        <th>Verification Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cert-logs-tbody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 9: PPE MANAGEMENT PAGE -->
+            <section class="view-panel" id="view-ppe">
+                <div class="card glass-card">
+                    <div class="card-header flex-header">
+                        <div>
+                            <h2>PPE Eligibility & Issuance Tracker</h2>
+                            <p>Track mandatory safety helmet, high-vis vest, boot, and respirator issuance status</p>
+                        </div>
+                        <button class="btn btn-primary" id="btn-assign-ppe-main">
+                            <i class="fa-solid fa-vest"></i> Assign PPE Item
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="custom-table" id="ppe-logs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Worker Name</th>
+                                        <th>PPE Item Type</th>
+                                        <th>Issuance Date</th>
+                                        <th>Expiry Date</th>
+                                        <th>Compliance Status</th>
+                                        <th>Remarks</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ppe-logs-tbody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW 10: AUTHORIZATION MANAGEMENT PAGE -->
+            <section class="view-panel" id="view-authorizations">
+                <div class="card glass-card">
+                    <div class="card-header flex-header">
+                        <div>
+                            <h2>Restricted Zone Work Permit Authorizations</h2>
+                            <p>Grant and revoke restricted entry permits for underground pitfaces, hot work, and high-voltage zones</p>
+                        </div>
+                        <button class="btn btn-primary" id="btn-grant-auth-main">
+                            <i class="fa-solid fa-key"></i> Grant Work Permit
+                        </button>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="custom-table" id="auth-logs-table">
+                                <thead>
+                                    <tr>
+                                        <th>Worker Name</th>
+                                        <th>Zone / Location</th>
+                                        <th>Permit Type</th>
+                                        <th>Granted By</th>
+                                        <th>Valid Until</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="auth-logs-tbody">
+                                    <!-- Dynamic content -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- WORKER DETAILS PROFILE MODAL -->
+            <div class="modal-backdrop" id="worker-detail-modal">
+                <div class="modal-box modal-lg">
+                    <div class="modal-header">
+                        <div>
+                            <h2 id="wk-detail-name">Worker Name</h2>
+                            <span class="badge badge-emerald" id="wk-detail-empid">EMP-000</span>
+                        </div>
+                        <button class="close-btn" onclick="closeModal('worker-detail-modal')">&times;</button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="detail-kpi-bar">
+                            <div class="detail-kpi">
+                                <span class="lbl">Department</span>
+                                <span class="val text-cyan" id="wk-detail-dept">--</span>
+                            </div>
+                            <div class="detail-kpi">
+                                <span class="lbl">Role</span>
+                                <span class="val text-purple" id="wk-detail-role">--</span>
+                            </div>
+                            <div class="detail-kpi">
+                                <span class="lbl">Status</span>
+                                <span class="val" id="wk-detail-status">ACTIVE</span>
+                            </div>
+                        </div>
+
+                        <div class="modal-tabs">
+                            <button class="modal-tab active" data-tab="wk-tab-overview" onclick="switchWorkerModalTab('wk-tab-overview')">Profile</button>
+                            <button class="modal-tab" data-tab="wk-tab-att" onclick="switchWorkerModalTab('wk-tab-att')">Attendance</button>
+                            <button class="modal-tab" data-tab="wk-tab-tr" onclick="switchWorkerModalTab('wk-tab-tr')">Trainings</button>
+                            <button class="modal-tab" data-tab="wk-tab-cert" onclick="switchWorkerModalTab('wk-tab-cert')">Certifications</button>
+                            <button class="modal-tab" data-tab="wk-tab-ppe" onclick="switchWorkerModalTab('wk-tab-ppe')">PPE Logs</button>
+                            <button class="modal-tab" data-tab="wk-tab-auth" onclick="switchWorkerModalTab('wk-tab-auth')">Work Permits</button>
+                        </div>
+
+                        <div class="modal-tab-content active" id="wk-tab-overview">
+                            <div class="info-grid">
+                                <div class="info-item"><label>Phone:</label> <span id="wk-info-phone">--</span></div>
+                                <div class="info-item"><label>Email:</label> <span id="wk-info-email">--</span></div>
+                                <div class="info-item"><label>Emergency Contact:</label> <span id="wk-info-emg-name">--</span></div>
+                                <div class="info-item"><label>Emergency Phone:</label> <span id="wk-info-emg-phone">--</span></div>
+                                <div class="info-item"><label>Joining Date:</label> <span id="wk-info-joining">--</span></div>
+                            </div>
+                        </div>
+
+                        <div class="modal-tab-content" id="wk-tab-att">
+                            <table class="custom-table-sm"><tbody id="wk-detail-att-tbody"></tbody></table>
+                        </div>
+                        <div class="modal-tab-content" id="wk-tab-tr">
+                            <table class="custom-table-sm"><tbody id="wk-detail-tr-tbody"></tbody></table>
+                        </div>
+                        <div class="modal-tab-content" id="wk-tab-cert">
+                            <table class="custom-table-sm"><tbody id="wk-detail-cert-tbody"></tbody></table>
+                        </div>
+                        <div class="modal-tab-content" id="wk-tab-ppe">
+                            <table class="custom-table-sm"><tbody id="wk-detail-ppe-tbody"></tbody></table>
+                        </div>
+                        <div class="modal-tab-content" id="wk-tab-auth">
+                            <table class="custom-table-sm"><tbody id="wk-detail-auth-tbody"></tbody></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MODAL: ADD / EDIT WORKER -->
+            <div class="modal-backdrop" id="worker-form-modal">
+                <div class="modal-box">
+                    <div class="modal-header">
+                        <h3 id="worker-form-title">Add New Worker</h3>
+                        <button class="close-btn" onclick="closeModal('worker-form-modal')">&times;</button>
+                    </div>
+                    <form id="worker-form">
+                        <input type="hidden" id="form-worker-id">
+                        <div class="modal-body">
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Employee ID *</label>
+                                    <input type="text" id="form-wk-empid" class="form-control" required placeholder="EMP-2026-1001">
+                                </div>
+                                <div class="form-group">
+                                    <label>Full Name *</label>
+                                    <input type="text" id="form-wk-fullname" class="form-control" required placeholder="Ramesh Kumar">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Department *</label>
+                                    <select id="form-wk-dept" class="form-control" required>
+                                        <option value="UNDERGROUND_OPS">UNDERGROUND_OPS</option>
+                                        <option value="EXCAVATION">EXCAVATION</option>
+                                        <option value="TRANSPORT">TRANSPORT</option>
+                                        <option value="MAINTENANCE">MAINTENANCE</option>
+                                        <option value="SAFETY">SAFETY</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label>Role *</label>
+                                    <input type="text" id="form-wk-role" class="form-control" required placeholder="HEAVY_EQUIPMENT_OPERATOR">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Phone Number *</label>
+                                    <input type="text" id="form-wk-phone" class="form-control" required placeholder="+91 9876543210">
+                                </div>
+                                <div class="form-group">
+                                    <label>Email Address</label>
+                                    <input type="email" id="form-wk-email" class="form-control" placeholder="worker@mineguard.in">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Emergency Contact Name *</label>
+                                    <input type="text" id="form-wk-emg-name" class="form-control" required placeholder="Spouse / Parent Name">
+                                </div>
+                                <div class="form-group">
+                                    <label>Emergency Contact Phone *</label>
+                                    <input type="text" id="form-wk-emg-phone" class="form-control" required placeholder="+91 9123456789">
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Joining Date *</label>
+                                <input type="date" id="form-wk-joining" class="form-control" required>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('worker-form-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Worker</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MODAL: MARK ATTENDANCE -->
+            <div class="modal-backdrop" id="att-form-modal">
+                <div class="modal-box">
+                    <div class="modal-header">
+                        <h3>Mark Worker Attendance</h3>
+                        <button class="close-btn" onclick="closeModal('att-form-modal')">&times;</button>
+                    </div>
+                    <form id="att-form">
+                        <input type="hidden" id="form-att-worker-id">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Select Shift *</label>
+                                <select id="form-att-shift" class="form-control" required>
+                                    <option value="MORNING">MORNING (06:00 - 14:00)</option>
+                                    <option value="AFTERNOON">AFTERNOON (14:00 - 22:00)</option>
+                                    <option value="NIGHT">NIGHT (22:00 - 06:00)</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label>Attendance Status *</label>
+                                <select id="form-att-status" class="form-control" required>
+                                    <option value="PRESENT">PRESENT</option>
+                                    <option value="ABSENT">ABSENT</option>
+                                    <option value="LATE">LATE</option>
+                                    <option value="OVERTIME">OVERTIME</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('att-form-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Submit Attendance</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MODAL: ASSIGN TRAINING -->
+            <div class="modal-backdrop" id="train-form-modal">
+                <div class="modal-box">
+                    <div class="modal-header">
+                        <h3>Assign Safety Training Program</h3>
+                        <button class="close-btn" onclick="closeModal('train-form-modal')">&times;</button>
+                    </div>
+                    <form id="train-form">
+                        <input type="hidden" id="form-tr-worker-id">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Program Name *</label>
+                                <input type="text" id="form-tr-program" class="form-control" required placeholder="e.g. DGMS Underground Gas & Safety Training">
+                            </div>
+                            <div class="form-group">
+                                <label>Trainer / Safety Officer *</label>
+                                <input type="text" id="form-tr-trainer" class="form-control" required placeholder="Inspector Subba Rao">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Completed Date *</label>
+                                    <input type="date" id="form-tr-completed" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Expiry Date *</label>
+                                    <input type="date" id="form-tr-expiry" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('train-form-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Training</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MODAL: REGISTER CERTIFICATE -->
+            <div class="modal-backdrop" id="cert-form-modal">
+                <div class="modal-box">
+                    <div class="modal-header">
+                        <h3>Register Worker Certification</h3>
+                        <button class="close-btn" onclick="closeModal('cert-form-modal')">&times;</button>
+                    </div>
+                    <form id="cert-form">
+                        <input type="hidden" id="form-cert-worker-id">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Certificate Name *</label>
+                                <input type="text" id="form-cert-name" class="form-control" required placeholder="e.g. DGMS HEMM Operator License">
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Certificate Number *</label>
+                                    <input type="text" id="form-cert-num" class="form-control" required placeholder="DGMS-2026-880">
+                                </div>
+                                <div class="form-group">
+                                    <label>Issuing Authority *</label>
+                                    <input type="text" id="form-cert-authority" class="form-control" required placeholder="DGMS / CIL Board">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Valid From *</label>
+                                    <input type="date" id="form-cert-validfrom" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Expiry Date *</label>
+                                    <input type="date" id="form-cert-expiry" class="form-control" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('cert-form-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Save Certificate</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MODAL: ASSIGN PPE -->
+            <div class="modal-backdrop" id="ppe-form-modal">
+                <div class="modal-box">
+                    <div class="modal-header">
+                        <h3>Assign Safety PPE Item</h3>
+                        <button class="close-btn" onclick="closeModal('ppe-form-modal')">&times;</button>
+                    </div>
+                    <form id="ppe-form">
+                        <input type="hidden" id="form-ppe-worker-id">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>PPE Item Type *</label>
+                                <select id="form-ppe-type" class="form-control" required>
+                                    <option value="HELMET">HELMET</option>
+                                    <option value="HIGH_VIS_VEST">HIGH_VIS_VEST</option>
+                                    <option value="SAFETY_BOOTS">SAFETY_BOOTS</option>
+                                    <option value="RESPIRATOR">RESPIRATOR</option>
+                                    <option value="HARNESS">HARNESS</option>
+                                    <option value="GOGGLES">GOGGLES</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Issuance Date *</label>
+                                    <input type="date" id="form-ppe-issuance" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Expiry Date *</label>
+                                    <input type="date" id="form-ppe-expiry" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Remarks</label>
+                                <textarea id="form-ppe-remarks" class="form-control" rows="2" placeholder="Standard IS-2925 Verified Hard Hat issued..."></textarea>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('ppe-form-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary">Assign PPE</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- MODAL: GRANT WORK AUTHORIZATION -->
+            <div class="modal-backdrop" id="auth-form-modal">
+                <div class="modal-box">
+                    <div class="modal-header">
+                        <h3>Grant Restricted Zone Work Permit</h3>
+                        <button class="close-btn" onclick="closeModal('auth-form-modal')">&times;</button>
+                    </div>
+                    <form id="auth-form">
+                        <input type="hidden" id="form-auth-worker-id">
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Restricted Zone Name / ID *</label>
+                                <input type="text" id="form-auth-zone" class="form-control" required placeholder="ZONE-UNDERGROUND-PITFACE-04">
+                            </div>
+                            <div class="form-group">
+                                <label>Permit Type *</label>
+                                <select id="form-auth-permit" class="form-control" required>
+                                    <option value="UNDERGROUND_ENTRY">UNDERGROUND_ENTRY</option>
+                                    <option value="HOT_WORK">HOT_WORK</option>
+                                    <option value="CONFINED_SPACE">CONFINED_SPACE</option>
+                                    <option value="HIGH_VOLTAGE">HIGH_VOLTAGE</option>
+                                </select>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group">
+                                    <label>Grant Date *</label>
+                                    <input type="date" id="form-auth-grant" class="form-control" required>
+                                </div>
+                                <div class="form-group">
+                                    <label>Expiry Date *</label>
+                                    <input type="date" id="form-auth-expiry" class="form-control" required>
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label>Granted By (Manager Name) *</label>
+                                <input type="text" id="form-auth-grantedby" class="form-control" required placeholder="Mine Manager Office">
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" onclick="closeModal('auth-form-modal')">Cancel</button>
+                            <button type="submit" class="btn btn-primary"><i class="fa-solid fa-key"></i> Issue Permit</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Existing Contractor Modals Retained -->
+            <!-- CONTRACTOR DETAILS MODAL -->
+            <div class="modal-backdrop" id="contractor-detail-modal">
+                <div class="modal-box modal-lg">
+                    <div class="modal-header">
+                        <div>
+                            <h2 id="detail-company-name">Contractor Name</h2>
+                            <span class="badge badge-emerald" id="detail-company-reg">REG-000</span>
+                        </div>
+                        <button class="close-btn" onclick="closeModal('contractor-detail-modal')">&times;</button>
+                    </div>
+
+                    <div class="modal-body">
+                        <div class="detail-kpi-bar">
+                            <div class="detail-kpi"><span class="lbl">Compliance Score</span><span class="val text-emerald" id="detail-compliance-score">100%</span></div>
+                            <div class="detail-kpi"><span class="lbl">Performance Rating</span><span class="val text-cyan" id="detail-performance-score">5.0 / 5.0</span></div>
+                            <div class="detail-kpi"><span class="lbl">Status</span><span class="val" id="detail-status-badge">ACTIVE</span></div>
+                        </div>
+                        <div class="info-grid">
+                            <div class="info-item"><label>Contact Person:</label> <span id="info-contact">--</span></div>
+                            <div class="info-item"><label>Email:</label> <span id="info-email">--</span></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+            <!-- VIEW: GOVERNANCE DASHBOARD -->
+            <section class="view-panel" id="view-governance-dashboard">
+                <div class="kpi-grid">
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-purple"><i class="fa-solid fa-gavel"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Total Grievances</span>
+                            <h3 class="kpi-value" id="kpi-total-grievances">--</h3>
+                            <span class="kpi-sub"><span id="kpi-open-grievances">--</span> Open</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-amber"><i class="fa-solid fa-arrow-trend-up"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Escalated</span>
+                            <h3 class="kpi-value text-warning" id="kpi-escalated-grievances">--</h3>
+                            <span class="kpi-sub">Needs immediate action</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-blue"><i class="fa-solid fa-stamp"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Pending Approvals</span>
+                            <h3 class="kpi-value" id="kpi-pending-approvals">--</h3>
+                            <span class="kpi-sub">Awaiting review</span>
+                        </div>
+                    </div>
+                    <div class="kpi-card">
+                        <div class="kpi-icon icon-emerald"><i class="fa-solid fa-check-double"></i></div>
+                        <div class="kpi-body">
+                            <span class="kpi-label">Approval Rate</span>
+                            <h3 class="kpi-value" id="kpi-approval-rate">--%</h3>
+                            <span class="kpi-sub">Overall completion</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>Recent Governance Activity</h2>
+                    </div>
+                    <div class="card-body">
+                        <p class="empty-state"><i class="fa-solid fa-chart-line"></i> Dashboard visualizations will appear here</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: GRIEVANCES -->
+            <section class="view-panel" id="view-grievances">
+                <div class="content-card table-card">
+                    <div class="card-header">
+                        <h2>Grievances & Complaints</h2>
+                        <div class="card-actions">
+                            <button class="btn btn-primary" id="btn-new-grievance"><i class="fa-solid fa-plus"></i> File Grievance</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-grievances">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Title</th>
+                                    <th>Category</th>
+                                    <th>Priority</th>
+                                    <th>Status</th>
+                                    <th>SLA Deadline</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: APPROVALS -->
+            <section class="view-panel" id="view-approvals">
+                <div class="content-card table-card">
+                    <div class="card-header">
+                        <h2>Approval Center</h2>
+                        <div class="card-actions">
+                            <button class="btn btn-primary" id="btn-new-approval"><i class="fa-solid fa-plus"></i> Request Approval</button>
+                        </div>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-approvals">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>Title</th>
+                                    <th>Entity</th>
+                                    <th>Status</th>
+                                    <th>Created At</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: ESCALATIONS -->
+            <section class="view-panel" id="view-escalations">
+                <div class="content-card">
+                    <div class="card-header">
+                        <h2>Escalation Engine</h2>
+                        <div class="card-actions">
+                            <button class="btn btn-secondary" id="btn-run-escalations"><i class="fa-solid fa-play"></i> Run Evaluator</button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="alert-box alert-warning">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                            <div class="alert-content">
+                                <h4>Escalation Engine Status</h4>
+                                <p>The automated escalation engine evaluates open grievances and compliance alerts against their SLAs. Breached items will be automatically escalated to higher management.</p>
+                            </div>
+                        </div>
+                        <div id="escalation-results" style="margin-top:20px;"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- VIEW: AUDIT -->
+            <section class="view-panel" id="view-audit">
+                <div class="content-card table-card">
+                    <div class="card-header">
+                        <h2>Immutable Audit Trail</h2>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table" id="table-audit">
+                            <thead>
+                                <tr>
+                                    <th>Timestamp</th>
+                                    <th>Action</th>
+                                    <th>Entity</th>
+                                    <th>Entity ID</th>
+                                    <th>User</th>
+                                    <th>Block Hash</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Application Controller -->
+    <script src="js/app.js"></script>
+</body>
+</html>

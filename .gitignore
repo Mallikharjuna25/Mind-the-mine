@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+.venv
+
+# SQLite
+*.db
+*.sqlite3
+*.db-journal
+
+# Storage uploads (transient test uploads)
+storage/uploads/*
+!storage/uploads/.gitkeep
+storage/synthetic_assets/*
+!storage/synthetic_assets/.gitkeep
+
+# Pytest & IDE
+.pytest_cache/
+.coverage
+htmlcov/
+.vscode/
+.idea/
+*.log
