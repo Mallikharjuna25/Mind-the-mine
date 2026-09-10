@@ -131,12 +131,13 @@ async def seed_demo_data(db: AsyncSession = Depends(get_db)):
         )
         db.add_all([eq1, eq2])
 
-        # 5. Add Demo Users (Super Admin, Safety Officer, Mine Manager)
+        # 5. Add Demo Users (Super Admin, Safety Officer, Mine Manager, Worker)
         users_data = [
             ("admin@mineguard.in", "Admin@12345", "Director General / Super Admin", UserRole.SUPER_ADMIN, "Chief Inspector of Mines"),
             ("manager@mineguard.in", "Manager@12345", "Rajesh Sharma", UserRole.MINE_MANAGER, "General Manager (Kusmunda)"),
             ("safety@mineguard.in", "Safety@12345", "Amitabh Verma", UserRole.SAFETY_OFFICER, "Senior Safety Officer"),
-            ("env@mineguard.in", "Env@12345", "Pooja Banerjee", UserRole.ENVIRONMENT_OFFICER, "Environmental Engineer")
+            ("env@mineguard.in", "Env@12345", "Pooja Banerjee", UserRole.ENVIRONMENT_OFFICER, "Environmental Engineer"),
+            ("worker@mineguard.in", "Worker@12345", "Ramesh Kumar", UserRole.WORKER, "HEMM Heavy Shovel Operator"),
         ]
         for email, pwd, name, role, desig in users_data:
             u = User(
@@ -155,7 +156,8 @@ async def seed_demo_data(db: AsyncSession = Depends(get_db)):
         # 6. Add Demo Contractors & Workers (Module 3)
         from app.models.contractor_models import Contractor
         from app.models.worker_models import (
-            Worker, WorkerAttendance, WorkerTraining, WorkerCertification, WorkerPPE, WorkerAuthorization
+            Worker, WorkerAttendance, WorkerTraining, WorkerCertification,
+            WorkerPPE, WorkerAuthorization, WorkerInsurance, WorkerLeave
         )
 
         cont1 = Contractor(
@@ -192,12 +194,17 @@ async def seed_demo_data(db: AsyncSession = Depends(get_db)):
             full_name="Ramesh Kumar",
             department="UNDERGROUND_OPS",
             role="HEAVY_EQUIPMENT_OPERATOR",
-            email="ramesh@mineguard.in",
+            email="worker@mineguard.in",
             phone="+91 91234 56789",
             emergency_contact_name="Sita Devi",
             emergency_contact_phone="+91 98765 12345",
             joining_date=date.today() - timedelta(days=365),
-            status="ACTIVE"
+            status="ACTIVE",
+            blood_group="B+",
+            rfid_tag="RFID-KUS-8821",
+            medical_fitness_status="FIT",
+            medical_exam_date=date.today() - timedelta(days=45),
+            medical_expiry_date=date.today() + timedelta(days=320)
         )
         w2 = Worker(
             mine_id=mine.id,
@@ -211,7 +218,12 @@ async def seed_demo_data(db: AsyncSession = Depends(get_db)):
             emergency_contact_name="Laxmi Reddy",
             emergency_contact_phone="+91 94400 99887",
             joining_date=date.today() - timedelta(days=500),
-            status="ACTIVE"
+            status="ACTIVE",
+            blood_group="O+",
+            rfid_tag="RFID-KUS-8822",
+            medical_fitness_status="FIT",
+            medical_exam_date=date.today() - timedelta(days=90),
+            medical_expiry_date=date.today() + timedelta(days=275)
         )
         w3 = Worker(
             mine_id=mine.id,
@@ -225,28 +237,72 @@ async def seed_demo_data(db: AsyncSession = Depends(get_db)):
             emergency_contact_name="Meena Singh",
             emergency_contact_phone="+91 93300 11223",
             joining_date=date.today() - timedelta(days=180),
-            status="ACTIVE"
+            status="ACTIVE",
+            blood_group="A+",
+            rfid_tag="RFID-KUS-8823",
+            medical_fitness_status="FIT",
+            medical_exam_date=date.today() - timedelta(days=30),
+            medical_expiry_date=date.today() + timedelta(days=335)
         )
         db.add_all([w1, w2, w3])
         await db.flush()
 
-        # Add worker PPE, training, and authorization
-        db.add(WorkerPPE(
-            worker_id=w1.id,
-            item_type="HELMET",
-            issuance_date=date.today() - timedelta(days=60),
-            expiry_date=date.today() + timedelta(days=300),
-            compliance_status="COMPLIANT",
-            remarks="Standard IS-2925 Verified Hard Hat"
-        ))
+        # Add worker PPE
+        db.add_all([
+            WorkerPPE(
+                worker_id=w1.id,
+                item_type="HELMET",
+                issuance_date=date.today() - timedelta(days=60),
+                expiry_date=date.today() + timedelta(days=300),
+                compliance_status="COMPLIANT",
+                remarks="Standard IS-2925 Verified Hard Hat with Miner Cap Lamp Mount"
+            ),
+            WorkerPPE(
+                worker_id=w1.id,
+                item_type="HIGH_VIS_VEST",
+                issuance_date=date.today() - timedelta(days=45),
+                expiry_date=date.today() + timedelta(days=320),
+                compliance_status="COMPLIANT",
+                remarks="Class 3 Reflective Retro-Fluorescent Harness"
+            ),
+            WorkerPPE(
+                worker_id=w1.id,
+                item_type="SAFETY_BOOTS",
+                issuance_date=date.today() - timedelta(days=90),
+                expiry_date=date.today() + timedelta(days=275),
+                compliance_status="COMPLIANT",
+                remarks="Steel-Toe Ankle Guard Mining Boots (IS 15298)"
+            ),
+            WorkerPPE(
+                worker_id=w1.id,
+                item_type="RESPIRATOR",
+                issuance_date=date.today() - timedelta(days=30),
+                expiry_date=date.today() + timedelta(days=150),
+                compliance_status="COMPLIANT",
+                remarks="P3 Dust Filter Half-Face Respirator"
+            )
+        ])
+
+        # Add Worker Trainings & Certifications
         db.add(WorkerTraining(
             worker_id=w1.id,
-            program_name="DGMS Statutory Underground Gas & Helmet Safety",
+            program_name="DGMS Statutory Underground Gas, Slope & Helmet Safety (VTC)",
             trainer_name="Senior Safety Officer Amitabh Verma",
             completed_date=date.today() - timedelta(days=90),
             expiry_date=date.today() + timedelta(days=275),
             status="COMPLETED"
         ))
+        db.add(WorkerCertification(
+            worker_id=w1.id,
+            certificate_name="DGMS Certified HEMM Heavy Shovel Operator Class I",
+            certificate_number="DGMS-HEMM-2024-884",
+            issuing_authority="Directorate General of Mines Safety (DGMS)",
+            valid_from=date.today() - timedelta(days=400),
+            expiry_date=date.today() + timedelta(days=695),
+            verification_status="VERIFIED"
+        ))
+
+        # Add Worker Authorization
         db.add(WorkerAuthorization(
             worker_id=w1.id,
             zone_id="ZONE-PIT-01",
@@ -257,10 +313,257 @@ async def seed_demo_data(db: AsyncSession = Depends(get_db)):
             granted_by="Mine Manager Office"
         ))
 
+        # Add Worker Attendances (Shift Clock-In)
+        db.add_all([
+            WorkerAttendance(
+                worker_id=w1.id,
+                mine_id=mine.id,
+                shift="MORNING",
+                check_in=datetime.now(timezone.utc) - timedelta(hours=3, minutes=15),
+                status="PRESENT"
+            ),
+            WorkerAttendance(
+                worker_id=w1.id,
+                mine_id=mine.id,
+                shift="MORNING",
+                check_in=datetime.now(timezone.utc) - timedelta(days=1, hours=8),
+                check_out=datetime.now(timezone.utc) - timedelta(days=1),
+                status="PRESENT"
+            ),
+            WorkerAttendance(
+                worker_id=w1.id,
+                mine_id=mine.id,
+                shift="MORNING",
+                check_in=datetime.now(timezone.utc) - timedelta(days=2, hours=8),
+                check_out=datetime.now(timezone.utc) - timedelta(days=2),
+                status="PRESENT"
+            )
+        ])
+
+        # Add Worker Insurance Policies
+        db.add_all([
+            WorkerInsurance(
+                worker_id=w1.id,
+                policy_provider="LIC Group Coal Mine Safety & Disability Scheme",
+                policy_number="LIC-CIL-992182",
+                policy_type="ACCIDENTAL_DEATH_DISABILITY",
+                coverage_amount=1500000.0,
+                start_date=date.today() - timedelta(days=365),
+                expiry_date=date.today() + timedelta(days=365),
+                nominee_name="Sita Devi",
+                nominee_relation="SPOUSE",
+                premium_status="ACTIVE",
+                tpa_contact_number="1800-425-2255"
+            ),
+            WorkerInsurance(
+                worker_id=w1.id,
+                policy_provider="New India Cashless Mining Health Cover",
+                policy_number="NIA-HLT-440192",
+                policy_type="CRITICAL_ILLNESS",
+                coverage_amount=500000.0,
+                start_date=date.today() - timedelta(days=180),
+                expiry_date=date.today() + timedelta(days=185),
+                nominee_name="Sita Devi",
+                nominee_relation="SPOUSE",
+                premium_status="ACTIVE",
+                tpa_contact_number="1800-209-1415"
+            ),
+            WorkerInsurance(
+                worker_id=w1.id,
+                policy_provider="Coal Mines Provident Fund (CMPF) Statutory Pension",
+                policy_number="CMPF-KUS-88301",
+                policy_type="CMPF_PROVIDENT_FUND",
+                coverage_amount=1240000.0,
+                start_date=date.today() - timedelta(days=730),
+                expiry_date=date.today() + timedelta(days=3650),
+                nominee_name="Rahul Kumar",
+                nominee_relation="SON",
+                premium_status="ACTIVE",
+                tpa_contact_number="07759-241022"
+            )
+        ])
+
+        # Add Worker Leaves & Gate Pass
+        db.add_all([
+            WorkerLeave(
+                worker_id=w1.id,
+                mine_id=mine.id,
+                leave_type="CASUAL",
+                start_date=date.today() - timedelta(days=30),
+                end_date=date.today() - timedelta(days=28),
+                days_count=3.0,
+                reason="Family festival celebration in Bilaspur",
+                status="APPROVED",
+                approved_by="manager@mineguard.in",
+                supervisor_remarks="Approved with relief operator assigned."
+            ),
+            WorkerLeave(
+                worker_id=w1.id,
+                mine_id=mine.id,
+                leave_type="SICK_MEDICAL",
+                start_date=date.today() - timedelta(days=10),
+                end_date=date.today() - timedelta(days=8),
+                days_count=2.0,
+                reason="Viral fever physician rest prescribed",
+                status="APPROVED",
+                approved_by="safety@mineguard.in",
+                supervisor_remarks="Medical certificate verified by mine dispensary."
+            ),
+            WorkerLeave(
+                worker_id=w1.id,
+                mine_id=mine.id,
+                leave_type="GATE_PASS_SHIFT_EXIT",
+                start_date=date.today(),
+                end_date=date.today(),
+                days_count=0.5,
+                reason="Urgent banking Aadhaar biometric update in Korba town",
+                status="PENDING",
+                supervisor_remarks="Shift supervisor review in progress."
+            )
+        ])
+
         await db.commit()
 
         # 7. Compute Initial Risk Scores
         await risk_engine_service.compute_mine_all_zones(db, mine.id)
+
+    # 8. Ensure Worker User and Self-Service Profile always exist idempotently
+    from app.models.worker_models import (
+        Worker, WorkerAttendance, WorkerTraining, WorkerCertification,
+        WorkerPPE, WorkerAuthorization, WorkerInsurance, WorkerLeave
+    )
+    worker_user = (await db.execute(select(User).where(User.email == "worker@mineguard.in"))).scalars().first()
+    if not worker_user:
+        worker_user = User(
+            email="worker@mineguard.in",
+            hashed_password=get_password_hash("Worker@12345"),
+            full_name="Ramesh Kumar",
+            role=UserRole.WORKER,
+            designation="HEMM Heavy Shovel Operator",
+            mine_id=mine.id,
+            is_active=True
+        )
+        db.add(worker_user)
+        await db.flush()
+
+    w1 = (await db.execute(select(Worker).where(Worker.employee_id == "EMP-2026-9901"))).scalars().first()
+    if not w1:
+        w1 = Worker(
+            mine_id=mine.id,
+            employee_id="EMP-2026-9901",
+            full_name="Ramesh Kumar",
+            department="UNDERGROUND_OPS",
+            role="HEAVY_EQUIPMENT_OPERATOR",
+            email="worker@mineguard.in",
+            phone="+91 91234 56789",
+            emergency_contact_name="Sita Devi",
+            emergency_contact_phone="+91 98765 12345",
+            joining_date=date.today() - timedelta(days=365),
+            status="ACTIVE",
+            blood_group="B+",
+            rfid_tag="RFID-KUS-8821",
+            medical_fitness_status="FIT",
+            medical_exam_date=date.today() - timedelta(days=45),
+            medical_expiry_date=date.today() + timedelta(days=320)
+        )
+        db.add(w1)
+        await db.flush()
+    else:
+        w1.email = "worker@mineguard.in"
+        w1.blood_group = "B+"
+        w1.rfid_tag = "RFID-KUS-8821"
+        w1.medical_fitness_status = "FIT"
+        w1.medical_exam_date = date.today() - timedelta(days=45)
+        w1.medical_expiry_date = date.today() + timedelta(days=320)
+        await db.flush()
+
+    # Ensure insurances exist for w1
+    existing_ins = (await db.execute(select(WorkerInsurance).where(WorkerInsurance.worker_id == w1.id))).scalars().first()
+    if not existing_ins:
+        db.add_all([
+            WorkerInsurance(
+                worker_id=w1.id,
+                policy_provider="LIC Group Coal Mine Safety & Disability Scheme",
+                policy_number="LIC-CIL-992182",
+                policy_type="ACCIDENTAL_DEATH_DISABILITY",
+                coverage_amount=1500000.0,
+                start_date=date.today() - timedelta(days=365),
+                expiry_date=date.today() + timedelta(days=365),
+                nominee_name="Sita Devi",
+                nominee_relation="SPOUSE",
+                premium_status="ACTIVE",
+                tpa_contact_number="1800-425-2255"
+            ),
+            WorkerInsurance(
+                worker_id=w1.id,
+                policy_provider="New India Cashless Mining Health Cover",
+                policy_number="NIA-HLT-440192",
+                policy_type="CRITICAL_ILLNESS",
+                coverage_amount=500000.0,
+                start_date=date.today() - timedelta(days=180),
+                expiry_date=date.today() + timedelta(days=185),
+                nominee_name="Sita Devi",
+                nominee_relation="SPOUSE",
+                premium_status="ACTIVE",
+                tpa_contact_number="1800-209-1415"
+            ),
+            WorkerInsurance(
+                worker_id=w1.id,
+                policy_provider="Coal Mines Provident Fund (CMPF) Statutory Pension",
+                policy_number="CMPF-KUS-88301",
+                policy_type="CMPF_PROVIDENT_FUND",
+                coverage_amount=1240000.0,
+                start_date=date.today() - timedelta(days=730),
+                expiry_date=date.today() + timedelta(days=3650),
+                nominee_name="Rahul Kumar",
+                nominee_relation="SON",
+                premium_status="ACTIVE",
+                tpa_contact_number="07759-241022"
+            )
+        ])
+
+    # Ensure leaves exist for w1
+    existing_leaves = (await db.execute(select(WorkerLeave).where(WorkerLeave.worker_id == w1.id))).scalars().first()
+    if not existing_leaves:
+        db.add_all([
+            WorkerLeave(
+                worker_id=w1.id,
+                mine_id=mine.id,
+                leave_type="CASUAL",
+                start_date=date.today() - timedelta(days=30),
+                end_date=date.today() - timedelta(days=28),
+                days_count=3.0,
+                reason="Family festival celebration in Bilaspur",
+                status="APPROVED",
+                approved_by="manager@mineguard.in",
+                supervisor_remarks="Approved with relief operator assigned."
+            ),
+            WorkerLeave(
+                worker_id=w1.id,
+                mine_id=mine.id,
+                leave_type="SICK_MEDICAL",
+                start_date=date.today() - timedelta(days=10),
+                end_date=date.today() - timedelta(days=8),
+                days_count=2.0,
+                reason="Viral fever physician rest prescribed",
+                status="APPROVED",
+                approved_by="safety@mineguard.in",
+                supervisor_remarks="Medical certificate verified by mine dispensary."
+            ),
+            WorkerLeave(
+                worker_id=w1.id,
+                mine_id=mine.id,
+                leave_type="GATE_PASS_SHIFT_EXIT",
+                start_date=date.today(),
+                end_date=date.today(),
+                days_count=0.5,
+                reason="Urgent banking Aadhaar biometric update in Korba town",
+                status="PENDING",
+                supervisor_remarks="Shift supervisor review in progress."
+            )
+        ])
+
+    await db.commit()
 
     return ApiResponse(
         message="Demo synthetic coal mine data (Modules 1, 2, and 3) successfully seeded!",
@@ -269,7 +572,8 @@ async def seed_demo_data(db: AsyncSession = Depends(get_db)):
             "demo_credentials": {
                 "admin": {"email": "admin@mineguard.in", "password": "Admin@12345"},
                 "safety_officer": {"email": "safety@mineguard.in", "password": "Safety@12345"},
-                "mine_manager": {"email": "manager@mineguard.in", "password": "Manager@12345"}
+                "mine_manager": {"email": "manager@mineguard.in", "password": "Manager@12345"},
+                "worker": {"email": "worker@mineguard.in", "password": "Worker@12345"}
             }
         }
     )

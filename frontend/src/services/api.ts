@@ -157,13 +157,26 @@ export const workersApi = {
     api.get('/mine/workers/dashboard', { params: { mine_id: mineId } }),
   list: (params?: Record<string, unknown>) => api.get('/mine/workers', { params }),
   get: (id: string) => api.get(`/mine/workers/${id}`),
+  getMe: () => api.get('/mine/workers/me/profile'),
   create: (payload: unknown) => api.post('/mine/workers', payload),
   update: (id: string, payload: unknown) => api.put(`/mine/workers/${id}`, payload),
   delete: (id: string) => api.delete(`/mine/workers/${id}`),
-  addAttendance: (payload: unknown) => api.post('/mine/workers/attendance', payload),
+  addAttendance: (workerIdOrPayload: string | unknown, payload?: unknown) => {
+    if (typeof workerIdOrPayload === 'string') {
+      return api.post(`/mine/workers/${workerIdOrPayload}/attendance`, payload);
+    }
+    const anyPayload = workerIdOrPayload as { worker_id?: string };
+    const workerId = anyPayload?.worker_id || 'default';
+    return api.post(`/mine/workers/${workerId}/attendance`, workerIdOrPayload);
+  },
   addTraining: (payload: unknown) => api.post('/mine/workers/training', payload),
   issuePPE: (payload: unknown) => api.post('/mine/workers/ppe', payload),
   grantPermit: (payload: unknown) => api.post('/mine/workers/authorize', payload),
+  getInsurances: (workerId: string) => api.get(`/mine/workers/${workerId}/insurances`),
+  createInsurance: (workerId: string, payload: unknown) => api.post(`/mine/workers/${workerId}/insurances`, payload),
+  getLeaves: (workerId: string) => api.get(`/mine/workers/${workerId}/leaves`),
+  applyLeave: (workerId: string, payload: unknown) => api.post(`/mine/workers/${workerId}/leaves`, payload),
+  actionLeave: (leaveId: string, payload: unknown) => api.put(`/mine/workers/leaves/${leaveId}/action`, payload),
 };
 
 export const governanceApi = {

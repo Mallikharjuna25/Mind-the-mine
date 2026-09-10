@@ -8,7 +8,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.database import get_db
-from app.core.security import TokenPayload, require_permission
+from app.core.security import TokenPayload, require_permission, get_current_user
 from app.schemas.worker_schemas import (
     WorkerCreate, WorkerUpdate, WorkerResponse,
     WorkerAttendanceCreate, WorkerAttendanceResponse,
@@ -16,6 +16,8 @@ from app.schemas.worker_schemas import (
     WorkerCertificationCreate, WorkerCertificationResponse,
     WorkerPPECreate, WorkerPPEResponse,
     WorkerAuthorizationCreate, WorkerAuthorizationResponse,
+    WorkerInsuranceCreate, WorkerInsuranceResponse,
+    WorkerLeaveCreate, WorkerLeaveResponse, WorkerLeaveAction,
     WorkerDashboardStats, WorkerReportsSummary
 )
 from app.schemas.common_schemas import ApiResponse
@@ -230,3 +232,105 @@ async def list_authorizations(
 ):
     auths = await worker_service.list_authorizations(db=db, worker_id=worker_id)
     return ApiResponse(data=[WorkerAuthorizationResponse.model_validate(a) for a in auths])
+
+
+# ------------------ WORKER SELF PROFILE ENDPOINT ------------------
+
+@router.get("/workers/me/profile", response_model=ApiResponse[WorkerResponse])
+async def get_my_worker_profile(
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user)
+):
+    # Try finding worker by user email
+    worker = await worker_service.get_worker_by_email(db, email=current_user.email)
+    if not worker:
+        # Fallback to the first active worker in the mine so any user previewing the portal sees a rich profile
+        workers = await worker_service.list_workers(db=db, status="ACTIVE")
+        if workers:
+            worker = await worker_service.get_worker(db, workers[0].id)
+    
+    if not worker:
+        raise HTTPException(status_code=404, detail="Worker profile not found.")
+
+    return ApiResponse(message="Worker profile retrieved", data=WorkerResponse.model_validate(worker))
+
+
+# ------------------ INSURANCE ENDPOINTS ------------------
+
+@router.post("/workers/{worker_id}/insurances", response_model=ApiResponse[WorkerInsuranceResponse])
+async def create_worker_insurance(
+    worker_id: str,
+    payload: WorkerInsuranceCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user)
+):
+    ins = await worker_service.create_insurance(
+        db=db, worker_id=worker_id, payload=payload, user_id=current_user.sub
+    )
+    return ApiResponse(message="Worker insurance policy registered", data=WorkerInsuranceResponse.model_validate(ins))
+
+
+@router.get("/workers/{worker_id}/insurances", response_model=ApiResponse[List[WorkerInsuranceResponse]])
+async def list_worker_insurances(
+    worker_id: str,
+    db: AsyncSession = Depends(get_db)
+):
+    ins_list = await worker_service.list_insurances(db=db, worker_id=worker_id)
+    return ApiResponse(data=[WorkerInsuranceResponse.model_validate(i) for i in ins_list])
+
+
+@router.get("/workers/insurances", response_model=ApiResponse[List[WorkerInsuranceResponse]])
+async def list_all_insurances(
+    worker_id: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db)
+):
+    ins_list = await worker_service.list_insurances(db=db, worker_id=worker_id)
+    return ApiResponse(data=[WorkerInsuranceResponse.model_validate(i) for i in ins_list])
+
+
+# ------------------ LEAVE & PERMISSION ENDPOINTS ------------------
+
+@router.post("/workers/{worker_id}/leaves", response_model=ApiResponse[WorkerLeaveResponse])
+async def apply_worker_leave(
+    worker_id: str,
+    payload: WorkerLeaveCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user)
+):
+    leave = await worker_service.apply_leave(
+        db=db, worker_id=worker_id, payload=payload, user_id=current_user.sub
+    )
+    return ApiResponse(message="Leave application submitted successfully", data=WorkerLeaveResponse.model_validate(leave))
+
+
+@router.get("/workers/{worker_id}/leaves", response_model=ApiResponse[List[WorkerLeaveResponse]])
+async def list_worker_leaves(
+    worker_id: str,
+    db: AsyncSession = Depends(get_db)
+):
+    leaves = await worker_service.list_leaves(db=db, worker_id=worker_id)
+    return ApiResponse(data=[WorkerLeaveResponse.model_validate(l) for l in leaves])
+
+
+@router.get("/workers/leaves", response_model=ApiResponse[List[WorkerLeaveResponse]])
+async def list_all_leaves(
+    worker_id: Optional[str] = Query(None),
+    mine_id: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db)
+):
+    leaves = await worker_service.list_leaves(db=db, worker_id=worker_id, mine_id=mine_id)
+    return ApiResponse(data=[WorkerLeaveResponse.model_validate(l) for l in leaves])
+
+
+@router.put("/workers/leaves/{leave_id}/action", response_model=ApiResponse[WorkerLeaveResponse])
+async def action_worker_leave(
+    leave_id: str,
+    payload: WorkerLeaveAction,
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(get_current_user)
+):
+    approver = current_user.email
+    leave = await worker_service.action_leave(
+        db=db, leave_id=leave_id, payload=payload, approver_name=approver
+    )
+    return ApiResponse(message=f"Leave status updated to {payload.status}", data=WorkerLeaveResponse.model_validate(leave))

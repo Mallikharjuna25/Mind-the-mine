@@ -27,6 +27,12 @@ class Worker(BaseModelMixin):
     
     joining_date = Column(Date, nullable=False)
     status = Column(String(30), default="ACTIVE", nullable=False, index=True)  # ACTIVE, INACTIVE, SUSPENDED, UNAUTHORIZED
+    
+    blood_group = Column(String(10), default="O+", nullable=True)
+    rfid_tag = Column(String(50), nullable=True, index=True)
+    medical_fitness_status = Column(String(30), default="FIT", nullable=False)  # FIT, TEMPORARILY_UNFIT, PERMANENTLY_UNFIT
+    medical_exam_date = Column(Date, nullable=True)
+    medical_expiry_date = Column(Date, nullable=True)
 
     # Relationships
     mine = relationship("Mine", backref="workers", lazy="selectin")
@@ -36,6 +42,8 @@ class Worker(BaseModelMixin):
     certifications = relationship("WorkerCertification", back_populates="worker", cascade="all, delete-orphan", lazy="selectin")
     ppes = relationship("WorkerPPE", back_populates="worker", cascade="all, delete-orphan", lazy="selectin")
     authorizations = relationship("WorkerAuthorization", back_populates="worker", cascade="all, delete-orphan", lazy="selectin")
+    insurances = relationship("WorkerInsurance", back_populates="worker", cascade="all, delete-orphan", lazy="selectin")
+    leaves = relationship("WorkerLeave", back_populates="worker", cascade="all, delete-orphan", lazy="selectin")
 
 
 class WorkerAttendance(BaseModelMixin):
@@ -114,3 +122,38 @@ class WorkerAuthorization(BaseModelMixin):
 
     # Relationships
     worker = relationship("Worker", back_populates="authorizations")
+
+
+class WorkerInsurance(BaseModelMixin):
+    __tablename__ = "worker_insurances"
+
+    worker_id = Column(String(36), ForeignKey("workers.id", ondelete="CASCADE"), nullable=False, index=True)
+    policy_provider = Column(String(255), nullable=False)  # e.g. "LIC Group Coal Mine Scheme", "New India Assurance"
+    policy_number = Column(String(100), unique=True, nullable=False, index=True)
+    policy_type = Column(String(100), nullable=False)  # ACCIDENTAL_DEATH_DISABILITY, CRITICAL_ILLNESS, CMPF_PROVIDENT_FUND
+    coverage_amount = Column(Float, nullable=False)  # e.g. 1500000.0
+    start_date = Column(Date, nullable=False)
+    expiry_date = Column(Date, nullable=False, index=True)
+    nominee_name = Column(String(100), nullable=False)
+    nominee_relation = Column(String(50), nullable=False)  # SPOUSE, CHILD, PARENT
+    premium_status = Column(String(30), default="ACTIVE", nullable=False)  # ACTIVE, EXPIRED, PENDING_RENEWAL
+    tpa_contact_number = Column(String(50), nullable=True)
+
+    worker = relationship("Worker", back_populates="insurances")
+
+
+class WorkerLeave(BaseModelMixin):
+    __tablename__ = "worker_leaves"
+
+    worker_id = Column(String(36), ForeignKey("workers.id", ondelete="CASCADE"), nullable=False, index=True)
+    mine_id = Column(String(36), ForeignKey("mines.id", ondelete="CASCADE"), nullable=False, index=True)
+    leave_type = Column(String(50), nullable=False)  # CASUAL, SICK_MEDICAL, PRIVILEGE_EARNED, GATE_PASS_SHIFT_EXIT
+    start_date = Column(Date, nullable=False)
+    end_date = Column(Date, nullable=False)
+    days_count = Column(Float, nullable=False, default=1.0)
+    reason = Column(Text, nullable=False)
+    status = Column(String(30), default="PENDING", nullable=False, index=True)  # PENDING, APPROVED, REJECTED
+    approved_by = Column(String(100), nullable=True)
+    supervisor_remarks = Column(Text, nullable=True)
+
+    worker = relationship("Worker", back_populates="leaves")

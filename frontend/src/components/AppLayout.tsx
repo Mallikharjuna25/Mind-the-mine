@@ -107,6 +107,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
   // Sidebar Menu items including Module 1, Module 2, and Module 3
   const menuItems: MenuProps['items'] = [
+    { key: '/worker-portal', icon: <UserOutlined style={{ color: '#10b981' }} />, label: '👷 Worker Portal & Pass' },
     { key: '/', icon: <DashboardOutlined />, label: 'Central Executive Dashboard' },
     { key: '/digital-twin', icon: <GlobalOutlined />, label: 'GIS Digital Twin' },
     {
@@ -205,7 +206,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
                 AI MineGuard
               </div>
               <div style={{ fontSize: 10, color: isDark ? 'rgba(255, 255, 255, 0.55)' : '#71717a', fontWeight: 500 }}>
-                {isAdmin ? '🛡️ Admin Authority Portal' : '👷 Safety Officer Portal'}
+                {user?.role === 'WORKER' ? '👷 Worker Self-Service Portal' : (isAdmin ? '🛡️ Admin Authority Portal' : '👷 Safety Officer Portal')}
               </div>
             </div>
           )}
@@ -249,6 +250,20 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
 
             {/* Top Module Switcher Buttons */}
             <Space size={6} wrap>
+              <Button
+                size="small"
+                type={location.pathname === '/worker-portal' ? 'primary' : 'default'}
+                onClick={() => navigate('/worker-portal')}
+                style={{
+                  fontSize: 11,
+                  fontWeight: 600,
+                  borderColor: '#059669',
+                  color: location.pathname === '/worker-portal' ? '#fff' : '#059669',
+                  background: location.pathname === '/worker-portal' ? '#059669' : undefined
+                }}
+              >
+                👷 Worker Portal
+              </Button>
               <Button
                 size="small"
                 type={['/', '/dashboard', '/digital-twin', '/cctv', '/equipment', '/environmental', '/risk-engine', '/workflows', '/compliance'].includes(location.pathname) ? 'primary' : 'default'}

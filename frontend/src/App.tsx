@@ -30,11 +30,13 @@ import { ContractorsPage } from './pages/ContractorsPage';
 import { WorkersPage } from './pages/WorkersPage';
 import { TrainingPage } from './pages/TrainingPage';
 import { GovernancePage } from './pages/GovernancePage';
+import { WorkerPortalPage } from './pages/WorkerPortalPage';
 
 const PROTECTED_ROUTES = [
   // Overview
   { path: '/', element: <DashboardPage /> },
   { path: '/dashboard', element: <DashboardPage /> },
+  { path: '/worker-portal', element: <WorkerPortalPage /> },
   { path: '/digital-twin', element: <DigitalTwinPage /> },
 
   // Module 1: AI Risk & Surveillance
@@ -86,13 +88,18 @@ const AppRoutes: React.FC = () => {
     );
   }
 
+  const isWorker = user.role === 'WORKER';
+
   // When logged in:
   return (
     <Routes>
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />
-      <Route path="/login" element={<Navigate to="/" replace />} />
+      <Route path="/login" element={<Navigate to={isWorker ? '/worker-portal' : '/'} replace />} />
+      {isWorker && (
+        <Route path="/" element={<AppLayout><WorkerPortalPage /></AppLayout>} />
+      )}
       {PROTECTED_ROUTES.map((r) => (
         <Route
           key={r.path}
@@ -100,7 +107,7 @@ const AppRoutes: React.FC = () => {
           element={<AppLayout>{r.element}</AppLayout>}
         />
       ))}
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<Navigate to={isWorker ? '/worker-portal' : '/'} replace />} />
     </Routes>
   );
 };

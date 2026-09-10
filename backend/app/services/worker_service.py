@@ -14,12 +14,14 @@ from app.core.exceptions import EntityNotFoundError, DuplicateEntityError, Inval
 from app.core.logging_config import logger
 from app.models.base import generate_uuid, utc_now
 from app.models.worker_models import (
-    Worker, WorkerAttendance, WorkerTraining, WorkerCertification, WorkerPPE, WorkerAuthorization
+    Worker, WorkerAttendance, WorkerTraining, WorkerCertification, WorkerPPE,
+    WorkerAuthorization, WorkerInsurance, WorkerLeave
 )
 from app.models.workflow_models import Alert
 from app.schemas.worker_schemas import (
     WorkerCreate, WorkerUpdate, WorkerAttendanceCreate, WorkerTrainingCreate,
     WorkerCertificationCreate, WorkerPPECreate, WorkerAuthorizationCreate,
+    WorkerInsuranceCreate, WorkerLeaveCreate, WorkerLeaveAction,
     WorkerDashboardStats, WorkerReportsSummary
 )
 from app.services.audit_service import audit_service
@@ -560,6 +562,119 @@ class WorkerService:
             active_permits_count=active_permits,
             revoked_permits_count=revoked_permits
         )
+
+    @classmethod
+    async def get_worker_by_email(cls, db: AsyncSession, email: str) -> Optional[Worker]:
+        stmt = (
+            select(Worker)
+            .where(and_(Worker.email == email, Worker.is_deleted == False))
+            .options(
+                selectinload(Worker.attendances),
+                selectinload(Worker.trainings),
+                selectinload(Worker.certifications),
+                selectinload(Worker.ppes),
+                selectinload(Worker.authorizations),
+                selectinload(Worker.insurances),
+                selectinload(Worker.leaves)
+            )
+        )
+        res = await db.execute(stmt)
+        return res.scalars().first()
+
+    @classmethod
+    async def create_insurance(
+        cls, db: AsyncSession, worker_id: str, payload: WorkerInsuranceCreate, user_id: Optional[str] = None
+    ) -> WorkerInsurance:
+        worker = await cls.get_worker(db, worker_id)
+        insurance = WorkerInsurance(
+            id=generate_uuid(),
+            worker_id=worker.id,
+            policy_provider=payload.policy_provider,
+            policy_number=payload.policy_number,
+            policy_type=payload.policy_type,
+            coverage_amount=payload.coverage_amount,
+            start_date=payload.start_date,
+            expiry_date=payload.expiry_date,
+            nominee_name=payload.nominee_name,
+            nominee_relation=payload.nominee_relation,
+            premium_status=payload.premium_status,
+            tpa_contact_number=payload.tpa_contact_number
+        )
+        db.add(insurance)
+        await db.flush()
+
+        await audit_service.log_action(
+            db=db, user_id=user_id, action="INSURANCE_ASSIGNED",
+            entity_type="WORKER_INSURANCE", entity_id=insurance.id,
+            details={"worker_id": worker_id, "policy_number": payload.policy_number}
+        )
+        return insurance
+
+    @classmethod
+    async def list_insurances(
+        cls, db: AsyncSession, worker_id: Optional[str] = None
+    ) -> List[WorkerInsurance]:
+        query = select(WorkerInsurance).where(WorkerInsurance.is_deleted == False)
+        if worker_id:
+            query = query.where(WorkerInsurance.worker_id == worker_id)
+        query = query.order_by(WorkerInsurance.created_at.desc())
+        res = await db.execute(query)
+        return list(res.scalars().all())
+
+    @classmethod
+    async def apply_leave(
+        cls, db: AsyncSession, worker_id: str, payload: WorkerLeaveCreate, user_id: Optional[str] = None
+    ) -> WorkerLeave:
+        worker = await cls.get_worker(db, worker_id)
+        leave = WorkerLeave(
+            id=generate_uuid(),
+            worker_id=worker.id,
+            mine_id=worker.mine_id,
+            leave_type=payload.leave_type,
+            start_date=payload.start_date,
+            end_date=payload.end_date,
+            days_count=payload.days_count,
+            reason=payload.reason,
+            status="PENDING"
+        )
+        db.add(leave)
+        await db.flush()
+
+        await audit_service.log_action(
+            db=db, user_id=user_id, action="LEAVE_APPLIED",
+            entity_type="WORKER_LEAVE", entity_id=leave.id,
+            details={"worker_id": worker_id, "days": payload.days_count, "type": payload.leave_type}
+        )
+        return leave
+
+    @classmethod
+    async def list_leaves(
+        cls, db: AsyncSession, worker_id: Optional[str] = None, mine_id: Optional[str] = None
+    ) -> List[WorkerLeave]:
+        query = select(WorkerLeave).where(WorkerLeave.is_deleted == False)
+        if worker_id:
+            query = query.where(WorkerLeave.worker_id == worker_id)
+        if mine_id:
+            query = query.where(WorkerLeave.mine_id == mine_id)
+        query = query.order_by(WorkerLeave.created_at.desc())
+        res = await db.execute(query)
+        return list(res.scalars().all())
+
+    @classmethod
+    async def action_leave(
+        cls, db: AsyncSession, leave_id: str, payload: WorkerLeaveAction, approver_name: str
+    ) -> WorkerLeave:
+        stmt = select(WorkerLeave).where(and_(WorkerLeave.id == leave_id, WorkerLeave.is_deleted == False))
+        res = await db.execute(stmt)
+        leave = res.scalars().first()
+        if not leave:
+            raise EntityNotFoundError("WorkerLeave", leave_id)
+
+        leave.status = payload.status
+        leave.approved_by = approver_name
+        leave.supervisor_remarks = payload.supervisor_remarks
+        await db.flush()
+        return leave
 
 
 worker_service = WorkerService()

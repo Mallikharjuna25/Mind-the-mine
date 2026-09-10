@@ -162,8 +162,31 @@ def test_sync_engine_batch_and_idempotency(client):
         assert "idempotent ACK" in item["message"]
 
 def test_field_verification_lifecycle(client):
-    # Fetch verifications generated automatically by failed checklist or incident
+    # Fetch verifications generated automatically or create a fresh verification
     verifications = client.get("/api/v1/field-verifications?status=REPORTED").json()
+    if not verifications:
+        import uuid
+        client.post("/api/v1/inspections", json={
+            "client_id": f"audit-test-{uuid.uuid4()}",
+            "template_id": "TMPL-DGMS-FIRE-01",
+            "mine_id": "MINE-DHANBAD-01",
+            "zone_id": "HAUL-ROAD-01",
+            "shift": "SHIFT_A",
+            "summary_findings": "Pre-shift fire safety inspection completed",
+            "items_results": [
+                {
+                    "item_code": "FIRE-02",
+                    "question": "Is stone dust barrier properly maintained?",
+                    "result_status": "FAIL",
+                    "observation": "Shelf 3 damaged by dust accumulation",
+                    "severity": "HIGH",
+                    "evidence_urls": ["/storage/uploads/stone_dust_fail.jpg"],
+                    "incident_generated": True
+                }
+            ]
+        })
+        verifications = client.get("/api/v1/field-verifications?status=REPORTED").json()
+
     assert len(verifications) > 0
     target_id = verifications[0]["id"]
     assert verifications[0]["status"] == "REPORTED"

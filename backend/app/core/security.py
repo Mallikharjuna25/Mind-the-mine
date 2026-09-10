@@ -24,6 +24,7 @@ class UserRole:
     CONTRACTOR = "CONTRACTOR"
     REGULATOR_DGMS = "REGULATOR_DGMS"
     CIL_CORPORATE = "CIL_CORPORATE"
+    WORKER = "WORKER"
 
 
 # Standard RBAC Permission Matrix mapping roles to fine-grained scopes
@@ -86,6 +87,11 @@ ROLE_PERMISSIONS: dict[str, Set[str]] = {
         "safety.firecheck.read", "environment.reading.read", "production.record.read",
         "risk.score.read", "risk.anomaly.read", "alert.read", "escalation.read",
         "contractor.read", "worker.read", "governance.report"
+    },
+    UserRole.WORKER: {
+        "worker.self.read", "worker.self.update", "worker.attendance",
+        "worker.leave.create", "worker.leave.read", "worker.training",
+        "worker.certification", "worker.ppe", "governance.grievance.create"
     }
 }
 

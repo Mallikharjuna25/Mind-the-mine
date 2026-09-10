@@ -145,6 +145,67 @@ class WorkerAuthorizationResponse(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class WorkerInsuranceCreate(BaseModel):
+    policy_provider: str = Field(..., min_length=2, max_length=255)
+    policy_number: str = Field(..., min_length=2, max_length=100)
+    policy_type: str = Field(default="ACCIDENTAL_DEATH_DISABILITY")
+    coverage_amount: float = Field(..., ge=0)
+    start_date: date
+    expiry_date: date
+    nominee_name: str = Field(..., min_length=2, max_length=100)
+    nominee_relation: str = Field(..., min_length=2, max_length=50)
+    premium_status: str = Field(default="ACTIVE")
+    tpa_contact_number: Optional[str] = None
+
+
+class WorkerInsuranceResponse(BaseModel):
+    id: str
+    worker_id: str
+    policy_provider: str
+    policy_number: str
+    policy_type: str
+    coverage_amount: float
+    start_date: date
+    expiry_date: date
+    nominee_name: str
+    nominee_relation: str
+    premium_status: str
+    tpa_contact_number: Optional[str] = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
+class WorkerLeaveCreate(BaseModel):
+    leave_type: str = Field(..., description="CASUAL, SICK_MEDICAL, PRIVILEGE_EARNED, GATE_PASS_SHIFT_EXIT")
+    start_date: date
+    end_date: date
+    days_count: float = Field(default=1.0, ge=0.5)
+    reason: str = Field(..., min_length=3)
+
+
+class WorkerLeaveAction(BaseModel):
+    status: str = Field(..., description="APPROVED, REJECTED")
+    supervisor_remarks: Optional[str] = None
+
+
+class WorkerLeaveResponse(BaseModel):
+    id: str
+    worker_id: str
+    mine_id: str
+    leave_type: str
+    start_date: date
+    end_date: date
+    days_count: float
+    reason: str
+    status: str
+    approved_by: Optional[str] = None
+    supervisor_remarks: Optional[str] = None
+    created_at: datetime
+
+    model_config = {"from_attributes": True}
+
+
 class WorkerResponse(BaseModel):
     id: str
     mine_id: str
@@ -159,11 +220,18 @@ class WorkerResponse(BaseModel):
     emergency_contact_phone: str
     joining_date: date
     status: str
+    blood_group: Optional[str] = "O+"
+    rfid_tag: Optional[str] = None
+    medical_fitness_status: Optional[str] = "FIT"
+    medical_exam_date: Optional[date] = None
+    medical_expiry_date: Optional[date] = None
     attendances: List[WorkerAttendanceResponse] = []
     trainings: List[WorkerTrainingResponse] = []
     certifications: List[WorkerCertificationResponse] = []
     ppes: List[WorkerPPEResponse] = []
     authorizations: List[WorkerAuthorizationResponse] = []
+    insurances: List[WorkerInsuranceResponse] = []
+    leaves: List[WorkerLeaveResponse] = []
     created_at: datetime
 
     model_config = {"from_attributes": True}

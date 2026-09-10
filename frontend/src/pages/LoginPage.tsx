@@ -39,8 +39,8 @@ export const LoginPage: React.FC = () => {
     } else {
       setPortalType('worker');
       form.setFieldsValue({
-        email: 'safety@mineguard.in',
-        password: 'Safety@12345',
+        email: 'worker@mineguard.in',
+        password: 'Worker@12345',
       });
     }
   }, [location.search, form]);
@@ -55,8 +55,8 @@ export const LoginPage: React.FC = () => {
       });
     } else {
       form.setFieldsValue({
-        email: 'safety@mineguard.in',
-        password: 'Safety@12345',
+        email: 'worker@mineguard.in',
+        password: 'Worker@12345',
       });
     }
   };
@@ -66,7 +66,11 @@ export const LoginPage: React.FC = () => {
     const success = await login(values.email, values.password);
     setLoading(false);
     if (success) {
-      navigate('/');
+      if (values.email.includes('worker') || portalType === 'worker') {
+        navigate('/worker-portal');
+      } else {
+        navigate('/dashboard');
+      }
     }
   };
 
@@ -76,14 +80,20 @@ export const LoginPage: React.FC = () => {
       await demoApi.seed();
       notification.success({
         message: 'Demo Data Initialized',
-        description: `Kusmunda Coal Mine test assets seeded. Logging in as ${asRole === 'admin' ? 'Super Admin' : 'Worker / Safety Officer'}...`,
+        description: `Kusmunda Coal Mine test assets seeded. Logging in as ${asRole === 'admin' ? 'Super Admin' : 'Mine Worker (Ramesh Kumar)'}...`,
       });
       const creds = asRole === 'admin'
         ? { email: 'admin@mineguard.in', pwd: 'Admin@12345' }
-        : { email: 'safety@mineguard.in', pwd: 'Safety@12345' };
+        : { email: 'worker@mineguard.in', pwd: 'Worker@12345' };
 
       const success = await login(creds.email, creds.pwd);
-      if (success) navigate('/');
+      if (success) {
+        if (asRole === 'worker') {
+          navigate('/worker-portal');
+        } else {
+          navigate('/dashboard');
+        }
+      }
     } catch {
       notification.error({ message: 'Seed Failed', description: 'Ensure the backend is running on port 8000.' });
     } finally {
@@ -174,12 +184,12 @@ export const LoginPage: React.FC = () => {
         <Alert
           message={
             portalType === 'worker'
-              ? '👷 Worker & Field Operations Portal'
-              : '👑 Administrator Governance Portal'
+              ? '👷 Mine Worker Self-Service Portal'
+              : '👑 Administrator Governance & Safety Command'
           }
           description={
             portalType === 'worker'
-              ? 'Active worker surveillance access. Module 1 features (CCTV Vision, Gas Telemetry, Equipment OCR, Risk Scoring) are fully active and working. Module 2 (Field Operations) & Module 3 (Contractor Governance) buttons are available on standby.'
+              ? 'Worker self-service interface: View your personal profile, RFID digital pass, shift clock-in status, DGMS Form O/P medical fitness certificates, statutory group insurance policies, and apply for casual/medical leaves or shift gate passes.'
               : 'Full administrative access: global risk weight tuning, live simulation drill controls (PPE breaches, gas leaks, OCR certs), statutory violation verification/overrides, and system database seeding.'
           }
           type={portalType === 'worker' ? 'info' : 'success'}
@@ -199,13 +209,13 @@ export const LoginPage: React.FC = () => {
         >
           <Form form={form} layout="vertical" onFinish={handleLogin} autoComplete="off">
             <Form.Item
-              label={portalType === 'worker' ? 'Worker / Officer Email' : 'Administrator Email'}
+              label={portalType === 'worker' ? 'Worker Email / ID' : 'Administrator Email'}
               name="email"
               rules={[{ required: true, type: 'email', message: 'Enter a valid email' }]}
             >
               <Input
                 size="large"
-                placeholder={portalType === 'worker' ? 'safety@mineguard.in' : 'admin@mineguard.in'}
+                placeholder={portalType === 'worker' ? 'worker@mineguard.in' : 'admin@mineguard.in'}
                 autoComplete="email"
               />
             </Form.Item>
@@ -231,12 +241,12 @@ export const LoginPage: React.FC = () => {
               style={{
                 height: 44,
                 fontWeight: 600,
-                background: portalType === 'worker' ? '#0284c7' : '#18181b',
-                borderColor: portalType === 'worker' ? '#0284c7' : '#18181b',
+                background: portalType === 'worker' ? '#059669' : '#18181b',
+                borderColor: portalType === 'worker' ? '#059669' : '#18181b',
                 color: '#ffffff',
               }}
             >
-              Sign In to {portalType === 'worker' ? 'Worker Dashboard' : 'Admin Portal'}
+              Sign In to {portalType === 'worker' ? 'Worker Self-Service Portal' : 'Admin Portal'}
             </Button>
           </Form>
 
@@ -261,7 +271,7 @@ export const LoginPage: React.FC = () => {
               color: isDark ? '#ffffff' : '#18181b',
             }}
           >
-            🚀 Seed & Login as {portalType === 'worker' ? 'Worker / Safety Officer' : 'Super Admin'}
+            🚀 Seed & Login as {portalType === 'worker' ? 'Worker (Ramesh Kumar)' : 'Super Admin'}
           </Button>
 
           <Divider style={{ margin: '16px 0 12px' }} />
@@ -273,9 +283,10 @@ export const LoginPage: React.FC = () => {
             </Text>
             <Space direction="vertical" size={4} style={{ width: '100%' }}>
               {[
-                { role: 'Worker / Safety Officer', email: 'safety@mineguard.in', pwd: 'Safety@12345', type: 'worker' },
-                { role: 'Super Admin', email: 'admin@mineguard.in', pwd: 'Admin@12345', type: 'admin' },
-                { role: 'Mine Manager', email: 'manager@mineguard.in', pwd: 'Manager@12345', type: 'admin' },
+                { role: 'Mine Worker (Ramesh Kumar)', email: 'worker@mineguard.in', pwd: 'Worker@12345', type: 'worker' },
+                { role: 'Super Admin (Director General)', email: 'admin@mineguard.in', pwd: 'Admin@12345', type: 'admin' },
+                { role: 'Mine Manager (Kusmunda SECL)', email: 'manager@mineguard.in', pwd: 'Manager@12345', type: 'admin' },
+                { role: 'Safety Officer (Amitabh Verma)', email: 'safety@mineguard.in', pwd: 'Safety@12345', type: 'admin' },
               ].map((u) => (
                 <div
                   key={u.role}
@@ -296,7 +307,7 @@ export const LoginPage: React.FC = () => {
                   }}
                 >
                   <Space size={6}>
-                    <Tag color={u.type === 'admin' ? 'default' : 'blue'} style={{ fontSize: 10 }}>
+                    <Tag color={u.type === 'admin' ? 'default' : 'green'} style={{ fontSize: 10 }}>
                       {u.role}
                     </Tag>
                     <Text style={{ fontSize: 11, color: isDark ? '#ffffff' : '#18181b' }}>{u.email}</Text>
