@@ -37,7 +37,10 @@ ROLE_PERMISSIONS: dict[str, Set[str]] = {
         "environment.reading.create", "environment.reading.read",
         "production.record.create", "production.record.read",
         "risk.score.compute", "risk.score.read", "risk.anomaly.read", "risk.anomaly.manage",
-        "alert.read", "alert.acknowledge", "action.create", "action.verify", "escalation.read"
+        "alert.read", "alert.acknowledge", "action.create", "action.verify", "escalation.read",
+        "contractor.create", "contractor.read", "contractor.update", "contractor.delete", "contractor.document.upload", "contractor.renew",
+        "worker.create", "worker.read", "worker.update", "worker.delete", "worker.attendance", "worker.training", "worker.certification", "worker.ppe", "worker.authorize",
+        "governance.report", "governance.grievance.create", "governance.approval.create", "governance.approval.act"
     },
     UserRole.SAFETY_OFFICER: {
         "cctv.camera.read", "cctv.detection.read",
@@ -46,32 +49,43 @@ ROLE_PERMISSIONS: dict[str, Set[str]] = {
         "safety.firecheck.create", "safety.firecheck.read",
         "environment.reading.read",
         "risk.score.read", "risk.anomaly.read",
-        "alert.read", "alert.acknowledge", "action.create", "action.verify", "escalation.read"
+        "alert.read", "alert.acknowledge", "action.create", "action.verify", "escalation.read",
+        "contractor.read", "contractor.document.upload",
+        "worker.read", "worker.attendance", "worker.training", "worker.certification", "worker.ppe", "worker.authorize",
+        "governance.report", "governance.grievance.create", "governance.approval.create"
     },
     UserRole.ENVIRONMENT_OFFICER: {
         "environment.reading.create", "environment.reading.read",
-        "risk.score.read", "alert.read", "alert.acknowledge"
+        "risk.score.read", "alert.read", "alert.acknowledge",
+        "contractor.read", "worker.read"
     },
     UserRole.FIELD_INSPECTOR: {
         "cctv.camera.read", "cctv.detection.read", "compliance.violation.read",
         "equipment.asset.read", "equipment.document.upload",
         "safety.firecheck.create", "environment.reading.create",
-        "alert.read", "action.verify"
+        "alert.read", "action.verify",
+        "contractor.read", "worker.read", "worker.attendance", "worker.ppe",
+        "governance.grievance.create"
     },
     UserRole.CONTRACTOR: {
         "compliance.violation.read", "equipment.asset.read", "equipment.document.upload",
-        "alert.read", "action.update"
+        "alert.read", "action.update",
+        "contractor.read", "contractor.document.upload",
+        "worker.read", "worker.attendance", "worker.training", "worker.certification",
+        "governance.grievance.create"
     },
     UserRole.REGULATOR_DGMS: {
         "cctv.camera.read", "cctv.detection.read", "compliance.violation.read",
         "equipment.asset.read", "equipment.document.read",
         "safety.firecheck.read", "environment.reading.read", "production.record.read",
-        "risk.score.read", "risk.anomaly.read", "alert.read", "escalation.read"
+        "risk.score.read", "risk.anomaly.read", "alert.read", "escalation.read",
+        "contractor.read", "worker.read", "governance.report"
     },
     UserRole.CIL_CORPORATE: {
         "cctv.camera.read", "compliance.violation.read", "equipment.asset.read",
         "safety.firecheck.read", "environment.reading.read", "production.record.read",
-        "risk.score.read", "risk.anomaly.read", "alert.read", "escalation.read"
+        "risk.score.read", "risk.anomaly.read", "alert.read", "escalation.read",
+        "contractor.read", "worker.read", "governance.report"
     }
 }
 
@@ -82,6 +96,23 @@ class TokenPayload(BaseModel):
     role: str
     mine_id: Optional[str] = None
     permissions: List[str] = []
+
+    @property
+    def id(self) -> str:
+        return self.sub
+
+    def __getitem__(self, item: str) -> Any:
+        if item in ("user_id", "sub"):
+            return self.sub
+        if hasattr(self, item):
+            return getattr(self, item)
+        raise KeyError(item)
+
+    def get(self, item: str, default: Any = None) -> Any:
+        try:
+            return self[item]
+        except KeyError:
+            return default
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
@@ -166,3 +197,21 @@ def require_roles(allowed_roles: List[str]):
             )
         return current_user
     return role_checker
+
+
+def get_current_user_with_permissions(required_permissions: Optional[List[str]] = None):
+    """
+    Dependency to validate current user against one or more required permissions.
+    """
+    async def permission_checker(current_user: TokenPayload = Depends(get_current_user)) -> TokenPayload:
+        if current_user.role == UserRole.SUPER_ADMIN or "*" in current_user.permissions:
+            return current_user
+        if required_permissions:
+            has_perm = any(p in current_user.permissions for p in required_permissions)
+            if not has_perm:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail=f"Access denied: missing required permissions {required_permissions}"
+                )
+        return current_user
+    return permission_checker

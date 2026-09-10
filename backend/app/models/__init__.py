@@ -15,7 +15,43 @@ from app.models.risk_models import RiskScore, Anomaly
 from app.models.workflow_models import Alert, CorrectiveAction, Escalation
 from app.models.audit_models import AuditLog
 
+# Module 2: Field Operations & Inspection Management Models
+from app.models.module2_models import (
+    FieldReport,
+    InspectionTemplate,
+    InspectionAudit,
+    IncidentRecord,
+    AIIncidentStructuringLog,
+    FieldVerification,
+    AuditTrailEntry
+)
+
+# Module 3: Contractor & Worker Compliance Governance Models
+from app.models.contractor_models import (
+    Contractor,
+    Contract,
+    ContractDocument,
+    ContractCompliance,
+    ContractPerformance
+)
+from app.models.worker_models import (
+    Worker,
+    WorkerAttendance,
+    WorkerTraining,
+    WorkerCertification,
+    WorkerPPE,
+    WorkerAuthorization
+)
+from app.models.governance_models import (
+    Grievance,
+    GrievanceEvidence,
+    GrievanceResolution,
+    ApprovalRequest,
+    ApprovalHistory
+)
+
 __all__ = [
+    # Module 1
     "BaseModelMixin",
     "User",
     "Mine",
@@ -32,5 +68,31 @@ __all__ = [
     "Alert",
     "CorrectiveAction",
     "Escalation",
-    "AuditLog"
+    "AuditLog",
+    # Module 2
+    "FieldReport",
+    "InspectionTemplate",
+    "InspectionAudit",
+    "IncidentRecord",
+    "AIIncidentStructuringLog",
+    "FieldVerification",
+    "AuditTrailEntry",
+    # Module 3
+    "Contractor",
+    "Contract",
+    "ContractDocument",
+    "ContractCompliance",
+    "ContractPerformance",
+    "Worker",
+    "WorkerAttendance",
+    "WorkerTraining",
+    "WorkerCertification",
+    "WorkerPPE",
+    "WorkerAuthorization",
+    "Grievance",
+    "GrievanceEvidence",
+    "GrievanceResolution",
+    "ApprovalRequest",
+    "ApprovalHistory",
 ]
+

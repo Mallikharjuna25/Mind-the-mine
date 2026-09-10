@@ -17,20 +17,48 @@ import { EnvironmentalPage } from './pages/EnvironmentalPage';
 import { RiskEnginePage } from './pages/RiskEnginePage';
 import { WorkflowsPage } from './pages/WorkflowsPage';
 import { CompliancePage } from './pages/CompliancePage';
-import { ModuleStandbyPage } from './pages/ModuleStandbyPage';
+
+// Module 2 Pages
+import { FieldInspectionsPage } from './pages/FieldInspectionsPage';
+import { FieldHazardsPage } from './pages/FieldHazardsPage';
+import { RemediationPage } from './pages/RemediationPage';
+import { GISMapPage } from './pages/GISMapPage';
+import { OfflineSyncPage } from './pages/OfflineSyncPage';
+
+// Module 3 Pages
+import { ContractorsPage } from './pages/ContractorsPage';
+import { WorkersPage } from './pages/WorkersPage';
+import { TrainingPage } from './pages/TrainingPage';
+import { GovernancePage } from './pages/GovernancePage';
 
 const PROTECTED_ROUTES = [
+  // Overview
   { path: '/', element: <DashboardPage /> },
   { path: '/dashboard', element: <DashboardPage /> },
   { path: '/digital-twin', element: <DigitalTwinPage /> },
+
+  // Module 1: AI Risk & Surveillance
   { path: '/cctv', element: <CCTVMonitoringPage /> },
   { path: '/equipment', element: <EquipmentOCRPage /> },
   { path: '/environmental', element: <EnvironmentalPage /> },
   { path: '/risk-engine', element: <RiskEnginePage /> },
   { path: '/workflows', element: <WorkflowsPage /> },
   { path: '/compliance', element: <CompliancePage /> },
-  { path: '/module-2', element: <ModuleStandbyPage moduleNumber={2} /> },
-  { path: '/module-3', element: <ModuleStandbyPage moduleNumber={3} /> },
+
+  // Module 2: Field Operations & Inspection Management
+  { path: '/inspections', element: <FieldInspectionsPage /> },
+  { path: '/field-hazards', element: <FieldHazardsPage /> },
+  { path: '/remediation', element: <RemediationPage /> },
+  { path: '/gis-map', element: <GISMapPage /> },
+  { path: '/offline-sync', element: <OfflineSyncPage /> },
+  { path: '/module-2', element: <Navigate to="/inspections" replace /> },
+
+  // Module 3: Contractor & Worker Compliance Governance
+  { path: '/contractors', element: <ContractorsPage /> },
+  { path: '/workers', element: <WorkersPage /> },
+  { path: '/training', element: <TrainingPage /> },
+  { path: '/governance', element: <GovernancePage /> },
+  { path: '/module-3', element: <Navigate to="/contractors" replace /> },
 ];
 
 const AppRoutes: React.FC = () => {

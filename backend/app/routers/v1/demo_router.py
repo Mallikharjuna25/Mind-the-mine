@@ -150,13 +150,120 @@ async def seed_demo_data(db: AsyncSession = Depends(get_db)):
             )
             db.add(u)
 
+        await db.flush()
+
+        # 6. Add Demo Contractors & Workers (Module 3)
+        from app.models.contractor_models import Contractor
+        from app.models.worker_models import (
+            Worker, WorkerAttendance, WorkerTraining, WorkerCertification, WorkerPPE, WorkerAuthorization
+        )
+
+        cont1 = Contractor(
+            mine_id=mine.id,
+            company_name="Bharat Mining Excavators Pvt Ltd",
+            registration_number="REG-BME-2026-001",
+            contact_person="Rajesh Sharma",
+            email="rajesh@bmecontractors.com",
+            phone="+91 98765 43210",
+            address="Godavarikhani Industrial Area, Telangana",
+            work_scope="EXCAVATION",
+            status="ACTIVE",
+            compliance_score=95.0
+        )
+        cont2 = Contractor(
+            mine_id=mine.id,
+            company_name="Singhania Heavy Haulage & Earthmovers",
+            registration_number="REG-SHE-2026-008",
+            contact_person="Vikas Singhania",
+            email="vikas@singhaniahaulage.in",
+            phone="+91 98480 12345",
+            address="Korba Industrial Sector 3, Chhattisgarh",
+            work_scope="TRANSPORT",
+            status="ACTIVE",
+            compliance_score=91.5
+        )
+        db.add_all([cont1, cont2])
+        await db.flush()
+
+        w1 = Worker(
+            mine_id=mine.id,
+            contractor_id=cont1.id,
+            employee_id="EMP-2026-9901",
+            full_name="Ramesh Kumar",
+            department="UNDERGROUND_OPS",
+            role="HEAVY_EQUIPMENT_OPERATOR",
+            email="ramesh@mineguard.in",
+            phone="+91 91234 56789",
+            emergency_contact_name="Sita Devi",
+            emergency_contact_phone="+91 98765 12345",
+            joining_date=date.today() - timedelta(days=365),
+            status="ACTIVE"
+        )
+        w2 = Worker(
+            mine_id=mine.id,
+            contractor_id=None,
+            employee_id="EMP-2026-9902",
+            full_name="Suresh Reddy",
+            department="SAFETY",
+            role="INSPECTOR",
+            email="suresh@mineguard.in",
+            phone="+91 94400 11223",
+            emergency_contact_name="Laxmi Reddy",
+            emergency_contact_phone="+91 94400 99887",
+            joining_date=date.today() - timedelta(days=500),
+            status="ACTIVE"
+        )
+        w3 = Worker(
+            mine_id=mine.id,
+            contractor_id=cont2.id,
+            employee_id="EMP-2026-9903",
+            full_name="Manoj Singh",
+            department="EXCAVATION",
+            role="BLASTER",
+            email="manoj@mineguard.in",
+            phone="+91 93300 44556",
+            emergency_contact_name="Meena Singh",
+            emergency_contact_phone="+91 93300 11223",
+            joining_date=date.today() - timedelta(days=180),
+            status="ACTIVE"
+        )
+        db.add_all([w1, w2, w3])
+        await db.flush()
+
+        # Add worker PPE, training, and authorization
+        db.add(WorkerPPE(
+            worker_id=w1.id,
+            item_type="HELMET",
+            issuance_date=date.today() - timedelta(days=60),
+            expiry_date=date.today() + timedelta(days=300),
+            compliance_status="COMPLIANT",
+            remarks="Standard IS-2925 Verified Hard Hat"
+        ))
+        db.add(WorkerTraining(
+            worker_id=w1.id,
+            program_name="DGMS Statutory Underground Gas & Helmet Safety",
+            trainer_name="Senior Safety Officer Amitabh Verma",
+            completed_date=date.today() - timedelta(days=90),
+            expiry_date=date.today() + timedelta(days=275),
+            status="COMPLETED"
+        ))
+        db.add(WorkerAuthorization(
+            worker_id=w1.id,
+            zone_id="ZONE-PIT-01",
+            permit_type="UNDERGROUND_ENTRY",
+            grant_date=date.today() - timedelta(days=60),
+            expiry_date=date.today() + timedelta(days=305),
+            status="GRANTED",
+            granted_by="Mine Manager Office"
+        ))
+
         await db.commit()
 
-        # 6. Compute Initial Risk Scores
+        # 7. Compute Initial Risk Scores
         await risk_engine_service.compute_mine_all_zones(db, mine.id)
 
     return ApiResponse(
-        message="Demo synthetic coal mine data successfully seeded!",
+        message="Demo synthetic coal mine data (Modules 1, 2, and 3) successfully seeded!",
         data={
             "mine_code": "MINE-SECL-KUS-01",
             "demo_credentials": {

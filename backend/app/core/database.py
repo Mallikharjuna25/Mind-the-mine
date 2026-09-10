@@ -44,3 +44,33 @@ async def get_db() -> AsyncGenerator[AsyncSession, None]:
             raise
         finally:
             await session.close()
+
+
+# Synchronous engine and session for sync operations and Module 2 endpoints
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+
+SYNC_DATABASE_URL = settings.DATABASE_URL.replace("+aiosqlite", "")
+sync_connect_args = {}
+if SYNC_DATABASE_URL.startswith("sqlite"):
+    sync_connect_args["check_same_thread"] = False
+
+sync_engine = create_engine(
+    SYNC_DATABASE_URL,
+    echo=False,
+    connect_args=sync_connect_args
+)
+
+SyncSessionLocal = sessionmaker(bind=sync_engine, autocommit=False, autoflush=False)
+
+
+def get_sync_db():
+    """
+    FastAPI dependency yielding a synchronous session for sync-compatible endpoints.
+    """
+    db = SyncSessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
+
