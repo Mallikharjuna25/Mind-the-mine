@@ -42,7 +42,10 @@ from app.models.worker_models import (
     WorkerPPE,
     WorkerAuthorization,
     WorkerInsurance,
-    WorkerLeave
+    WorkerLeave,
+    WorkerPass,
+    WorkerDocument,
+    WorkerInduction
 )
 from app.models.governance_models import (
     Grievance,
@@ -93,6 +96,9 @@ __all__ = [
     "WorkerAuthorization",
     "WorkerInsurance",
     "WorkerLeave",
+    "WorkerPass",
+    "WorkerDocument",
+    "WorkerInduction",
     "Grievance",
     "GrievanceEvidence",
     "GrievanceResolution",

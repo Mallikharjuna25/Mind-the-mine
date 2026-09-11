@@ -10,6 +10,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from app.core.database import get_db
 from app.core.security import get_password_hash, UserRole
+from app.models.base import utc_now
 from app.models.user_models import User
 from app.models.mine_models import Mine, MineZone
 from app.models.cctv_models import CameraRegistry
@@ -430,7 +431,8 @@ async def seed_demo_data(db: AsyncSession = Depends(get_db)):
     # 8. Ensure Worker User and Self-Service Profile always exist idempotently
     from app.models.worker_models import (
         Worker, WorkerAttendance, WorkerTraining, WorkerCertification,
-        WorkerPPE, WorkerAuthorization, WorkerInsurance, WorkerLeave
+        WorkerPPE, WorkerAuthorization, WorkerInsurance, WorkerLeave,
+        WorkerPass, WorkerDocument, WorkerInduction
     )
     worker_user = (await db.execute(select(User).where(User.email == "worker@mineguard.in"))).scalars().first()
     if not worker_user:
@@ -562,6 +564,126 @@ async def seed_demo_data(db: AsyncSession = Depends(get_db)):
                 supervisor_remarks="Shift supervisor review in progress."
             )
         ])
+
+    # Ensure RFID Pass exists for w1
+    existing_pass = (await db.execute(select(WorkerPass).where(WorkerPass.worker_id == w1.id))).scalars().first()
+    if not existing_pass:
+        db.add(
+            WorkerPass(
+                worker_id=w1.id,
+                mine_id=mine.id,
+                rfid_uid="RFID-KUS-8821",
+                pass_number="PASS-KUS-8821",
+                issue_date=date.today() - timedelta(days=60),
+                expiry_date=date.today() + timedelta(days=305),
+                status="ACTIVE",
+                access_level="UNDERGROUND",
+                permitted_zones=["ZONE-PIT-01", "ZONE-BLAST-02", "HAUL_ROAD_01", "GENERAL_SURFACE"],
+                issued_by="safety@mineguard.in"
+            )
+        )
+
+    # Ensure Worker Documents exist for w1 (Includes 1 Auto-Accepted and 1 Needs-Review for live demo)
+    existing_docs = (await db.execute(select(WorkerDocument).where(WorkerDocument.worker_id == w1.id))).scalars().first()
+    if not existing_docs:
+        doc1 = WorkerDocument(
+            worker_id=w1.id,
+            document_type="FITNESS_CERTIFICATE_FORM_O_P",
+            document_number="DGMS/PME/2026/0914",
+            issue_date=date.today() - timedelta(days=45),
+            expiry_date=date.today() + timedelta(days=320),
+            file_path="storage/uploads/worker_fitness_cert_pme.png",
+            original_filename="DGMS_Form_P_Periodic_Medical_Exam.png",
+            mime_type="image/png",
+            file_size_bytes=1048576,
+            ocr_status="AUTO_ACCEPTED",
+            ocr_confidence=0.94,
+            raw_ocr_text="FORM P MEDICAL CERTIFICATE - DGMS APPROVED. EXAM DATE: 2026-01-20. STATUS: FIT.",
+            extracted_data={
+                "worker_name": "Ramesh Kumar",
+                "certificate_number": "DGMS/PME/2026/0914",
+                "exam_date": (date.today() - timedelta(days=45)).isoformat(),
+                "expiry_date": (date.today() + timedelta(days=320)).isoformat(),
+                "fitness_status": "FIT",
+                "examining_doctor": "Dr. S. K. Mukherjee, Chief Medical Officer, DGMS Approved"
+            },
+            verification_status="VERIFIED",
+            verified_by="medical_officer@mineguard.in",
+            verified_at=utc_now()
+        )
+        doc2 = WorkerDocument(
+            worker_id=w1.id,
+            document_type="DGMS_VOCATIONAL_TRAINING",
+            document_number="DGMS/VTC/MVR/2026/4412",
+            issue_date=date.today() - timedelta(days=60),
+            expiry_date=date.today() + timedelta(days=305),
+            file_path="storage/uploads/worker_training_cert.png",
+            original_filename="DGMS_MVR_1966_Induction_Certificate.png",
+            mime_type="image/png",
+            file_size_bytes=894210,
+            ocr_status="AUTO_ACCEPTED",
+            ocr_confidence=0.91,
+            raw_ocr_text="MINES VOCATIONAL TRAINING RULES 1966 RULE 28. PASSED WITH HONOURS 92%.",
+            extracted_data={
+                "worker_name": "Ramesh Kumar",
+                "certificate_number": "DGMS/VTC/MVR/2026/4412",
+                "training_title": "DGMS Statutory Underground Gas & Helmet Safety Induction",
+                "trainer_name": "Sr Safety Officer Amitabh Verma",
+                "training_date": (date.today() - timedelta(days=60)).isoformat(),
+                "expiry_date": (date.today() + timedelta(days=305)).isoformat(),
+                "score_percent": 92.0
+            },
+            verification_status="VERIFIED",
+            verified_by="safety@mineguard.in",
+            verified_at=utc_now()
+        )
+        doc3 = WorkerDocument(
+            worker_id=w1.id,
+            document_type="BLASTING_COMPETENCY",
+            document_number="BLAST-PERMIT-2026-X8",
+            issue_date=date.today() - timedelta(days=15),
+            expiry_date=date.today() + timedelta(days=165),
+            file_path="storage/uploads/blasting_clearance_sample.png",
+            original_filename="Highwall_Blasting_Competency_Pass.png",
+            mime_type="image/png",
+            file_size_bytes=642010,
+            ocr_status="NEEDS_REVIEW",
+            ocr_confidence=0.74,
+            raw_ocr_text="HIGHWALL BLASTING PERMIT. PARTIALLY BLURRED AUTHORITY STAMP. REG NO: BLAST-PERMIT-2026-X8",
+            extracted_data={
+                "worker_name": "Ramesh Kumar",
+                "certificate_number": "BLAST-PERMIT-2026-X8",
+                "issue_date": (date.today() - timedelta(days=15)).isoformat(),
+                "expiry_date": (date.today() + timedelta(days=165)).isoformat(),
+                "permit_type": "HIGHWALL_CONTROLLED_BLASTING"
+            },
+            validation_errors=[
+                "OCR confidence (0.74) is below statutory threshold (0.85)",
+                "Official authority seal partially obscured by fold in paper"
+            ],
+            verification_status="PENDING"
+        )
+        db.add_all([doc1, doc2, doc3])
+
+    # Ensure Worker Induction exists for w1
+    existing_ind = (await db.execute(select(WorkerInduction).where(WorkerInduction.worker_id == w1.id))).scalars().first()
+    if not existing_ind:
+        db.add(
+            WorkerInduction(
+                worker_id=w1.id,
+                mine_id=mine.id,
+                induction_type="INITIAL_STATUTORY",
+                training_title="DGMS Statutory Underground Gas & Helmet Safety Induction",
+                trainer_name="Sr Safety Officer Amitabh Verma, DGMS Certified Instructor",
+                training_date=date.today() - timedelta(days=60),
+                validity_months=12,
+                expiry_date=date.today() + timedelta(days=305),
+                score_percent=92.0,
+                verification_status="VERIFIED",
+                status="COMPLETED",
+                remarks="Full marks in methane detection and self-contained self-rescuer (SCSR) donning."
+            )
+        )
 
     await db.commit()
 

@@ -8,7 +8,9 @@ from datetime import datetime, date
 from typing import Dict, Any, Optional, Tuple
 
 
-def parse_date_safely(date_str: str) -> Optional[date]:
+def parse_date_safely(date_str: Optional[str]) -> Optional[date]:
+    if not date_str:
+        return None
     for fmt in ("%Y-%m-%d", "%d/%m/%Y", "%d-%m-%Y", "%d.%m.%Y", "%B %d, %Y"):
         try:
             return datetime.strptime(date_str.strip(), fmt).date()
@@ -51,13 +53,13 @@ class CertificateParser:
             extracted["certificate_number"] = "DGMS/EZ/HEMM/2026/AUTO"
 
         # 2. Equipment Code
-        eq_match = re.search(r"(?:EQUIPMENT\s*CODE[\s:]*)([A-Z0-9\-_]+)", raw_text, re.IGNORECASE)
+        eq_match = re.search(r"(?:EQUIPMENT\s*CODE|ASSET\s*CODE)[\s:]*([A-Z0-9\-_]+)", raw_text, re.IGNORECASE)
         if eq_match:
             extracted["equipment_code"] = eq_match.group(1).strip()
             matched_fields += 1
 
         # 3. Make / Model
-        make_match = re.search(r"(?:EQUIPMENT\s*TYPE\s*\/\s*MODEL[\s:]*)([^\n\r]+)", raw_text, re.IGNORECASE)
+        make_match = re.search(r"(?:EQUIPMENT\s*TYPE\s*\/\s*MODEL|MAKE\s*\/\s*MODEL|EQUIPMENT\s*MODEL)[\s:]*([^\n\r]+)", raw_text, re.IGNORECASE)
         if make_match:
             extracted["make_model"] = make_match.group(1).strip()
             matched_fields += 1

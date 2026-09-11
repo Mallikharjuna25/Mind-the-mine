@@ -150,6 +150,8 @@ export const contractorsApi = {
   delete: (id: string) => api.delete(`/mine/contractors/${id}`),
   renewContract: (id: string, payload: unknown) =>
     api.post(`/mine/contracts/${id}/renew`, payload),
+  uploadDocument: (contractorId: string, formData: FormData) =>
+    api.post(`/mine/contractors/${contractorId}/documents`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
 };
 
 export const workersApi = {
@@ -177,6 +179,18 @@ export const workersApi = {
   getLeaves: (workerId: string) => api.get(`/mine/workers/${workerId}/leaves`),
   applyLeave: (workerId: string, payload: unknown) => api.post(`/mine/workers/${workerId}/leaves`, payload),
   actionLeave: (leaveId: string, payload: unknown) => api.put(`/mine/workers/leaves/${leaveId}/action`, payload),
+  // Module 3 Workforce Governance Extensions
+  getPasses: (params?: Record<string, unknown>) => api.get('/mine/workers/passes', { params }),
+  issuePass: (workerId: string, payload: unknown) => api.post(`/mine/workers/${workerId}/passes`, payload),
+  actionPass: (passId: string, payload: unknown) => api.put(`/mine/workers/passes/${passId}/action`, payload),
+  getDocuments: (params?: Record<string, unknown>) => api.get('/mine/workers/documents', { params }),
+  uploadDocument: (workerId: string, formData: FormData) =>
+    api.post(`/mine/workers/${workerId}/documents`, formData, { headers: { 'Content-Type': 'multipart/form-data' } }),
+  reviewDocument: (docId: string, payload: unknown) => api.put(`/mine/workers/documents/${docId}/review`, payload),
+  getInductions: (params?: Record<string, unknown>) => api.get('/mine/workers/inductions', { params }),
+  createInduction: (workerId: string, payload: unknown) => api.post(`/mine/workers/${workerId}/inductions`, payload),
+  getInductionStats: (mineId?: string) => api.get('/mine/workers/inductions/stats', { params: { mine_id: mineId } }),
+  checkZoneClearance: (workerId: string, zoneId: string) => api.get(`/mine/workers/${workerId}/zone-clearance`, { params: { zone_id: zoneId } }),
 };
 
 export const governanceApi = {
@@ -196,6 +210,8 @@ export const governanceApi = {
     api.post(`/mine/governance/approvals/${id}/action`, payload),
   evaluateEscalations: (mineId: string) =>
     api.post('/mine/governance/escalations/evaluate', null, { params: { mine_id: mineId } }),
+  evaluateExpiries: (mineId?: string) =>
+    api.post('/mine/governance/evaluate-expiries', null, { params: { mine_id: mineId } }),
   auditTrail: (mineId: string) =>
     api.get('/mine/governance/audit-trail', { params: { mine_id: mineId } }),
 };

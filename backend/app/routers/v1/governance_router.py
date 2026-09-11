@@ -138,6 +138,17 @@ async def evaluate_escalations(
     result = await governance_service.evaluate_escalations(db, mine_id)
     return ApiResponse(data=result)
 
+
+@router.post("/evaluate-expiries", response_model=ApiResponse[dict])
+async def evaluate_workforce_expiries(
+    mine_id: Optional[str] = Query(None, description="Mine ID"),
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user_with_permissions(["governance.report"]))
+):
+    from app.services.workforce_governance_jobs import workforce_jobs
+    res = await workforce_jobs.evaluate_all_expiries_and_slas(db, mine_id=mine_id)
+    return ApiResponse(message="Workforce statutory expiry and SLA evaluation completed", data=res)
+
 # Audit Trail
 @router.get("/audit-trail", response_model=ApiResponse[list])
 async def get_audit_trail(
@@ -151,7 +162,21 @@ async def get_audit_trail(
     current_user: User = Depends(get_current_user_with_permissions(["governance.audit.read"]))
 ):
     db_objs = await governance_service.query_audit_trail(db, mine_id, action, entity_type, user_id, skip, limit)
-    # the AuditLog model doesn't have a Pydantic schema in this context, 
-    # but the jsonable_encoder handles it or we can return it as dicts if needed.
-    # We will rely on FastAPI's auto-conversion.
-    return ApiResponse(data=db_objs)
+    serialized = [
+        {
+            "id": obj.id,
+            "mine_id": obj.mine_id,
+            "user_id": obj.user_id,
+            "user_email": obj.user_email,
+            "action": obj.action,
+            "entity_type": obj.entity_type,
+            "entity_id": obj.entity_id,
+            "changes": obj.changes_json,
+            "previous_hash": obj.previous_hash,
+            "current_hash": obj.block_hash,
+            "block_hash": obj.block_hash,
+            "created_at": obj.created_at.isoformat() if obj.created_at else None
+        }
+        for obj in db_objs
+    ]
+    return ApiResponse(data=serialized)

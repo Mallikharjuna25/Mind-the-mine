@@ -3,10 +3,13 @@ Worker & Compliance Management API Router (Module 3 -> Task 2)
 Exposes RESTful endpoints for Worker Registry, Attendance, Training, Certifications, PPE, Authorization & Reports.
 """
 
+import os
+import shutil
 from typing import List, Optional
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, status, UploadFile, File, Form
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.core.config import settings
 from app.core.database import get_db
 from app.core.security import TokenPayload, require_permission, get_current_user
 from app.schemas.worker_schemas import (
@@ -18,6 +21,10 @@ from app.schemas.worker_schemas import (
     WorkerAuthorizationCreate, WorkerAuthorizationResponse,
     WorkerInsuranceCreate, WorkerInsuranceResponse,
     WorkerLeaveCreate, WorkerLeaveResponse, WorkerLeaveAction,
+    WorkerPassCreate, WorkerPassAction, WorkerPassResponse,
+    WorkerDocumentResponse, WorkerDocumentReviewAction,
+    WorkerInductionCreate, WorkerInductionResponse, WorkerInductionStats,
+    WorkerZoneClearanceResponse,
     WorkerDashboardStats, WorkerReportsSummary
 )
 from app.schemas.common_schemas import ApiResponse
@@ -334,3 +341,149 @@ async def action_worker_leave(
         db=db, leave_id=leave_id, payload=payload, approver_name=approver
     )
     return ApiResponse(message=f"Leave status updated to {payload.status}", data=WorkerLeaveResponse.model_validate(leave))
+
+
+# ------------------ RFID PASS ENDPOINTS ------------------
+
+@router.post("/workers/{worker_id}/passes", response_model=ApiResponse[WorkerPassResponse])
+async def issue_worker_pass(
+    worker_id: str,
+    payload: WorkerPassCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(require_permission("worker.update"))
+):
+    pass_obj = await worker_service.register_pass(
+        db=db, worker_id=worker_id, payload=payload, issued_by=current_user.email or current_user.sub
+    )
+    return ApiResponse(message="RFID Pass registered and activated successfully", data=WorkerPassResponse.model_validate(pass_obj))
+
+
+@router.put("/workers/passes/{pass_id}/action", response_model=ApiResponse[WorkerPassResponse])
+async def action_worker_pass(
+    pass_id: str,
+    payload: WorkerPassAction,
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(require_permission("worker.update"))
+):
+    actor = current_user.email or current_user.sub
+    pass_obj = await worker_service.action_pass(db=db, pass_id=pass_id, payload=payload, actor=actor)
+    return ApiResponse(message=f"Pass status updated to {pass_obj.status}", data=WorkerPassResponse.model_validate(pass_obj))
+
+
+@router.get("/workers/passes", response_model=ApiResponse[List[WorkerPassResponse]])
+async def list_worker_passes(
+    worker_id: Optional[str] = Query(None),
+    mine_id: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db)
+):
+    passes = await worker_service.list_passes(db=db, worker_id=worker_id, mine_id=mine_id, status=status)
+    return ApiResponse(data=[WorkerPassResponse.model_validate(p) for p in passes])
+
+
+# ------------------ WORKER DOCUMENTS & OCR ENDPOINTS ------------------
+
+@router.post("/workers/{worker_id}/documents", response_model=ApiResponse[WorkerDocumentResponse])
+async def upload_worker_document(
+    worker_id: str,
+    document_type: str = Form(default="IDENTITY_CARD"),
+    file: UploadFile = File(...),
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(require_permission("worker.document.upload"))
+):
+    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+    file_path = os.path.join(settings.UPLOAD_DIR, f"worker_{worker_id}_{file.filename}")
+    with open(file_path, "wb") as buffer:
+        shutil.copyfileobj(file.file, buffer)
+
+    file_size = os.path.getsize(file_path)
+
+    doc = await worker_service.upload_worker_document(
+        db=db,
+        worker_id=worker_id,
+        contractor_id=None,
+        document_type=document_type,
+        file_name=file.filename,
+        file_path=file_path,
+        file_size_bytes=file_size,
+        mime_type=file.content_type or "application/pdf",
+        user_id=current_user.email or current_user.sub
+    )
+    return ApiResponse(
+        message=f"Document uploaded and processed via OCR (Status: {doc.ocr_status}, Confidence: {doc.ocr_confidence:.2f})",
+        data=WorkerDocumentResponse.model_validate(doc)
+    )
+
+
+@router.put("/workers/documents/{doc_id}/review", response_model=ApiResponse[WorkerDocumentResponse])
+async def review_worker_document(
+    doc_id: str,
+    payload: WorkerDocumentReviewAction,
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(require_permission("worker.document.review"))
+):
+    reviewer = current_user.email or current_user.sub
+    doc = await worker_service.review_worker_document(
+        db=db, document_id=doc_id, payload=payload, reviewer=reviewer
+    )
+    return ApiResponse(message=f"Document verification status updated to {doc.verification_status}", data=WorkerDocumentResponse.model_validate(doc))
+
+
+@router.get("/workers/documents", response_model=ApiResponse[List[WorkerDocumentResponse]])
+async def list_worker_documents(
+    worker_id: Optional[str] = Query(None),
+    contractor_id: Optional[str] = Query(None),
+    verification_status: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db)
+):
+    docs = await worker_service.list_worker_documents(
+        db=db, worker_id=worker_id, contractor_id=contractor_id, verification_status=verification_status
+    )
+    return ApiResponse(data=[WorkerDocumentResponse.model_validate(d) for d in docs])
+
+
+# ------------------ DGMS SAFETY INDUCTION ENDPOINTS ------------------
+
+@router.post("/workers/{worker_id}/inductions", response_model=ApiResponse[WorkerInductionResponse])
+async def create_worker_induction(
+    worker_id: str,
+    payload: WorkerInductionCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: TokenPayload = Depends(require_permission("worker.training"))
+):
+    induction = await worker_service.create_induction(
+        db=db, worker_id=worker_id, payload=payload, user_id=current_user.email or current_user.sub
+    )
+    return ApiResponse(message="DGMS Safety Induction recorded successfully", data=WorkerInductionResponse.model_validate(induction))
+
+
+@router.get("/workers/inductions", response_model=ApiResponse[List[WorkerInductionResponse]])
+async def list_worker_inductions(
+    worker_id: Optional[str] = Query(None),
+    mine_id: Optional[str] = Query(None),
+    status: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db)
+):
+    inductions = await worker_service.list_inductions(db=db, worker_id=worker_id, mine_id=mine_id, status=status)
+    return ApiResponse(data=[WorkerInductionResponse.model_validate(i) for i in inductions])
+
+
+@router.get("/workers/inductions/stats", response_model=ApiResponse[WorkerInductionStats])
+async def get_worker_induction_stats(
+    mine_id: Optional[str] = Query(None),
+    db: AsyncSession = Depends(get_db)
+):
+    stats = await worker_service.get_induction_stats(db=db, mine_id=mine_id)
+    return ApiResponse(message="DGMS Safety Induction workforce statistics", data=stats)
+
+
+# ------------------ ZONE ACCESS CLEARANCE ENDPOINT ------------------
+
+@router.get("/workers/{worker_id}/zone-clearance", response_model=ApiResponse[WorkerZoneClearanceResponse])
+async def check_worker_zone_clearance(
+    worker_id: str,
+    zone_id: str = Query(..., description="Restricted Zone ID e.g. ZONE-PIT-01, ZONE-BLAST-02"),
+    db: AsyncSession = Depends(get_db)
+):
+    clearance = await worker_service.check_zone_clearance(db=db, worker_id=worker_id, zone_id=zone_id)
+    return ApiResponse(message="Worker zone clearance evaluated", data=clearance)

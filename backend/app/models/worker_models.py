@@ -44,6 +44,9 @@ class Worker(BaseModelMixin):
     authorizations = relationship("WorkerAuthorization", back_populates="worker", cascade="all, delete-orphan", lazy="selectin")
     insurances = relationship("WorkerInsurance", back_populates="worker", cascade="all, delete-orphan", lazy="selectin")
     leaves = relationship("WorkerLeave", back_populates="worker", cascade="all, delete-orphan", lazy="selectin")
+    passes = relationship("WorkerPass", back_populates="worker", cascade="all, delete-orphan", lazy="selectin")
+    documents = relationship("WorkerDocument", back_populates="worker", cascade="all, delete-orphan", lazy="selectin")
+    inductions = relationship("WorkerInduction", back_populates="worker", cascade="all, delete-orphan", lazy="selectin")
 
 
 class WorkerAttendance(BaseModelMixin):
@@ -157,3 +160,80 @@ class WorkerLeave(BaseModelMixin):
     supervisor_remarks = Column(Text, nullable=True)
 
     worker = relationship("Worker", back_populates="leaves")
+
+
+class WorkerPass(BaseModelMixin):
+    __tablename__ = "worker_passes"
+
+    worker_id = Column(String(36), ForeignKey("workers.id", ondelete="CASCADE"), nullable=False, index=True)
+    mine_id = Column(String(36), ForeignKey("mines.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    rfid_uid = Column(String(100), nullable=False, index=True)
+    pass_number = Column(String(100), unique=True, nullable=False, index=True)
+    issue_date = Column(Date, nullable=False)
+    expiry_date = Column(Date, nullable=False, index=True)
+    status = Column(String(30), default="ACTIVE", nullable=False, index=True)  # ACTIVE, EXPIRED, REVOKED, BLOCKED, PENDING
+    access_level = Column(String(50), default="GENERAL_SURFACE", nullable=False)  # GENERAL_SURFACE, HAUL_ROAD, DEEP_PIT, UNDERGROUND, BLASTING_ZONE
+    permitted_zones = Column(JSON, default=list, nullable=False)  # List of zone strings e.g. ["PIT-01", "HAUL-02"]
+    last_seen = Column(DateTime, nullable=True)
+    issued_by = Column(String(100), nullable=False)
+    revoked_by = Column(String(100), nullable=True)
+    revocation_reason = Column(Text, nullable=True)
+
+    worker = relationship("Worker", back_populates="passes")
+    mine = relationship("Mine", lazy="selectin")
+
+
+class WorkerDocument(BaseModelMixin):
+    __tablename__ = "worker_documents"
+
+    worker_id = Column(String(36), ForeignKey("workers.id", ondelete="CASCADE"), nullable=True, index=True)
+    contractor_id = Column(String(36), ForeignKey("contractors.id", ondelete="CASCADE"), nullable=True, index=True)
+
+    document_type = Column(String(50), nullable=False, index=True)  # IDENTITY_CARD, FITNESS_CERTIFICATE_FORM_O_P, DGMS_VOCATIONAL_TRAINING, BLASTING_COMPETENCY, CONTRACTOR_AUTHORIZATION, HEMM_DRIVING_LICENSE
+    document_number = Column(String(100), nullable=True, index=True)
+    issue_date = Column(Date, nullable=True)
+    expiry_date = Column(Date, nullable=True, index=True)
+
+    file_path = Column(String(500), nullable=False)
+    original_filename = Column(String(255), nullable=False)
+    mime_type = Column(String(100), default="application/pdf", nullable=False)
+    file_size_bytes = Column(Integer, default=0, nullable=False)
+
+    ocr_status = Column(String(30), default="PENDING", nullable=False, index=True)  # PENDING, PROCESSING, AUTO_ACCEPTED, NEEDS_REVIEW, VERIFIED, REJECTED
+    ocr_confidence = Column(Float, default=0.0, nullable=False)
+    raw_ocr_text = Column(Text, nullable=True)
+    extracted_data = Column(JSON, nullable=True)
+    validation_errors = Column(JSON, nullable=True)
+
+    verification_status = Column(String(30), default="PENDING", nullable=False, index=True)  # VERIFIED, PENDING, REJECTED
+    verified_by = Column(String(100), nullable=True)
+    verified_at = Column(DateTime, nullable=True)
+    rejection_reason = Column(Text, nullable=True)
+
+    worker = relationship("Worker", back_populates="documents")
+    contractor = relationship("Contractor", backref="workforce_documents", lazy="selectin")
+
+
+class WorkerInduction(BaseModelMixin):
+    __tablename__ = "worker_inductions"
+
+    worker_id = Column(String(36), ForeignKey("workers.id", ondelete="CASCADE"), nullable=False, index=True)
+    mine_id = Column(String(36), ForeignKey("mines.id", ondelete="CASCADE"), nullable=False, index=True)
+
+    induction_type = Column(String(50), default="INITIAL_STATUTORY", nullable=False)  # INITIAL_STATUTORY, REFRESHER_ANNUAL, SPECIALIZED_ZONE, POST_INCIDENT
+    training_title = Column(String(255), nullable=False)
+    trainer_name = Column(String(100), nullable=False)
+    training_date = Column(Date, nullable=False)
+    validity_months = Column(Integer, default=12, nullable=False)
+    expiry_date = Column(Date, nullable=False, index=True)
+    score_percent = Column(Float, nullable=True)
+
+    certificate_document_id = Column(String(36), ForeignKey("worker_documents.id", ondelete="SET NULL"), nullable=True)
+    verification_status = Column(String(30), default="VERIFIED", nullable=False, index=True)  # VERIFIED, PENDING, REJECTED
+    status = Column(String(30), default="COMPLETED", nullable=False, index=True)  # PENDING, SCHEDULED, COMPLETED, EXPIRED, FAILED, REQUIRES_RENEWAL
+    remarks = Column(Text, nullable=True)
+
+    worker = relationship("Worker", back_populates="inductions")
+    mine = relationship("Mine", lazy="selectin")
+    certificate_document = relationship("WorkerDocument", lazy="selectin")
