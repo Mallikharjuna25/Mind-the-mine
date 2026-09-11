@@ -8,6 +8,7 @@ import {
   ClockCircleOutlined, AuditOutlined, ReloadOutlined
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { useTheme } from '../contexts/ThemeContext';
 import { inspectionsApi } from '../services/api';
 
 const { Title, Text, Paragraph } = Typography;
@@ -44,6 +45,7 @@ interface InspectionAudit {
 }
 
 export const FieldInspectionsPage: React.FC = () => {
+  const { isDark } = useTheme();
   const [templates, setTemplates] = useState<InspectionTemplate[]>([]);
   const [audits, setAudits] = useState<InspectionAudit[]>([]);
   const [loading, setLoading] = useState(true);
@@ -302,7 +304,7 @@ export const FieldInspectionsPage: React.FC = () => {
                 <Paragraph style={{ fontSize: 12, color: '#71717a', minHeight: 36 }}>{t.description}</Paragraph>
                 <div style={{ marginTop: 8 }}>
                   <Text strong style={{ fontSize: 11 }}>Key Inspection checkpoints ({t.items?.length || 0}):</Text>
-                  <ul style={{ paddingLeft: 16, margin: '6px 0', fontSize: 12, color: '#52525b' }}>
+                  <ul style={{ paddingLeft: 16, margin: '6px 0', fontSize: 12, color: isDark ? 'rgba(255, 255, 255, 0.7)' : '#4b5563' }}>
                     {t.items?.slice(0, 3).map(it => (
                       <li key={it.item_code}>{it.question}</li>
                     ))}

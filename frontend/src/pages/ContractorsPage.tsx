@@ -292,9 +292,9 @@ export const ContractorsPage: React.FC = () => {
       key: 'company',
       render: (_: any, r: Contractor) => (
         <div>
-          <div style={{ fontWeight: 600, color: '#ffffff', fontSize: 14 }}>{r.company_name}</div>
-          <div style={{ fontSize: 12, color: '#a1a1aa' }}>Reg: <Tag color="blue" style={{ fontSize: 11 }}>{r.registration_number}</Tag></div>
-          <div style={{ fontSize: 11, color: '#71717a' }}>Contact: {r.contact_person} ({r.phone})</div>
+          <div style={{ fontWeight: 600, fontSize: 14 }}>{r.company_name}</div>
+          <div style={{ fontSize: 12 }}><Text type="secondary">Reg:</Text> <Tag color="blue" style={{ fontSize: 11 }}>{r.registration_number}</Tag></div>
+          <div style={{ fontSize: 11 }}><Text type="secondary">Contact: {r.contact_person} ({r.phone})</Text></div>
         </div>
       )
     },
@@ -405,7 +405,7 @@ export const ContractorsPage: React.FC = () => {
       {/* Header Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#ffffff' }}>
+          <Title level={3} style={{ margin: 0 }}>
             <ShopOutlined style={{ color: '#9333ea', marginRight: 10 }} />
             Contractor Directory & Compliance Governance
           </Title>

@@ -163,7 +163,7 @@ export const WorkflowsPage: React.FC = () => {
                 children: (
                   <div>
                     <div style={{ fontWeight: 600, fontSize: 13 }}>Level {level}</div>
-                    <div style={{ fontSize: 12, color: '#525252' }}>{info.label}</div>
+                    <div style={{ fontSize: 12 }}><Text type="secondary">{info.label}</Text></div>
                     <Tag color={info.color} style={{ marginTop: 4, fontSize: 11 }}>
                       Response within {info.minutes}m
                     </Tag>

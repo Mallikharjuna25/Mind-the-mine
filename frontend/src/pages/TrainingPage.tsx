@@ -194,10 +194,10 @@ export const TrainingPage: React.FC = () => {
       key: 'trainee',
       render: (_: any, r: InductionRecord) => (
         <div>
-          <div style={{ fontWeight: 600, color: '#ffffff', fontSize: 13 }}>
+          <div style={{ fontWeight: 600, fontSize: 13 }}>
             {r.worker_name || 'Ramesh Kumar'}
           </div>
-          <div style={{ fontSize: 11, color: '#a1a1aa' }}>
+          <div style={{ fontSize: 11, marginTop: 2 }}>
             <Tag color="blue" style={{ fontSize: 10, padding: '0 4px' }}>{r.employee_id || 'EMP-2026-9901'}</Tag>
           </div>
         </div>
@@ -222,8 +222,8 @@ export const TrainingPage: React.FC = () => {
       render: (_: any, r: InductionRecord) => (
         <div>
           <div style={{ fontSize: 12 }}>Completed: {r.training_date}</div>
-          <div style={{ fontSize: 11, color: '#a1a1aa' }}>
-            Valid Until: <strong style={{ color: '#ffffff' }}>{r.expiry_date}</strong>
+          <div style={{ fontSize: 11 }}>
+            <Text type="secondary">Valid Until:</Text> <strong style={{ marginLeft: 4 }}>{r.expiry_date}</strong>
           </div>
         </div>
       )
@@ -271,7 +271,7 @@ export const TrainingPage: React.FC = () => {
       {/* Header Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#ffffff' }}>
+          <Title level={3} style={{ margin: 0 }}>
             <SafetyCertificateOutlined style={{ color: '#16a34a', marginRight: 10 }} />
             DGMS Statutory Safety Induction & Vocational Training
           </Title>

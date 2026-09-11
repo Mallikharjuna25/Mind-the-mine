@@ -353,8 +353,8 @@ export const WorkersPage: React.FC = () => {
             {r.full_name.slice(0, 2).toUpperCase()}
           </Avatar>
           <div>
-            <div style={{ fontWeight: 600, color: '#ffffff', fontSize: 13 }}>{r.full_name}</div>
-            <div style={{ fontSize: 11, color: '#a1a1aa' }}>
+            <div style={{ fontWeight: 600, fontSize: 13 }}>{r.full_name}</div>
+            <div style={{ fontSize: 11, marginTop: 2 }}>
               <Tag color="blue" style={{ fontSize: 10, padding: '0 4px' }}>{r.employee_id}</Tag>
               {r.blood_group && <Tag color="red" style={{ fontSize: 10, padding: '0 4px' }}>{r.blood_group}</Tag>}
             </div>
@@ -476,7 +476,7 @@ export const WorkersPage: React.FC = () => {
       {/* Header Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#ffffff' }}>
+          <Title level={3} style={{ margin: 0 }}>
             <IdcardOutlined style={{ color: '#2563eb', marginRight: 10 }} />
             Workers & RFID Access Pass Management
           </Title>

@@ -8,6 +8,7 @@ import {
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
 import type { EquipmentAsset, EquipmentDocument } from '../types';
+import { useTheme } from '../contexts/ThemeContext';
 import { equipmentApi, demoApi } from '../services/api';
 
 const { Title, Text } = Typography;
@@ -21,6 +22,7 @@ const CATEGORY_ICON: Record<string, string> = {
 };
 
 export const EquipmentOCRPage: React.FC = () => {
+  const { isDark } = useTheme();
   const [assets, setAssets] = useState<EquipmentAsset[]>([]);
   const [expiryAlerts, setExpiryAlerts] = useState<EquipmentAsset[]>([]);
   const [documents, setDocuments] = useState<EquipmentDocument[]>([]);
@@ -208,12 +210,12 @@ export const EquipmentOCRPage: React.FC = () => {
             <Col xs={24} sm={12} md={6} key={s.step}>
               <Card
                 size="small"
-                style={{ borderRadius: 8, textAlign: 'center', borderTop: '3px solid #18181b' }}
+                style={{ borderRadius: 8, textAlign: 'center', borderTop: isDark ? '3px solid #3b82f6' : '3px solid #2563eb' }}
               >
                 <div style={{ fontSize: 24 }}>{s.icon}</div>
-                <div style={{ fontSize: 11, fontWeight: 700, marginTop: 4, color: '#18181b' }}>Step {s.step}</div>
+                <div style={{ fontSize: 11, fontWeight: 700, marginTop: 4, color: isDark ? '#60a5fa' : '#2563eb' }}>Step {s.step}</div>
                 <div style={{ fontSize: 12, fontWeight: 600, marginTop: 2 }}>{s.label}</div>
-                <div style={{ fontSize: 11, color: '#737373', marginTop: 4 }}>{s.desc}</div>
+                <div style={{ fontSize: 11, marginTop: 4 }}><Text type="secondary">{s.desc}</Text></div>
               </Card>
             </Col>
           ))}

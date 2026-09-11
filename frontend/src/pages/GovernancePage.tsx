@@ -11,6 +11,7 @@ import {
   ExclamationCircleOutlined
 } from '@ant-design/icons';
 import dayjs from 'dayjs';
+import { useTheme } from '../contexts/ThemeContext';
 import { governanceApi } from '../services/api';
 
 const { Title, Text, Paragraph } = Typography;
@@ -40,6 +41,7 @@ interface ApprovalRequest {
   approver_role: string;
   status: string;
   remarks?: string;
+  submitted_by_id?: string;
   created_at: string;
 }
 
@@ -49,14 +51,15 @@ interface AuditLogEntry {
   entity_type: string;
   entity_id: string;
   user_id?: string;
-  user_email?: string;
-  changes_json?: Record<string, any>;
+  user_email: string;
+  changes_json: any;
   previous_hash?: string;
   block_hash: string;
   created_at: string;
 }
 
 export const GovernancePage: React.FC = () => {
+  const { isDark } = useTheme();
   const [grievances, setGrievances] = useState<Grievance[]>([]);
   const [approvals, setApprovals] = useState<ApprovalRequest[]>([]);
   const [auditLogs, setAuditLogs] = useState<AuditLogEntry[]>([]);
@@ -266,8 +269,8 @@ export const GovernancePage: React.FC = () => {
       key: 'complainant',
       render: (_: any, r: Grievance) => (
         <div>
-          <div style={{ fontWeight: 600, color: '#ffffff', fontSize: 13 }}>{r.complainant_name}</div>
-          <div style={{ fontSize: 11, color: '#a1a1aa' }}>Ref: <Text code>{r.id}</Text></div>
+          <div style={{ fontWeight: 600, fontSize: 13 }}>{r.complainant_name}</div>
+          <div style={{ fontSize: 11 }}><Text type="secondary">Ref:</Text> <Text code>{r.id}</Text></div>
         </div>
       )
     },
@@ -357,10 +360,10 @@ export const GovernancePage: React.FC = () => {
       key: 'title',
       render: (_: any, r: ApprovalRequest) => (
         <div>
-          <div style={{ fontWeight: 600, color: '#ffffff', fontSize: 13 }}>{r.title}</div>
-          <div style={{ fontSize: 11, color: '#a1a1aa' }}>
-            Entity: <Tag color="blue" style={{ fontSize: 10 }}>{r.entity_type}</Tag>
-            Ref ID: <Text code>{r.entity_id}</Text>
+          <div style={{ fontWeight: 600, fontSize: 13 }}>{r.title}</div>
+          <div style={{ fontSize: 11 }}>
+            <Text type="secondary">Entity:</Text> <Tag color="blue" style={{ fontSize: 10 }}>{r.entity_type}</Tag>
+            <Text type="secondary">Ref ID:</Text> <Text code>{r.entity_id}</Text>
           </div>
         </div>
       )
@@ -375,51 +378,60 @@ export const GovernancePage: React.FC = () => {
       title: 'Required Authority Role',
       dataIndex: 'approver_role',
       key: 'approver_role',
-      render: (role: string) => <Tag color="cyan">{role}</Tag>
+      render: (role: string) => <Tag color="gold">{role}</Tag>
     },
     {
       title: 'Status',
       dataIndex: 'status',
       key: 'status',
-      render: (s: string) => (
-        <Tag color={s === 'APPROVED' ? 'green' : (s === 'REJECTED' ? 'red' : 'gold')}>
-          {s}
-        </Tag>
-      )
+      render: (s: string) => {
+        const colors: Record<string, string> = {
+          PENDING: 'orange',
+          APPROVED: 'green',
+          REJECTED: 'red'
+        };
+        return <Tag color={colors[s] || 'default'}>{s}</Tag>;
+      }
+    },
+    {
+      title: 'Submitted Date',
+      dataIndex: 'created_at',
+      key: 'created_at',
+      render: (dt: string) => <Text style={{ fontSize: 12 }}>{new Date(dt).toLocaleDateString()}</Text>
     },
     {
       title: 'Actions',
       key: 'actions',
       render: (_: any, r: ApprovalRequest) => (
-        <Space size="small">
-          {r.status === 'PENDING' && (
-            <>
-              <Button
-                size="small"
-                type="primary"
-                style={{ background: '#16a34a', borderColor: '#16a34a' }}
-                onClick={() => {
-                  setSelectedApproval(r);
-                  setPendingAction('APPROVED');
-                  setApprovalActionModal(true);
-                }}
-              >
-                Approve
-              </Button>
-              <Button
-                size="small"
-                danger
-                onClick={() => {
-                  setSelectedApproval(r);
-                  setPendingAction('REJECTED');
-                  setApprovalActionModal(true);
-                }}
-              >
-                Reject
-              </Button>
-            </>
-          )}
-        </Space>
+        r.status === 'PENDING' ? (
+          <Space>
+            <Button
+              type="primary"
+              size="small"
+              style={{ background: '#16a34a', borderColor: '#16a34a' }}
+              onClick={() => {
+                setSelectedApproval(r);
+                setPendingAction('APPROVED');
+                setApprovalActionModal(true);
+              }}
+            >
+              Authorize
+            </Button>
+            <Button
+              danger
+              size="small"
+              onClick={() => {
+                setSelectedApproval(r);
+                setPendingAction('REJECTED');
+                setApprovalActionModal(true);
+              }}
+            >
+              Reject
+            </Button>
+          </Space>
+        ) : (
+          <Text type="secondary" style={{ fontSize: 12 }}>Decision Recorded</Text>
+        )
       )
     }
   ];
@@ -429,7 +441,7 @@ export const GovernancePage: React.FC = () => {
       {/* Header Bar */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
         <div>
-          <Title level={3} style={{ margin: 0, color: '#ffffff' }}>
+          <Title level={3} style={{ margin: 0 }}>
             <FileProtectOutlined style={{ color: '#dc2626', marginRight: 10 }} />
             Workforce Grievances, Approvals & Tamper-Evident Audit
           </Title>
@@ -561,9 +573,9 @@ export const GovernancePage: React.FC = () => {
                       <Timeline.Item
                         key={entry.id}
                         color={entry.action.includes('REJECT') || entry.action.includes('REVOKE') ? 'red' : 'green'}
-                        label={<Text style={{ fontSize: 11, color: '#a1a1aa' }}>{new Date(entry.created_at).toLocaleTimeString()} {new Date(entry.created_at).toLocaleDateString()}</Text>}
+                        label={<Text type="secondary" style={{ fontSize: 11 }}>{new Date(entry.created_at).toLocaleTimeString()} {new Date(entry.created_at).toLocaleDateString()}</Text>}
                       >
-                        <Card size="small" style={{ background: '#18181b', border: '1px solid #27272a' }}>
+                        <Card size="small" style={{ background: isDark ? '#18181b' : '#f8fafc', border: isDark ? '1px solid #27272a' : '1px solid #e2e8f0' }}>
                           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                             <Tag color="purple" style={{ fontWeight: 600 }}>{entry.action}</Tag>
                             <Text type="secondary" style={{ fontSize: 11 }}>Actor: {entry.user_email || 'System'}</Text>
@@ -572,12 +584,12 @@ export const GovernancePage: React.FC = () => {
                             <strong>Entity:</strong> {entry.entity_type} (<Text code>{entry.entity_id}</Text>)
                           </div>
                           {entry.changes_json && (
-                            <pre style={{ fontSize: 10, background: '#09090b', padding: 6, borderRadius: 4, marginTop: 6, overflow: 'auto', color: '#22c55e' }}>
+                            <pre style={{ fontSize: 10, background: isDark ? '#09090b' : '#f1f5f9', padding: 6, borderRadius: 4, marginTop: 6, overflow: 'auto', color: isDark ? '#22c55e' : '#15803d' }}>
                               {JSON.stringify(entry.changes_json, null, 2)}
                             </pre>
                           )}
-                          <div style={{ fontSize: 10, color: '#71717a', marginTop: 4 }}>
-                            <strong>SHA-256 Block Hash:</strong> <Text code style={{ fontSize: 9 }}>{entry.block_hash}</Text>
+                          <div style={{ fontSize: 10, marginTop: 4 }}>
+                            <Text type="secondary">SHA-256 Block Hash:</Text> <Text code style={{ fontSize: 9 }}>{entry.block_hash}</Text>
                           </div>
                         </Card>
                       </Timeline.Item>

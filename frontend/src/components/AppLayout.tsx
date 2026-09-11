@@ -12,7 +12,6 @@ import {
   FileProtectOutlined,
   UserOutlined,
   LogoutOutlined,
-  PlayCircleOutlined,
   BellOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
@@ -23,6 +22,9 @@ import {
   AuditOutlined,
   InfoCircleOutlined,
   PhoneOutlined,
+  DownOutlined,
+  FileSearchOutlined,
+  FireOutlined,
   SyncOutlined,
 } from '@ant-design/icons';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -61,62 +63,65 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       else await demoApi.simulateGasBreach();
       notification.success({
         message: 'Simulation Triggered',
-        description: `${type === 'violation' ? 'CCTV PPE violation' : type === 'ocr' ? 'DGMS certificate OCR' : 'Methane gas breach'} simulated successfully.`,
-        placement: 'topRight',
+        description: `Live ${type.toUpperCase()} simulation event has been successfully dispatched to the streaming engine.`,
       });
     } catch {
-      notification.error({ message: 'Simulation Error', description: 'Backend not reachable.' });
+      notification.error({
+        message: 'Simulation Failed',
+        description: 'Unable to reach backend simulation endpoints.',
+      });
     } finally {
       setSimulating(null);
     }
   };
 
+  const isWorker = user?.role === 'WORKER';
+
   const userMenu: MenuProps['items'] = [
     {
-      key: 'role',
-      label: (
-        <Space direction="vertical" size={0}>
-          <span style={{ fontWeight: 600 }}>{user?.full_name}</span>
-          <span style={{ color: '#71717a', fontSize: 12 }}>
-            {isAdmin ? '👑 Administrator / Super Admin' : '👷 Authorized Safety Officer'}
-          </span>
-          <span style={{ color: '#a1a1aa', fontSize: 11 }}>{user?.designation}</span>
-        </Space>
-      ),
+      key: 'user-info',
       disabled: true,
+      label: (
+        <div style={{ padding: '4px 0' }}>
+          <div style={{ fontWeight: 600, color: isDark ? '#ffffff' : '#18181b' }}>{user?.full_name || 'User'}</div>
+          <div style={{ fontSize: 11, color: isDark ? 'rgba(255, 255, 255, 0.55)' : '#71717a' }}>{user?.email}</div>
+          <div style={{ fontSize: 10, marginTop: 4 }}>
+            <Tag color={isAdmin ? 'purple' : 'blue'} style={{ fontSize: 10 }}>{user?.role}</Tag>
+          </div>
+        </div>
+      ),
     },
     { type: 'divider' },
-    {
-      key: 'landing',
-      icon: <HomeOutlined />,
-      label: 'Public Overview',
-    },
-    {
-      key: 'about',
-      icon: <InfoCircleOutlined />,
-      label: 'About Platform',
-    },
-    {
-      key: 'contact',
-      icon: <PhoneOutlined />,
-      label: 'Contact & Safety Desk',
-    },
+    { key: 'landing', icon: <GlobalOutlined />, label: 'Platform Portal Home' },
+    { key: 'about', icon: <InfoCircleOutlined />, label: 'About DGMS & Architecture' },
+    { key: 'contact', icon: <PhoneOutlined />, label: 'Emergency & Helpdesk' },
     { type: 'divider' },
-    { key: 'logout', icon: <LogoutOutlined />, label: 'Logout', danger: true },
+    { key: 'logout', icon: <LogoutOutlined />, label: 'Sign Out', danger: true },
   ];
-
-  const isWorker = user?.role === 'WORKER';
 
   // Role-specific sidebar navigation:
   // - Worker sees ONLY Worker Portal & Central Dashboard
   // - Admin sees all operational subsystems WITHOUT the worker portal pass bar
   const menuItems: MenuProps['items'] = isWorker
     ? [
-        { key: '/worker-portal', icon: <UserOutlined style={{ color: '#10b981' }} />, label: '👷 Worker Portal & Pass' },
-        { key: '/dashboard', icon: <DashboardOutlined />, label: 'Central Dashboard' },
+        {
+          key: 'worker_group',
+          label: (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 8 }}>
+              <span>Worker Space</span>
+              <Tag color="cyan" style={{ fontSize: 9, margin: 0, padding: '0 4px', lineHeight: '16px' }}>PORTAL</Tag>
+            </div>
+          ),
+          type: 'group',
+          children: [
+            { key: '/worker-portal', icon: <UserOutlined style={{ color: '#059669' }} />, label: 'My Digital RFID Pass & Records' },
+            { key: '/dashboard', icon: <DashboardOutlined style={{ color: '#2563eb' }} />, label: 'Mine Safety Dashboard' },
+            { key: '/digital-twin', icon: <GlobalOutlined style={{ color: '#7c3aed' }} />, label: 'GIS Digital Twin' },
+          ],
+        },
       ]
     : [
-        { key: '/dashboard', icon: <DashboardOutlined />, label: 'Central Executive Dashboard' },
+        { key: '/', icon: <DashboardOutlined />, label: 'Central Executive Dashboard' },
         { key: '/digital-twin', icon: <GlobalOutlined />, label: 'GIS Digital Twin' },
         {
           key: 'module1_group',
@@ -128,12 +133,12 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
           ),
           type: 'group',
           children: [
-            { key: '/cctv', icon: <CameraOutlined />, label: 'CCTV Vision AI' },
-            { key: '/equipment', icon: <ToolOutlined />, label: 'Equipment & OCR' },
-            { key: '/environmental', icon: <AreaChartOutlined />, label: 'Gas IoT Telemetry' },
-            { key: '/risk-engine', icon: <ThunderboltOutlined />, label: 'Risk Matrix Engine' },
-            { key: '/workflows', icon: <AlertOutlined />, label: 'Statutory Alerts & SLA' },
-            { key: '/compliance', icon: <FileProtectOutlined />, label: 'DGMS Act Compliance' },
+            { key: '/cctv', icon: <CameraOutlined style={{ color: '#16a34a' }} />, label: 'CCTV PPE Feeds' },
+            { key: '/equipment', icon: <ToolOutlined style={{ color: '#ca8a04' }} />, label: 'Equipment & OCR Scan' },
+            { key: '/environmental', icon: <AreaChartOutlined style={{ color: '#0284c7' }} />, label: 'Environmental Telemetry' },
+            { key: '/risk-engine', icon: <ThunderboltOutlined style={{ color: '#ea580c' }} />, label: 'Predictive Risk Index' },
+            { key: '/workflows', icon: <AlertOutlined style={{ color: '#dc2626' }} />, label: 'Automated SOP Workflow' },
+            { key: '/compliance', icon: <FileProtectOutlined style={{ color: '#9333ea' }} />, label: 'DGMS Statutory Logs' },
           ],
         },
         {
@@ -171,6 +176,31 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         },
       ];
 
+  const simulationMenuItems: MenuProps['items'] = [
+    {
+      key: 'violation',
+      icon: <AlertOutlined style={{ color: '#ea580c' }} />,
+      label: 'Simulate PPE Breach (CCTV Feed)',
+      disabled: simulating !== null,
+      onClick: () => runSimulation('violation'),
+    },
+    {
+      key: 'ocr',
+      icon: <FileSearchOutlined style={{ color: '#2563eb' }} />,
+      label: 'Simulate OCR Equipment Scan',
+      disabled: simulating !== null,
+      onClick: () => runSimulation('ocr'),
+    },
+    {
+      key: 'gas',
+      icon: <FireOutlined style={{ color: '#ef4444' }} />,
+      label: 'Simulate CH₄ Gas Threshold Breach',
+      danger: true,
+      disabled: simulating !== null,
+      onClick: () => runSimulation('gas'),
+    },
+  ];
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       {/* SIDEBAR */}
@@ -179,7 +209,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
         collapsed={collapsed}
         onCollapse={setCollapsed}
         trigger={null}
-        width={250}
+        width={268}
         style={{
           borderRight: isDark ? '1px solid #27272a' : '1px solid #e4e4e7',
           background: isDark ? '#050505' : '#ffffff',
@@ -231,7 +261,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
       </Sider>
 
       {/* MAIN LAYOUT */}
-      <Layout style={{ marginLeft: collapsed ? 80 : 250, transition: 'margin 0.2s' }}>
+      <Layout style={{ marginLeft: collapsed ? 80 : 268, transition: 'margin 0.2s' }}>
         {/* HEADER */}
         <Header
           style={{
@@ -246,9 +276,11 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             zIndex: 99,
             gap: 12,
             height: 64,
+            whiteSpace: 'nowrap',
+            flexWrap: 'nowrap',
           }}
         >
-          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexShrink: 0 }}>
             <Button
               type="text"
               icon={collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
@@ -257,7 +289,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             />
 
             {/* Top Navigation Switcher Buttons */}
-            <Space size={6} wrap>
+            <Space size={6} wrap={false}>
               {isWorker ? (
                 <>
                   <Button
@@ -340,46 +372,31 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             </Space>
           </div>
 
-          {/* Center: Admin Simulation Controls OR User Status */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flex: 1, justifyContent: 'center' }}>
+          {/* Center: Admin Simulation Dropdown OR User Status */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, flexShrink: 0 }}>
             {isAdmin ? (
-              <Space size={6} wrap>
-                <Tag color="#18181b" style={{ fontWeight: 600, fontSize: 10, letterSpacing: 0.5, margin: 0 }}>
-                  <SafetyCertificateOutlined /> ADMIN CONTROLS
-                </Tag>
-                <Button
-                  size="small"
-                  icon={<PlayCircleOutlined />}
-                  loading={simulating === 'violation'}
-                  onClick={() => runSimulation('violation')}
-                  style={{ fontSize: 11 }}
-                >
-                  PPE Violation
-                </Button>
-                <Button
-                  size="small"
-                  icon={<PlayCircleOutlined />}
-                  loading={simulating === 'ocr'}
-                  onClick={() => runSimulation('ocr')}
-                  style={{ fontSize: 11 }}
-                >
-                  OCR Scan
-                </Button>
-                <Button
-                  size="small"
-                  danger
-                  icon={<PlayCircleOutlined />}
-                  loading={simulating === 'gas'}
-                  onClick={() => runSimulation('gas')}
-                  style={{ fontSize: 11 }}
-                >
-                  Gas Breach
-                </Button>
+              <Space size={6} wrap={false}>
+                <Dropdown menu={{ items: simulationMenuItems }} placement="bottom" arrow>
+                  <Button
+                    size="small"
+                    icon={<ThunderboltOutlined style={{ color: simulating ? '#eab308' : '#3b82f6' }} />}
+                    loading={simulating !== null}
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      borderColor: isDark ? '#3f3f46' : '#d4d4d8',
+                      background: isDark ? '#18181b' : '#f4f4f5',
+                    }}
+                  >
+                    {simulating ? `Simulating ${simulating}...` : '⚡ Simulators'}{' '}
+                    <DownOutlined style={{ fontSize: 9, marginLeft: 2 }} />
+                  </Button>
+                </Dropdown>
               </Space>
             ) : (
-              <Space size={8}>
+              <Space size={8} wrap={false}>
                 <Tag color="green" icon={<CheckCircleFilled />} style={{ fontSize: 11, fontWeight: 500, margin: 0 }}>
-                  Active Surveillance Stream
+                  Active Surveillance
                 </Tag>
                 <Tag color="blue" style={{ fontSize: 11, fontWeight: 500, margin: 0 }}>
                   Shift: General 08:00 - 16:00
@@ -393,7 +410,7 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
             <ThemeToggle size="middle" />
 
             {isAdmin ? (
-              <Tag color={isDark ? '#27272a' : '#18181b'} style={{ fontWeight: 600, fontSize: 11, margin: 0, padding: '2px 8px' }}>
+              <Tag color="gold" style={{ fontWeight: 600, fontSize: 11, margin: 0, padding: '2px 8px' }}>
                 👑 Admin Authority
               </Tag>
             ) : (
