@@ -8,8 +8,7 @@ import {
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
-import { ThemeToggle } from '../components/ThemeToggle';
-import logo from '../assets/logo.svg';
+import { PublicNavbar } from '../components/PublicNavbar';
 
 const { Title, Paragraph } = Typography;
 
@@ -27,76 +26,7 @@ export const AboutPage: React.FC = () => {
         transition: 'background-color 0.2s ease, color 0.2s ease',
       }}
     >
-      {/* ── TOP NAVBAR ────────────────────────────────────────────────────── */}
-      <nav
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          background: isDark ? 'rgba(17, 17, 17, 0.92)' : 'rgba(255, 255, 255, 0.92)',
-          backdropFilter: 'blur(10px)',
-          borderBottom: isDark ? '1px solid #27272a' : '1px solid #e4e4e7',
-          padding: '0 32px',
-          height: 64,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }} onClick={() => navigate('/')}>
-          <img src={logo} alt="AI MineGuard Logo" style={{ width: 32, height: 32 }} />
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 16, letterSpacing: -0.3, lineHeight: 1.2, color: isDark ? '#ffffff' : '#18181b' }}>
-              AI MineGuard
-            </div>
-            <div style={{ fontSize: 10, color: isDark ? 'rgba(255, 255, 255, 0.55)' : '#71717a', fontWeight: 500 }}>
-              Smart India Hackathon 2026
-            </div>
-          </div>
-        </div>
-
-        {/* Center links */}
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
-          <Button type="link" onClick={() => navigate('/')} style={{ color: isDark ? '#a1a1aa' : '#52525b', padding: 0, fontSize: 14 }}>
-            Home
-          </Button>
-          <Button type="link" onClick={() => navigate('/about')} style={{ color: isDark ? '#ffffff' : '#18181b', fontWeight: 600, padding: 0, fontSize: 14 }}>
-            About Platform
-          </Button>
-          <Button type="link" onClick={() => navigate('/contact')} style={{ color: isDark ? '#a1a1aa' : '#52525b', padding: 0, fontSize: 14 }}>
-            Contact & Support
-          </Button>
-          <Tag color="green" style={{ margin: 0, fontWeight: 600 }}>Module 1 Active</Tag>
-        </div>
-
-        {/* Right CTA */}
-        <Space size={12}>
-          <ThemeToggle size="middle" />
-          <Button
-            onClick={() => navigate('/login?role=worker')}
-            style={{
-              fontWeight: 500,
-              borderColor: isDark ? '#27272a' : '#e4e4e7',
-              background: isDark ? '#111111' : '#ffffff',
-              color: isDark ? '#ffffff' : '#18181b',
-            }}
-          >
-            <UserOutlined /> Worker Login
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => navigate('/login?role=admin')}
-            style={{
-              background: isDark ? '#27272a' : '#18181b',
-              borderColor: isDark ? '#3f3f46' : '#18181b',
-              color: '#ffffff',
-              fontWeight: 500,
-            }}
-          >
-            <SafetyCertificateOutlined /> Admin Login
-          </Button>
-        </Space>
-      </nav>
+      <PublicNavbar />
 
       {/* ── HERO BANNER ───────────────────────────────────────────────────── */}
       <div style={{ padding: '60px 24px 40px', maxWidth: 1000, margin: '0 auto', textAlign: 'center' }}>
@@ -174,12 +104,12 @@ export const AboutPage: React.FC = () => {
           </Row>
         </Card>
 
-        {/* The 3-Module Breakdown */}
+        {/* Unified Operational Architecture */}
         <Title level={3} style={{ marginBottom: 20, color: isDark ? '#ffffff' : '#18181b' }}>
-          Three-Module Centralized Architecture
+          Unified Operational Architecture
         </Title>
         <Row gutter={[20, 20]}>
-          {/* Module 1 */}
+          {/* Subsystem 1 */}
           <Col xs={24} md={8}>
             <Card
               bordered
@@ -191,10 +121,10 @@ export const AboutPage: React.FC = () => {
               }}
             >
               <Tag color="success" style={{ fontWeight: 600, marginBottom: 12 }}>
-                ACTIVE ON THIS DEPLOYMENT
+                OPERATIONAL
               </Tag>
               <Title level={4} style={{ margin: '0 0 8px', color: isDark ? '#ffffff' : '#18181b' }}>
-                Module 1: AI Compliance and Risk Engine
+                AI Surveillance & Risk Engine
               </Title>
               <Paragraph style={{ fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b', lineHeight: 1.6 }}>
                 Fully functional edge surveillance engine covering AI CCTV PPE compliance, heavy equipment DGMS certificate OCR extraction, continuous gas telemetry alarms, explainable risk calculations, and SLA corrective workflows.
@@ -202,7 +132,7 @@ export const AboutPage: React.FC = () => {
             </Card>
           </Col>
 
-          {/* Module 2 */}
+          {/* Subsystem 2 */}
           <Col xs={24} md={8}>
             <Card
               bordered
@@ -210,22 +140,22 @@ export const AboutPage: React.FC = () => {
                 borderRadius: 14,
                 height: '100%',
                 background: isDark ? '#111111' : '#ffffff',
-                borderColor: isDark ? '#27272a' : '#e4e4e7',
+                border: isDark ? '2px solid #2563eb' : '2px solid #2563eb',
               }}
             >
               <Tag color="blue" style={{ fontWeight: 600, marginBottom: 12 }}>
-                PHASE 2 ROADMAP (STANDBY)
+                OPERATIONAL
               </Tag>
               <Title level={4} style={{ margin: '0 0 8px', color: isDark ? '#ffffff' : '#18181b' }}>
-                Module 2: Field Operations & Inspection Management
+                Field Operations & Inspection Management
               </Title>
               <Paragraph style={{ fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b', lineHeight: 1.6 }}>
-                Standardized digital pit inspection checklists, pre-shift mobile equipment roadworthiness verifications, geo-tagged blast zone clearance logging, and drone bench inspection uploads.
+                Standardized digital pit inspection checklists, pre-shift mobile equipment roadworthiness verifications, geo-tagged blast zone clearance logging, and offline mesh synchronization.
               </Paragraph>
             </Card>
           </Col>
 
-          {/* Module 3 */}
+          {/* Subsystem 3 */}
           <Col xs={24} md={8}>
             <Card
               bordered
@@ -233,17 +163,17 @@ export const AboutPage: React.FC = () => {
                 borderRadius: 14,
                 height: '100%',
                 background: isDark ? '#111111' : '#ffffff',
-                borderColor: isDark ? '#27272a' : '#e4e4e7',
+                border: isDark ? '2px solid #9333ea' : '2px solid #9333ea',
               }}
             >
               <Tag color="purple" style={{ fontWeight: 600, marginBottom: 12 }}>
-                PHASE 3 ROADMAP (STANDBY)
+                OPERATIONAL
               </Tag>
               <Title level={4} style={{ margin: '0 0 8px', color: isDark ? '#ffffff' : '#18181b' }}>
-                Module 3: Contractor Governance Management
+                Workforce & Contractor Governance
               </Title>
               <Paragraph style={{ fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b', lineHeight: 1.6 }}>
-                Comprehensive contractor firm onboarding, biometric worker identity verification, statutory PF/ESI wage compliance audits, mandatory safety induction tracking, and agency blacklisting matrix.
+                Comprehensive contractor firm onboarding, biometric worker identity verification, statutory MVTR 1966 safety training tracking, worker digital RFID passes, and grievance dispute resolution.
               </Paragraph>
             </Card>
           </Col>

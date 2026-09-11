@@ -140,20 +140,20 @@ export const DashboardPage: React.FC = () => {
       </Row>
 
       <AntAlert
-        message="AI MineGuard Unified Enterprise Intelligence — Modules 1, 2, and 3 Active & Synchronized"
-        description="All 3 statutory subsystems (Module 1: AI Risk & Vision, Module 2: Field Operations & GIS Inspections, and Module 3: Contractor & Worker Governance) are fully unified and operational in real time."
+        message="AI MineGuard Unified Enterprise Intelligence — Operations, Field Safety & Workforce Management Synchronized"
+        description="All core statutory subsystems (AI Risk & Vision, Field Operations & GIS Inspections, and Contractor & Workforce Governance) are fully unified and operational in real time."
         type="success"
         showIcon
         style={{ marginBottom: 20, borderRadius: 10 }}
       />
 
-      {/* Cross-Module Operational Hub */}
+      {/* Operational Command Hub */}
       <Row gutter={[16, 16]} style={{ marginBottom: 20 }}>
         <Col xs={24} md={8}>
           <Card
             type="inner"
-            title="🛡️ Module 1: AI Risk & Surveillance"
-            extra={<Tag color="green">ACTIVE</Tag>}
+            title="🛡️ AI Surveillance & Risk Engine"
+            extra={<Tag color="green">OPERATIONAL</Tag>}
             style={{ borderRadius: 10, height: '100%', borderColor: '#86efac' }}
             actions={[
               <Button type="link" size="small" onClick={() => navigate('/cctv')}>
@@ -184,8 +184,8 @@ export const DashboardPage: React.FC = () => {
         <Col xs={24} md={8}>
           <Card
             type="inner"
-            title="📋 Module 2: Field Ops & Inspection"
-            extra={<Tag color="blue">ACTIVE</Tag>}
+            title="📋 Field Operations & Inspection"
+            extra={<Tag color="blue">OPERATIONAL</Tag>}
             style={{ borderRadius: 10, height: '100%', borderColor: '#93c5fd' }}
             actions={[
               <Button type="link" size="small" style={{ color: '#2563eb' }} onClick={() => navigate('/inspections')}>
@@ -216,8 +216,8 @@ export const DashboardPage: React.FC = () => {
         <Col xs={24} md={8}>
           <Card
             type="inner"
-            title="🏢 Module 3: Contractor & Worker Gov"
-            extra={<Tag color="purple">ACTIVE</Tag>}
+            title="🏢 Contractor & Workforce Governance"
+            extra={<Tag color="purple">OPERATIONAL</Tag>}
             style={{ borderRadius: 10, height: '100%', borderColor: '#d8b4fe' }}
             actions={[
               <Button type="link" size="small" style={{ color: '#9333ea' }} onClick={() => navigate('/contractors')}>

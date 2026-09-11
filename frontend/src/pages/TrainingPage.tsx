@@ -170,7 +170,7 @@ export const TrainingPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <Title level={3} style={{ margin: 0 }}>📚 DGMS Safety Training & Vocational Induction (Module 3)</Title>
+          <Title level={3} style={{ margin: 0 }}>📚 DGMS Safety Training & Vocational Induction</Title>
           <Text type="secondary">Track statutory Mines Vocational Training Rules (MVTR 1966), gas detection courses, and auto-lockout triggers.</Text>
         </div>
         <Space>

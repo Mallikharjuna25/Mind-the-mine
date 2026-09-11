@@ -220,7 +220,7 @@ export const ContractorsPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <Title level={3} style={{ margin: 0 }}>🏢 Contractor Governance & KYC Management (Module 3)</Title>
+          <Title level={3} style={{ margin: 0 }}>🏢 Contractor Governance & KYC Management</Title>
           <Text type="secondary">Contractor pre-qualification, statutory DGMS compliance scoring, and contract life-cycle enforcement.</Text>
         </div>
         <Space>

@@ -223,7 +223,7 @@ export const FieldHazardsPage: React.FC = () => {
       {/* Header Banner */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <Title level={3} style={{ margin: 0 }}>🚨 Field Hazard & Incident Intelligence (Module 2)</Title>
+          <Title level={3} style={{ margin: 0 }}>🚨 Field Hazard & Incident Intelligence</Title>
           <Text type="secondary">Voice-driven AI structuring, statutory incident logging, and automated CAPA verification triggers.</Text>
         </div>
         <Space>

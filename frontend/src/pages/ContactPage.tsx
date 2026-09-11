@@ -1,23 +1,18 @@
 import React, { useState } from 'react';
 import { Typography, Card, Row, Col, Tag, Button, Space, Form, Input, notification } from 'antd';
 import {
-  SafetyCertificateOutlined,
-  UserOutlined,
   PhoneOutlined,
   MailOutlined,
   EnvironmentOutlined,
   SendOutlined,
 } from '@ant-design/icons';
-import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
-import { ThemeToggle } from '../components/ThemeToggle';
-import logo from '../assets/logo.svg';
+import { PublicNavbar } from '../components/PublicNavbar';
 
 const { Title, Paragraph } = Typography;
 const { TextArea } = Input;
 
 export const ContactPage: React.FC = () => {
-  const navigate = useNavigate();
   const { isDark } = useTheme();
   const [form] = Form.useForm();
   const [submitting, setSubmitting] = useState(false);
@@ -44,76 +39,7 @@ export const ContactPage: React.FC = () => {
         transition: 'background-color 0.2s ease, color 0.2s ease',
       }}
     >
-      {/* ── TOP NAVBAR ────────────────────────────────────────────────────── */}
-      <nav
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          background: isDark ? 'rgba(17, 17, 17, 0.92)' : 'rgba(255, 255, 255, 0.92)',
-          backdropFilter: 'blur(10px)',
-          borderBottom: isDark ? '1px solid #27272a' : '1px solid #e4e4e7',
-          padding: '0 32px',
-          height: 64,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }} onClick={() => navigate('/')}>
-          <img src={logo} alt="AI MineGuard Logo" style={{ width: 32, height: 32 }} />
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 16, letterSpacing: -0.3, lineHeight: 1.2, color: isDark ? '#ffffff' : '#18181b' }}>
-              AI MineGuard
-            </div>
-            <div style={{ fontSize: 10, color: isDark ? 'rgba(255, 255, 255, 0.55)' : '#71717a', fontWeight: 500 }}>
-              Smart India Hackathon 2026
-            </div>
-          </div>
-        </div>
-
-        {/* Center links */}
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
-          <Button type="link" onClick={() => navigate('/')} style={{ color: isDark ? '#a1a1aa' : '#52525b', padding: 0, fontSize: 14 }}>
-            Home
-          </Button>
-          <Button type="link" onClick={() => navigate('/about')} style={{ color: isDark ? '#a1a1aa' : '#52525b', padding: 0, fontSize: 14 }}>
-            About Platform
-          </Button>
-          <Button type="link" onClick={() => navigate('/contact')} style={{ color: isDark ? '#ffffff' : '#18181b', fontWeight: 600, padding: 0, fontSize: 14 }}>
-            Contact & Support
-          </Button>
-          <Tag color="green" style={{ margin: 0, fontWeight: 600 }}>Module 1 Active</Tag>
-        </div>
-
-        {/* Right CTA */}
-        <Space size={12}>
-          <ThemeToggle size="middle" />
-          <Button
-            onClick={() => navigate('/login?role=worker')}
-            style={{
-              fontWeight: 500,
-              borderColor: isDark ? '#27272a' : '#e4e4e7',
-              background: isDark ? '#111111' : '#ffffff',
-              color: isDark ? '#ffffff' : '#18181b',
-            }}
-          >
-            <UserOutlined /> Worker Login
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => navigate('/login?role=admin')}
-            style={{
-              background: isDark ? '#27272a' : '#18181b',
-              borderColor: isDark ? '#3f3f46' : '#18181b',
-              color: '#ffffff',
-              fontWeight: 500,
-            }}
-          >
-            <SafetyCertificateOutlined /> Admin Login
-          </Button>
-        </Space>
-      </nav>
+      <PublicNavbar />
 
       {/* ── HEADER BANNER ─────────────────────────────────────────────────── */}
       <div style={{ padding: '60px 24px 30px', maxWidth: 1000, margin: '0 auto', textAlign: 'center' }}>
@@ -196,7 +122,7 @@ export const ContactPage: React.FC = () => {
               </Title>
               <Paragraph style={{ fontSize: 12, color: isDark ? '#a1a1aa' : '#71717a', lineHeight: 1.6, margin: 0 }}>
                 Directorate General of Mines Safety (DGMS), Bilaspur Region.<br />
-                All statutory safety violations promoted via Module 1 are archived with encrypted audit trails per CMR 2017 standards.
+                All statutory safety violations logged via the platform are archived with encrypted audit trails per CMR 2017 standards.
               </Paragraph>
             </Card>
           </Col>

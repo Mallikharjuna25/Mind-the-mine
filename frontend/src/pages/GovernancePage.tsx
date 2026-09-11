@@ -283,7 +283,7 @@ export const GovernancePage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <Title level={3} style={{ margin: 0 }}>⚖️ Statutory Governance, Violations & Approval Workflows (Module 3)</Title>
+          <Title level={3} style={{ margin: 0 }}>⚖️ Statutory Governance, Violations & Approval Workflows</Title>
           <Text type="secondary">Grievance SLA dispute resolution, show-cause governance ledger, and formal managerial approvals.</Text>
         </div>
         <Space>

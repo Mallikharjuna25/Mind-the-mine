@@ -1,5 +1,5 @@
 import React from 'react';
-import { Typography, Button, Card, Tag, Row, Col, Space, Divider, Alert } from 'antd';
+import { Typography, Button, Card, Tag, Row, Col, Space, Divider } from 'antd';
 import {
   SafetyCertificateOutlined,
   EyeOutlined,
@@ -8,16 +8,19 @@ import {
   AlertOutlined,
   UserOutlined,
   ArrowRightOutlined,
-  CheckCircleFilled,
-  ClockCircleOutlined,
   FireOutlined,
   FileDoneOutlined,
   AuditOutlined,
-  InfoCircleOutlined,
+  GlobalOutlined,
+  IdcardOutlined,
+  SyncOutlined,
+  SafetyOutlined,
+  TeamOutlined,
+  DashboardOutlined,
 } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from '../contexts/ThemeContext';
-import { ThemeToggle } from '../components/ThemeToggle';
+import { PublicNavbar } from '../components/PublicNavbar';
 import logo from '../assets/logo.svg';
 
 const { Title, Paragraph, Text } = Typography;
@@ -26,101 +29,27 @@ export const LandingPage: React.FC = () => {
   const navigate = useNavigate();
   const { isDark } = useTheme();
 
+  const cardBg = isDark ? '#111111' : '#ffffff';
+  const borderColor = isDark ? '#27272a' : '#e4e4e7';
+  const textColor = isDark ? 'rgba(255, 255, 255, 0.88)' : '#18181b';
+  const secondaryTextColor = isDark ? '#a1a1aa' : '#71717a';
+
   return (
     <div
       style={{
         minHeight: '100vh',
         background: isDark ? '#050505' : '#fafafa',
-        color: isDark ? 'rgba(255, 255, 255, 0.88)' : '#18181b',
-        fontFamily: 'inherit',
+        color: textColor,
         transition: 'background-color 0.2s ease, color 0.2s ease',
       }}
     >
-      {/* ── TOP STICKY NAVBAR ────────────────────────────────────────────── */}
-      <nav
-        style={{
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          background: isDark ? 'rgba(17, 17, 17, 0.92)' : 'rgba(255, 255, 255, 0.92)',
-          backdropFilter: 'blur(10px)',
-          borderBottom: isDark ? '1px solid #27272a' : '1px solid #e4e4e7',
-          padding: '0 32px',
-          height: 64,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-        }}
-      >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 12, cursor: 'pointer' }} onClick={() => navigate('/')}>
-          <img src={logo} alt="AI MineGuard Logo" style={{ width: 32, height: 32 }} />
-          <div>
-            <div style={{ fontWeight: 700, fontSize: 16, letterSpacing: -0.3, lineHeight: 1.2, color: isDark ? '#ffffff' : '#18181b' }}>
-              AI MineGuard
-            </div>
-            <div style={{ fontSize: 10, color: isDark ? 'rgba(255, 255, 255, 0.55)' : '#71717a', fontWeight: 500 }}>
-              Smart India Hackathon 2026
-            </div>
-          </div>
-        </div>
+      <PublicNavbar />
 
-        {/* Center navigation links */}
-        <div style={{ display: 'flex', gap: 24, alignItems: 'center' }}>
-          <Button type="link" onClick={() => navigate('/')} style={{ color: isDark ? '#ffffff' : '#18181b', fontWeight: 600, padding: 0, fontSize: 14 }}>
-            Home
-          </Button>
-          <Button type="link" onClick={() => navigate('/about')} style={{ color: isDark ? '#a1a1aa' : '#52525b', padding: 0, fontSize: 14 }}>
-            About Platform
-          </Button>
-          <a href="#modules" style={{ color: isDark ? '#a1a1aa' : '#52525b', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
-            Modules
-          </a>
-          <a href="#roles" style={{ color: isDark ? '#a1a1aa' : '#52525b', textDecoration: 'none', fontSize: 14, fontWeight: 500 }}>
-            Worker vs Admin
-          </a>
-          <Button type="link" onClick={() => navigate('/contact')} style={{ color: isDark ? '#a1a1aa' : '#52525b', padding: 0, fontSize: 14 }}>
-            Contact & Support
-          </Button>
-          <Tag color="green" style={{ margin: 0, fontWeight: 600 }}>Module 1 Active</Tag>
-        </div>
-
-        {/* Right CTA + Theme Toggle */}
-        <Space size={12}>
-          <ThemeToggle size="middle" />
-
-          <Button
-            onClick={() => navigate('/login?role=worker')}
-            style={{
-              fontWeight: 500,
-              borderColor: isDark ? '#27272a' : '#e4e4e7',
-              background: isDark ? '#111111' : '#ffffff',
-              color: isDark ? '#ffffff' : '#18181b',
-            }}
-          >
-            <UserOutlined /> Worker Login
-          </Button>
-
-          <Button
-            type="primary"
-            onClick={() => navigate('/login?role=admin')}
-            style={{
-              background: isDark ? '#27272a' : '#18181b',
-              borderColor: isDark ? '#3f3f46' : '#18181b',
-              color: '#ffffff',
-              fontWeight: 500,
-              boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-            }}
-          >
-            <SafetyCertificateOutlined /> Admin Login
-          </Button>
-        </Space>
-      </nav>
-
-      {/* ── HERO SECTION ─────────────────────────────────────────────────── */}
+      {/* ── HERO SECTION ──────────────────────────────────────────── */}
       <section
         style={{
-          padding: '80px 24px 60px',
-          maxWidth: 1200,
+          padding: '72px 24px 48px',
+          maxWidth: 1160,
           margin: '0 auto',
           textAlign: 'center',
         }}
@@ -129,546 +58,561 @@ export const LandingPage: React.FC = () => {
           <Tag
             color="default"
             style={{
-              padding: '4px 12px',
+              padding: '4px 14px',
               borderRadius: 20,
               fontSize: 12,
               fontWeight: 600,
               background: isDark ? '#18181b' : '#f4f4f5',
-              borderColor: isDark ? '#27272a' : '#e4e4e7',
-              color: isDark ? 'rgba(255, 255, 255, 0.88)' : '#18181b',
+              borderColor,
+              color: textColor,
             }}
           >
-            🛡️ STATUTORY COAL MINE SAFETY & RISK INTELLIGENCE · CMR 2017
+            🛡️ ENTERPRISE MINING SAFETY & STATUTORY COMPLIANCE · CMR 2017
           </Tag>
         </div>
 
         <Title
           level={1}
           style={{
-            fontSize: 'clamp(32px, 5vw, 56px)',
+            fontSize: 'clamp(32px, 4.5vw, 54px)',
             fontWeight: 800,
             letterSpacing: -1.2,
-            lineHeight: 1.15,
-            maxWidth: 960,
+            lineHeight: 1.18,
+            maxWidth: 920,
             margin: '0 auto 20px',
             color: isDark ? '#ffffff' : '#09090b',
           }}
         >
-          Autonomous AI Safety Governance & Compliance for Modern Mines
+          Autonomous Safety Intelligence & Workforce Governance for Modern Mining
         </Title>
 
         <Paragraph
           style={{
-            fontSize: 'clamp(16px, 2vw, 19px)',
-            color: isDark ? '#a1a1aa' : '#71717a',
+            fontSize: 'clamp(16px, 1.8vw, 18px)',
+            color: secondaryTextColor,
             maxWidth: 780,
             margin: '0 auto 36px',
-            lineHeight: 1.6,
+            lineHeight: 1.65,
           }}
         >
-          A unified, centralized intelligence platform orchestrating edge CCTV computer vision, continuous multi-gas sensor telemetry, automated DGMS statutory form compliance, and an explainable multi-factor dynamic risk engine.
+          AI MineGuard is a unified operational intelligence platform engineered for coal and metal mines.
+          It combines edge computer vision, real-time subterranean gas telemetry, mobile-first field inspections,
+          and digital workforce governance to eliminate hazards, protect workers, and automate DGMS compliance.
         </Paragraph>
 
-        {/* Action Buttons: Worker Login & Admin Login */}
+        {/* Action Buttons */}
         <Space size={16} wrap style={{ justifyContent: 'center', marginBottom: 48 }}>
           <Button
             type="primary"
             size="large"
-            onClick={() => navigate('/login?role=worker')}
+            onClick={() => navigate('/login?role=admin')}
             style={{
-              height: 52,
-              padding: '0 32px',
-              fontSize: 16,
+              height: 50,
+              padding: '0 30px',
+              fontSize: 15,
               fontWeight: 600,
               background: '#0284c7',
               borderColor: '#0284c7',
               color: '#ffffff',
-              borderRadius: 10,
-              boxShadow: '0 4px 12px rgba(2, 132, 199, 0.3)',
+              borderRadius: 8,
+              boxShadow: '0 4px 14px rgba(2, 132, 199, 0.25)',
             }}
           >
-            <UserOutlined /> Worker Portal Login <ArrowRightOutlined />
+            <SafetyCertificateOutlined /> Enter Operations Console <ArrowRightOutlined />
           </Button>
 
           <Button
             size="large"
-            onClick={() => navigate('/login?role=admin')}
+            onClick={() => navigate('/login?role=worker')}
             style={{
-              height: 52,
+              height: 50,
               padding: '0 28px',
-              fontSize: 16,
-              fontWeight: 600,
-              borderRadius: 10,
-              background: isDark ? '#27272a' : '#18181b',
-              borderColor: isDark ? '#3f3f46' : '#18181b',
-              color: '#ffffff',
-            }}
-          >
-            <SafetyCertificateOutlined /> Admin Portal Login
-          </Button>
-
-          <Button
-            type="dashed"
-            size="large"
-            onClick={() => navigate('/about')}
-            style={{
-              height: 52,
-              padding: '0 24px',
               fontSize: 15,
-              fontWeight: 500,
-              borderRadius: 10,
-              borderColor: isDark ? '#3f3f46' : '#d4d4d8',
-              color: isDark ? 'rgba(255, 255, 255, 0.88)' : 'inherit',
+              fontWeight: 600,
+              borderRadius: 8,
+              background: cardBg,
+              borderColor,
+              color: textColor,
             }}
           >
-            <InfoCircleOutlined /> About Platform
+            <UserOutlined /> Worker Self-Service Portal
           </Button>
         </Space>
 
         {/* Live Metrics Strip */}
         <div
           style={{
-            background: isDark ? '#111111' : '#ffffff',
-            border: isDark ? '1px solid #27272a' : '1px solid #e4e4e7',
-            borderRadius: 16,
+            background: cardBg,
+            border: `1px solid ${borderColor}`,
+            borderRadius: 14,
             padding: '24px 32px',
-            boxShadow: '0 10px 25px -5px rgba(0, 0, 0, 0.1)',
-            maxWidth: 1060,
+            boxShadow: '0 8px 24px -4px rgba(0, 0, 0, 0.08)',
+            maxWidth: 1040,
             margin: '0 auto',
           }}
         >
           <Row gutter={[24, 24]} align="middle">
             <Col xs={12} sm={6}>
               <div style={{ fontSize: 28, fontWeight: 800, color: isDark ? '#ffffff' : '#18181b' }}>99.4%</div>
-              <div style={{ fontSize: 13, color: isDark ? '#a1a1aa' : '#71717a', marginTop: 4 }}>YOLOv8 PPE Accuracy</div>
+              <div style={{ fontSize: 13, color: secondaryTextColor, marginTop: 4 }}>Vision AI PPE Accuracy</div>
             </Col>
             <Col xs={12} sm={6}>
               <div style={{ fontSize: 28, fontWeight: 800, color: '#16a34a' }}>&lt; 5s</div>
-              <div style={{ fontSize: 13, color: isDark ? '#a1a1aa' : '#71717a', marginTop: 4 }}>Statutory SLA Alert Trigger</div>
+              <div style={{ fontSize: 13, color: secondaryTextColor, marginTop: 4 }}>Statutory SLA Alert Speed</div>
             </Col>
             <Col xs={12} sm={6}>
               <div style={{ fontSize: 28, fontWeight: 800, color: '#2563eb' }}>100%</div>
-              <div style={{ fontSize: 13, color: isDark ? '#a1a1aa' : '#71717a', marginTop: 4 }}>DGMS CMR 2017 Aligned</div>
+              <div style={{ fontSize: 13, color: secondaryTextColor, marginTop: 4 }}>DGMS CMR 2017 Aligned</div>
             </Col>
             <Col xs={12} sm={6}>
               <div style={{ fontSize: 28, fontWeight: 800, color: '#d97706' }}>24/7</div>
-              <div style={{ fontSize: 13, color: isDark ? '#a1a1aa' : '#71717a', marginTop: 4 }}>Continuous Gas Telemetry</div>
+              <div style={{ fontSize: 13, color: secondaryTextColor, marginTop: 4 }}>Atmospheric Gas Telemetry</div>
             </Col>
           </Row>
         </div>
       </section>
 
-      {/* ── MODULE ARCHITECTURE SECTION ───────────────────────────────────── */}
-      <section id="modules" style={{ padding: '60px 24px', maxWidth: 1200, margin: '0 auto' }}>
-        <div style={{ textAlign: 'center', marginBottom: 48 }}>
-          <Tag color="default" style={{ fontSize: 12, fontWeight: 600, padding: '2px 10px' }}>
-            CENTRALIZED PLATFORM ARCHITECTURE
+      {/* ── OUR SOLUTION SECTION ──────────────────────────────────── */}
+      <section
+        id="solution"
+        style={{
+          padding: '64px 24px',
+          maxWidth: 1160,
+          margin: '0 auto',
+          scrollMarginTop: 80,
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: 44 }}>
+          <Tag color="blue" style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', textTransform: 'uppercase' }}>
+            Unified Enterprise Solution
           </Tag>
           <Title level={2} style={{ marginTop: 12, marginBottom: 8, fontWeight: 800, color: isDark ? '#ffffff' : '#18181b' }}>
-            The 3 Mining Operations Modules
+            Our Solution
           </Title>
-          <Paragraph type="secondary" style={{ fontSize: 16, maxWidth: 680, margin: '0 auto', color: isDark ? '#a1a1aa' : '#71717a' }}>
-            Module 1 is fully active and working on this branch. Module 2 and Module 3 buttons are accessible in the UI on standby roadmap.
+          <Paragraph style={{ fontSize: 15, maxWidth: 640, margin: '0 auto', color: secondaryTextColor }}>
+            A single, comprehensive platform that replaces fragmented manual logs with automated, real-time safety governance.
           </Paragraph>
         </div>
 
         <Row gutter={[24, 24]}>
-          {/* MODULE 1 (ACTIVE & WORKING) */}
-          <Col xs={24} lg={8}>
+          {/* Solution Pillar 1 */}
+          <Col xs={24} md={8}>
             <Card
               bordered
               style={{
-                borderRadius: 16,
+                borderRadius: 14,
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                border: isDark ? '2px solid #16a34a' : '2px solid #16a34a',
-                background: isDark ? '#111111' : '#ffffff',
-                boxShadow: '0 8px 30px rgba(0, 0, 0, 0.1)',
-                position: 'relative',
+                border: `1px solid ${borderColor}`,
+                background: cardBg,
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <Tag color="success" icon={<CheckCircleFilled />} style={{ fontWeight: 600, padding: '2px 8px' }}>
-                  ACTIVE & WORKING
-                </Tag>
-                <Text code style={{ fontSize: 11 }}>BRANCH: malli</Text>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                <div style={{ background: 'rgba(22, 163, 74, 0.12)', padding: 10, borderRadius: 10 }}>
+                  <SafetyCertificateOutlined style={{ fontSize: 24, color: '#16a34a' }} />
+                </div>
+                <div>
+                  <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b', fontSize: 16 }}>
+                    Surveillance & Risk Engine
+                  </Title>
+                  <Text type="secondary" style={{ fontSize: 11 }}>Continuous Site Sensing</Text>
+                </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                <SafetyCertificateOutlined style={{ fontSize: 26, color: '#16a34a' }} />
-                <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Module 1: AI Compliance & Risk Engine</Title>
-              </div>
-
-              <Paragraph type="secondary" style={{ fontSize: 13, lineHeight: 1.6, color: isDark ? '#a1a1aa' : '#71717a' }}>
-                Operational AI safety core: real-time YOLOv8 PPE detection, heavy equipment DGMS certificate OCR extraction, continuous underground toxic gas telemetry, explainable risk calculation ($R = w_v V + w_e E + w_p P + w_s S$), and SLA corrective escalations.
+              <Paragraph style={{ fontSize: 13, lineHeight: 1.6, color: secondaryTextColor }}>
+                Automated continuous surveillance using edge computer vision and environmental IoT sensors to anticipate and mitigate hazards before accidents occur.
               </Paragraph>
 
-              <Divider style={{ margin: '12px 0', borderColor: isDark ? '#27272a' : '#e4e4e7' }} />
+              <Divider style={{ margin: '14px 0', borderColor }} />
 
-              <Space direction="vertical" size={8} style={{ width: '100%', marginBottom: 20 }}>
+              <Space direction="vertical" size={10} style={{ width: '100%' }}>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
-                  <EyeOutlined style={{ color: '#16a34a', marginTop: 3 }} />
-                  <span><strong>AI CCTV Vision:</strong> Live worker helmet & vest compliance.</span>
+                  <EyeOutlined style={{ color: '#16a34a', marginTop: 2 }} />
+                  <span><strong>AI CCTV Vision:</strong> Automated PPE verification & exclusion zone monitoring.</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
-                  <ToolOutlined style={{ color: '#2563eb', marginTop: 3 }} />
-                  <span><strong>Equipment OCR:</strong> DGMS machinery fitness verification.</span>
+                  <ToolOutlined style={{ color: '#2563eb', marginTop: 2 }} />
+                  <span><strong>Machinery Fitness:</strong> OCR verification of DGMS certificates & operator licenses.</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
-                  <FireOutlined style={{ color: '#dc2626', marginTop: 3 }} />
-                  <span><strong>Gas Telemetry:</strong> Multi-gas ($CH_4, CO, O_2$) breach alarms.</span>
+                  <FireOutlined style={{ color: '#dc2626', marginTop: 2 }} />
+                  <span><strong>Gas Telemetry:</strong> Real-time methane, carbon monoxide, and oxygen breach alarms.</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
-                  <ThunderboltOutlined style={{ color: '#d97706', marginTop: 3 }} />
-                  <span><strong>Dynamic Risk Engine:</strong> Explainable composite risk formula.</span>
-                </div>
-                <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
-                  <AlertOutlined style={{ color: '#9333ea', marginTop: 3 }} />
-                  <span><strong>DGMS SLA Workflows:</strong> Statutory countdowns & escalation logs.</span>
+                  <ThunderboltOutlined style={{ color: '#d97706', marginTop: 2 }} />
+                  <span><strong>Dynamic Risk Matrix:</strong> Multi-factor mathematical risk index calculated per zone.</span>
                 </div>
               </Space>
-
-              <div style={{ marginTop: 'auto' }}>
-                <Button
-                  type="primary"
-                  block
-                  size="large"
-                  onClick={() => navigate('/login?role=worker')}
-                  style={{ background: '#16a34a', borderColor: '#16a34a', color: '#fff', fontWeight: 600 }}
-                >
-                  Launch Module 1 (Active) <ArrowRightOutlined />
-                </Button>
-              </div>
             </Card>
           </Col>
 
-          {/* MODULE 2 (STANDBY) */}
-          <Col xs={24} lg={8}>
+          {/* Solution Pillar 2 */}
+          <Col xs={24} md={8}>
             <Card
               bordered
               style={{
-                borderRadius: 16,
+                borderRadius: 14,
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                border: isDark ? '1px solid #27272a' : '1px solid #e4e4e7',
-                background: isDark ? '#111111' : '#ffffff',
+                border: `1px solid ${borderColor}`,
+                background: cardBg,
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <Tag color="blue" icon={<ClockCircleOutlined />} style={{ fontWeight: 600, padding: '2px 8px' }}>
-                  PHASE 2 ROADMAP
-                </Tag>
-                <Tag color="default" style={{ fontSize: 11 }}>STANDBY</Tag>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                <div style={{ background: 'rgba(37, 99, 235, 0.12)', padding: 10, borderRadius: 10 }}>
+                  <FileDoneOutlined style={{ fontSize: 24, color: '#2563eb' }} />
+                </div>
+                <div>
+                  <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b', fontSize: 16 }}>
+                    Field Operations & Inspections
+                  </Title>
+                  <Text type="secondary" style={{ fontSize: 11 }}>Mobile-First Audit Workflow</Text>
+                </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                <FileDoneOutlined style={{ fontSize: 26, color: '#2563eb' }} />
-                <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Module 2: Field Operations & Inspection Management</Title>
-              </div>
-
-              <Paragraph type="secondary" style={{ fontSize: 13, lineHeight: 1.6, color: isDark ? '#a1a1aa' : '#71717a' }}>
-                Comprehensive pit inspection framework including digital pre-shift overman sign-offs, heavy machinery roadworthiness inspections, geo-tagged hazard logging, and drone bench inspection uploads.
+              <Paragraph style={{ fontSize: 13, lineHeight: 1.6, color: secondaryTextColor }}>
+                Empowers safety officers and pit inspectors with digitized workflows that operate seamlessly both online and in disconnected subterranean tunnels.
               </Paragraph>
 
-              <Divider style={{ margin: '12px 0', borderColor: isDark ? '#27272a' : '#e4e4e7' }} />
+              <Divider style={{ margin: '14px 0', borderColor }} />
 
-              <Space direction="vertical" size={8} style={{ width: '100%', marginBottom: 20 }}>
-                <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
-                  <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Digital Pit Pre-Shift Safety Walkaround Checklists.</span>
+              <Space direction="vertical" size={10} style={{ width: '100%' }}>
+                <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
+                  <FileDoneOutlined style={{ color: '#2563eb', marginTop: 2 }} />
+                  <span><strong>Statutory Checklists:</strong> Standardized DGMS pre-shift and machinery audit forms.</span>
                 </div>
-                <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
-                  <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Mobile Equipment Roadworthiness Pre-Operation Logs.</span>
+                <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
+                  <AlertOutlined style={{ color: '#ea580c', marginTop: 2 }} />
+                  <span><strong>Voice Hazard Logging:</strong> AI converts spoken field notes into structured incident reports.</span>
                 </div>
-                <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
-                  <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Geo-Tagged Danger Zones & Blast Clearance Buffers.</span>
+                <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
+                  <SafetyOutlined style={{ color: '#059669', marginTop: 2 }} />
+                  <span><strong>CAPA Remediation:</strong> Verifiable corrective actions backed by photo evidence.</span>
                 </div>
-                <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
-                  <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Drone Aerial Bench Highwall Stability Photo Logs.</span>
+                <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
+                  <SyncOutlined style={{ color: '#7c3aed', marginTop: 2 }} />
+                  <span><strong>Offline Sync Center:</strong> Subterranean mesh caching with automatic cloud sync.</span>
                 </div>
               </Space>
-
-              <div style={{ marginTop: 'auto' }}>
-                <Alert
-                  message="Navigation Button Active"
-                  description="Module 2 button is present in the navigation bar. Features are on standby roadmap."
-                  type="info"
-                  showIcon
-                  style={{ marginBottom: 12, fontSize: 12, padding: '8px 12px' }}
-                />
-                <Button
-                  block
-                  size="large"
-                  onClick={() => navigate('/login?role=worker')}
-                  style={{ borderColor: isDark ? '#27272a' : '#e4e4e7', color: isDark ? '#a1a1aa' : '#52525b', fontWeight: 500 }}
-                >
-                  View Module 2 Specs in Portal
-                </Button>
-              </div>
             </Card>
           </Col>
 
-          {/* MODULE 3 (STANDBY) */}
-          <Col xs={24} lg={8}>
+          {/* Solution Pillar 3 */}
+          <Col xs={24} md={8}>
             <Card
               bordered
               style={{
-                borderRadius: 16,
+                borderRadius: 14,
                 height: '100%',
                 display: 'flex',
                 flexDirection: 'column',
-                border: isDark ? '1px solid #27272a' : '1px solid #e4e4e7',
-                background: isDark ? '#111111' : '#ffffff',
+                border: `1px solid ${borderColor}`,
+                background: cardBg,
+                boxShadow: '0 4px 20px rgba(0, 0, 0, 0.05)',
               }}
             >
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 16 }}>
-                <Tag color="purple" icon={<ClockCircleOutlined />} style={{ fontWeight: 600, padding: '2px 8px' }}>
-                  PHASE 3 ROADMAP
-                </Tag>
-                <Tag color="default" style={{ fontSize: 11 }}>STANDBY</Tag>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
+                <div style={{ background: 'rgba(147, 51, 234, 0.12)', padding: 10, borderRadius: 10 }}>
+                  <TeamOutlined style={{ fontSize: 24, color: '#9333ea' }} />
+                </div>
+                <div>
+                  <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b', fontSize: 16 }}>
+                    Workforce & Contractor Governance
+                  </Title>
+                  <Text type="secondary" style={{ fontSize: 11 }}>Statutory Credentialing</Text>
+                </div>
               </div>
 
-              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 12 }}>
-                <AuditOutlined style={{ fontSize: 26, color: '#9333ea' }} />
-                <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Module 3: Contractor Governance Management</Title>
-              </div>
-
-              <Paragraph type="secondary" style={{ fontSize: 13, lineHeight: 1.6, color: isDark ? '#a1a1aa' : '#71717a' }}>
-                End-to-end contractor workforce governance including biometric gate pass verification, statutory PF/ESI minimum wage escrow audits, safety training tracking, and agency blacklisting matrix.
+              <Paragraph style={{ fontSize: 13, lineHeight: 1.6, color: secondaryTextColor }}>
+                Maintains transparent, compliant governance over the entire mining workforce, contractor agencies, and heavy machinery operators.
               </Paragraph>
 
-              <Divider style={{ margin: '12px 0', borderColor: isDark ? '#27272a' : '#e4e4e7' }} />
+              <Divider style={{ margin: '14px 0', borderColor }} />
 
-              <Space direction="vertical" size={8} style={{ width: '100%', marginBottom: 20 }}>
-                <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
-                  <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Contractor Worker Biometric Identity Gate Access.</span>
+              <Space direction="vertical" size={10} style={{ width: '100%' }}>
+                <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
+                  <IdcardOutlined style={{ color: '#9333ea', marginTop: 2 }} />
+                  <span><strong>Worker Pass & RFID:</strong> Biometric authentication & designated HEMM equipment rosters.</span>
                 </div>
-                <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
-                  <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Statutory Wage, PF & ESI Escrow Compliance Audits.</span>
+                <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
+                  <AuditOutlined style={{ color: '#16a34a', marginTop: 2 }} />
+                  <span><strong>DGMS Safety Induction:</strong> Tracking MVTR 1966 certifications & medical fitness.</span>
                 </div>
-                <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
-                  <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Mandatory Vocational Safety Induction (VT) Records.</span>
+                <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
+                  <TeamOutlined style={{ color: '#2563eb', marginTop: 2 }} />
+                  <span><strong>Contractor Vetting:</strong> Real-time KYC validation, insurance validity, & SLA tracking.</span>
                 </div>
-                <div style={{ display: 'flex', gap: 8, fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
-                  <CheckCircleFilled style={{ color: '#71717a', marginTop: 3 }} />
-                  <span>Contractor Agency Safety Rating & Blacklisting Matrix.</span>
+                <div style={{ display: 'flex', gap: 8, fontSize: 13 }}>
+                  <AlertOutlined style={{ color: '#dc2626', marginTop: 2 }} />
+                  <span><strong>Grievance Resolution:</strong> Formal show-cause logs & dispute resolution workflows.</span>
                 </div>
               </Space>
-
-              <div style={{ marginTop: 'auto' }}>
-                <Alert
-                  message="Navigation Button Active"
-                  description="Module 3 button is present in the navigation bar. Features are on standby roadmap."
-                  type="info"
-                  showIcon
-                  style={{ marginBottom: 12, fontSize: 12, padding: '8px 12px' }}
-                />
-                <Button
-                  block
-                  size="large"
-                  onClick={() => navigate('/login?role=worker')}
-                  style={{ borderColor: isDark ? '#27272a' : '#e4e4e7', color: isDark ? '#a1a1aa' : '#52525b', fontWeight: 500 }}
-                >
-                  View Module 3 Specs in Portal
-                </Button>
-              </div>
             </Card>
           </Col>
         </Row>
       </section>
 
-      {/* ── ROLE-BASED ACCESS GOVERNANCE SECTION (WORKER VS ADMIN) ────────── */}
-      <section id="roles" style={{ padding: '60px 24px', background: isDark ? '#09090b' : '#f4f4f5' }}>
-        <div style={{ maxWidth: 1100, margin: '0 auto' }}>
-          <div style={{ textAlign: 'center', marginBottom: 40 }}>
-            <Tag color="default" style={{ fontSize: 12, fontWeight: 600, padding: '2px 10px' }}>
-              WORKER VS ADMIN GOVERNANCE
-            </Tag>
-            <Title level={2} style={{ marginTop: 12, marginBottom: 8, fontWeight: 800, color: isDark ? '#ffffff' : '#18181b' }}>
-              Worker Features vs. Admin Authority
-            </Title>
-            <Paragraph type="secondary" style={{ fontSize: 16, color: isDark ? '#a1a1aa' : '#71717a' }}>
-              Two distinct operational portals tailored for on-ground workforce safety and executive compliance governance.
-            </Paragraph>
-          </div>
-
-          <Row gutter={[24, 24]}>
-            {/* WORKER ROLE */}
-            <Col xs={24} md={12}>
-              <Card
-                bordered
-                style={{
-                  borderRadius: 16,
-                  height: '100%',
-                  background: isDark ? '#111111' : '#ffffff',
-                  border: isDark ? '1px solid #27272a' : '1px solid #d4d4d8',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                  <div
-                    style={{
-                      width: 44,
-                      height: 44,
-                      background: '#0284c7',
-                      borderRadius: 10,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <UserOutlined style={{ fontSize: 24, color: '#ffffff' }} />
-                  </div>
-                  <div>
-                    <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Worker Portal</Title>
-                    <Tag color="blue" style={{ fontSize: 11, marginTop: 2 }}>SAFETY_OFFICER / MINE_WORKER / OPERATOR</Tag>
-                  </div>
-                </div>
-
-                <Paragraph style={{ fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
-                  Tailored for on-ground mine workers, pit operators, overmen, and safety inspectors:
-                </Paragraph>
-
-                <Space direction="vertical" size={10} style={{ width: '100%', marginBottom: 24 }}>
-                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
-                    <CheckCircleFilled style={{ color: '#0284c7', marginTop: 2 }} />
-                    <span><strong>Module 1 Active & Working:</strong> Live CCTV PPE detection feed, continuous gas sensor threshold alerts, and machinery fitness checks.</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
-                    <CheckCircleFilled style={{ color: '#0284c7', marginTop: 2 }} />
-                    <span><strong>Shift Safety Checklist:</strong> Complete digital pre-shift checks and submit field safety notes directly from the pit.</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
-                    <CheckCircleFilled style={{ color: '#0284c7', marginTop: 2 }} />
-                    <span><strong>Module 2 & 3 Visibility:</strong> Labeled buttons for Field Operations and Contractor Governance available on standby.</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
-                    <CheckCircleFilled style={{ color: '#0284c7', marginTop: 2 }} />
-                    <span><strong>Safety Protected:</strong> Restricted from accidental mathematical weight recalibration and system simulation controls.</span>
-                  </div>
-                </Space>
-
-                <Button
-                  block
-                  size="large"
-                  onClick={() => navigate('/login?role=worker')}
-                  style={{ borderColor: '#0284c7', color: '#0284c7', fontWeight: 600, background: isDark ? '#111111' : '#ffffff' }}
-                >
-                  Sign In as Worker / Safety Officer
-                </Button>
-              </Card>
-            </Col>
-
-            {/* ADMIN ROLE */}
-            <Col xs={24} md={12}>
-              <Card
-                bordered
-                style={{
-                  borderRadius: 16,
-                  height: '100%',
-                  background: isDark ? '#111111' : '#ffffff',
-                  border: isDark ? '1px solid #27272a' : '1px solid #d4d4d8',
-                }}
-              >
-                <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 16 }}>
-                  <div
-                    style={{
-                      width: 44,
-                      height: 44,
-                      background: isDark ? '#27272a' : '#18181b',
-                      borderRadius: 10,
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                    }}
-                  >
-                    <SafetyCertificateOutlined style={{ fontSize: 24, color: '#ffffff' }} />
-                  </div>
-                  <div>
-                    <Title level={4} style={{ margin: 0, color: isDark ? '#ffffff' : '#18181b' }}>Admin Portal</Title>
-                    <Tag color={isDark ? '#27272a' : '#18181b'} style={{ fontSize: 11, marginTop: 2 }}>SUPER_ADMIN / MINE_MANAGER</Tag>
-                  </div>
-                </div>
-
-                <Paragraph style={{ fontSize: 13, color: isDark ? '#a1a1aa' : '#52525b' }}>
-                  Designed for Directors General, Chief Inspectors, and Mine Managers with statutory decision-making authority:
-                </Paragraph>
-
-                <Space direction="vertical" size={10} style={{ width: '100%', marginBottom: 24 }}>
-                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
-                    <CheckCircleFilled style={{ color: '#16a34a', marginTop: 2 }} />
-                    <span><strong>Risk Engine Weights:</strong> Adjust $w_v, w_e, w_p, w_s$ multipliers and trigger automated score recomputations.</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
-                    <CheckCircleFilled style={{ color: '#16a34a', marginTop: 2 }} />
-                    <span><strong>Simulation & Drills:</strong> Execute live demo safety drill events (PPE breaches, gas leaks, OCR validation).</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
-                    <CheckCircleFilled style={{ color: '#16a34a', marginTop: 2 }} />
-                    <span><strong>Statutory Violation Overrides:</strong> Legally verify, escalate, or dismiss flagged infractions with audit tracking.</span>
-                  </div>
-                  <div style={{ display: 'flex', gap: 10, fontSize: 13 }}>
-                    <CheckCircleFilled style={{ color: '#16a34a', marginTop: 2 }} />
-                    <span><strong>System Data Seeding:</strong> Seed synthetic coal mine assets, zones, and equipment inventory.</span>
-                  </div>
-                </Space>
-
-                <Button
-                  type="primary"
-                  block
-                  size="large"
-                  onClick={() => navigate('/login?role=admin')}
-                  style={{ background: isDark ? '#27272a' : '#18181b', borderColor: isDark ? '#3f3f46' : '#18181b', color: '#fff', fontWeight: 600 }}
-                >
-                  Sign In as Administrator
-                </Button>
-              </Card>
-            </Col>
-          </Row>
+      {/* ── THE USE OF THE WEBSITE SECTION ───────────────────────── */}
+      <section
+        id="platform-use"
+        style={{
+          padding: '64px 24px',
+          maxWidth: 1160,
+          margin: '0 auto',
+          scrollMarginTop: 80,
+        }}
+      >
+        <div style={{ textAlign: 'center', marginBottom: 44 }}>
+          <Tag color="purple" style={{ fontSize: 11, fontWeight: 600, padding: '2px 10px', textTransform: 'uppercase' }}>
+            Role-Based Workflows
+          </Tag>
+          <Title level={2} style={{ marginTop: 12, marginBottom: 8, fontWeight: 800, color: isDark ? '#ffffff' : '#18181b' }}>
+            The Use of the Website
+          </Title>
+          <Paragraph style={{ fontSize: 15, maxWidth: 680, margin: '0 auto', color: secondaryTextColor }}>
+            How different stakeholders interact with AI MineGuard every shift to ensure zero preventable accidents and continuous statutory compliance.
+          </Paragraph>
         </div>
+
+        <Row gutter={[24, 24]}>
+          {/* Persona 1: Mine Workers */}
+          <Col xs={24} md={8}>
+            <div
+              style={{
+                background: cardBg,
+                border: `1px solid ${borderColor}`,
+                borderRadius: 14,
+                padding: '28px 24px',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <UserOutlined style={{ fontSize: 22, color: '#10b981' }} />
+                <Title level={4} style={{ margin: 0, fontSize: 17, color: isDark ? '#ffffff' : '#18181b' }}>
+                  Mine Workers & Operators
+                </Title>
+              </div>
+              <Paragraph style={{ fontSize: 13, color: secondaryTextColor, lineHeight: 1.6, flexGrow: 1 }}>
+                Workers log in to access the <strong>Worker Portal & Digital Pass</strong>. Here, they view their shift schedule, confirm designated heavy machinery assignments, check medical exam fitness validity, and report safety hazards from the pit face.
+              </Paragraph>
+              <div style={{ background: isDark ? '#18181b' : '#f4f4f5', padding: '12px 16px', borderRadius: 8, marginTop: 16 }}>
+                <Text style={{ fontSize: 12, fontWeight: 600 }}>Key Use Case:</Text>
+                <div style={{ fontSize: 12, color: secondaryTextColor, marginTop: 4 }}>
+                  • Access digital RFID mine entry pass<br />
+                  • Check shift schedule & designated HEMM<br />
+                  • Submit hazard alerts with voice notes
+                </div>
+              </div>
+              <Button
+                block
+                style={{ marginTop: 20, fontWeight: 600 }}
+                onClick={() => navigate('/login?role=worker')}
+              >
+                Go to Worker Portal →
+              </Button>
+            </div>
+          </Col>
+
+          {/* Persona 2: Field Safety Officers */}
+          <Col xs={24} md={8}>
+            <div
+              style={{
+                background: cardBg,
+                border: `1px solid ${borderColor}`,
+                borderRadius: 14,
+                padding: '28px 24px',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <SafetyCertificateOutlined style={{ fontSize: 22, color: '#2563eb' }} />
+                <Title level={4} style={{ margin: 0, fontSize: 17, color: isDark ? '#ffffff' : '#18181b' }}>
+                  Safety Officers & Inspectors
+                </Title>
+              </div>
+              <Paragraph style={{ fontSize: 13, color: secondaryTextColor, lineHeight: 1.6, flexGrow: 1 }}>
+                Safety officers use the site on tablets in the pit or control room. They execute mandatory pre-shift DGMS checklists, monitor live CCTV PPE detection feeds, receive gas breach warnings within 5 seconds, and verify CAPA remediation evidence.
+              </Paragraph>
+              <div style={{ background: isDark ? '#18181b' : '#f4f4f5', padding: '12px 16px', borderRadius: 8, marginTop: 16 }}>
+                <Text style={{ fontSize: 12, fontWeight: 600 }}>Key Use Case:</Text>
+                <div style={{ fontSize: 12, color: secondaryTextColor, marginTop: 4 }}>
+                  • Conduct statutory pre-shift inspections<br />
+                  • Review real-time gas threshold breaches<br />
+                  • Verify CAPA before/after hazard closure
+                </div>
+              </div>
+              <Button
+                type="primary"
+                block
+                style={{ marginTop: 20, fontWeight: 600, background: '#2563eb', borderColor: '#2563eb' }}
+                onClick={() => navigate('/login?role=admin')}
+              >
+                View Inspection Console →
+              </Button>
+            </div>
+          </Col>
+
+          {/* Persona 3: Mine Management */}
+          <Col xs={24} md={8}>
+            <div
+              style={{
+                background: cardBg,
+                border: `1px solid ${borderColor}`,
+                borderRadius: 14,
+                padding: '28px 24px',
+                height: '100%',
+                display: 'flex',
+                flexDirection: 'column',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 14 }}>
+                <DashboardOutlined style={{ fontSize: 22, color: '#9333ea' }} />
+                <Title level={4} style={{ margin: 0, fontSize: 17, color: isDark ? '#ffffff' : '#18181b' }}>
+                  Mine Managers & Leadership
+                </Title>
+              </div>
+              <Paragraph style={{ fontSize: 13, color: secondaryTextColor, lineHeight: 1.6, flexGrow: 1 }}>
+                Mine managers use the <strong>Central Executive Dashboard</strong> and <strong>GIS Digital Twin</strong> to observe site-wide safety posture, verify contractor KYC validity, monitor statutory SLA escalations, and generate official DGMS audit reports.
+              </Paragraph>
+              <div style={{ background: isDark ? '#18181b' : '#f4f4f5', padding: '12px 16px', borderRadius: 8, marginTop: 16 }}>
+                <Text style={{ fontSize: 12, fontWeight: 600 }}>Key Use Case:</Text>
+                <div style={{ fontSize: 12, color: secondaryTextColor, marginTop: 4 }}>
+                  • Real-time GIS digital twin visualization<br />
+                  • Multi-mine compliance index tracking<br />
+                  • One-click statutory DGMS audit exports
+                </div>
+              </div>
+              <Button
+                type="primary"
+                block
+                style={{ marginTop: 20, fontWeight: 600, background: '#18181b', borderColor: '#18181b' }}
+                onClick={() => navigate('/login?role=admin')}
+              >
+                Open Operations Console →
+              </Button>
+            </div>
+          </Col>
+        </Row>
       </section>
 
-      {/* ── STATUTORY STANDARDS & FOOTER ─────────────────────────────────── */}
-      <section id="compliance" style={{ padding: '60px 24px', maxWidth: 1100, margin: '0 auto', textAlign: 'center' }}>
-        <Title level={3} style={{ fontWeight: 700, marginBottom: 16, color: isDark ? '#ffffff' : '#18181b' }}>
-          Statutory Regulatory Frameworks
-        </Title>
-        <Paragraph type="secondary" style={{ maxWidth: 700, margin: '0 auto 32px', fontSize: 15, color: isDark ? '#a1a1aa' : '#71717a' }}>
-          Engineered to satisfy mandatory Indian mining safety regulations including the Coal Mines Regulations (CMR 2017), Mines Act 1952, and Director General of Mines Safety (DGMS) circulars.
-        </Paragraph>
-
-        <Space size={16} wrap style={{ justifyContent: 'center', marginBottom: 48 }}>
-          <Tag style={{ padding: '6px 14px', fontSize: 13, borderRadius: 8 }}>CMR 2017 Regulation 166 (Ventilation & Gases)</Tag>
-          <Tag style={{ padding: '6px 14px', fontSize: 13, borderRadius: 8 }}>CMR 2017 Regulation 184 (HEMM Safety & Speed)</Tag>
-          <Tag style={{ padding: '6px 14px', fontSize: 13, borderRadius: 8 }}>Mines Act 1952 Section 22A (Emergency Powers)</Tag>
-          <Tag style={{ padding: '6px 14px', fontSize: 13, borderRadius: 8 }}>DGMS Tech. Circular No. 6 (Automated Vision)</Tag>
-        </Space>
-
-        <div style={{ borderTop: isDark ? '1px solid #27272a' : '1px solid #e4e4e7', paddingTop: 32, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16 }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-            <img src={logo} alt="logo" style={{ width: 24, height: 24 }} />
-            <Text strong style={{ fontSize: 13, color: isDark ? '#ffffff' : '#18181b' }}>AI MineGuard · Smart India Hackathon 2026</Text>
-          </div>
-          <Space size={16}>
-            <Button type="link" onClick={() => navigate('/about')} style={{ color: isDark ? '#a1a1aa' : '#71717a', padding: 0 }}>
-              About
+      {/* ── ARCHITECTURE HIGHLIGHT BANNER ─────────────────────────── */}
+      <section style={{ padding: '20px 24px 72px', maxWidth: 1160, margin: '0 auto' }}>
+        <div
+          style={{
+            background: isDark
+              ? 'linear-gradient(135deg, #111827 0%, #18181b 100%)'
+              : 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+            border: `1px solid ${isDark ? '#1f293d' : '#bae6fd'}`,
+            borderRadius: 16,
+            padding: '40px 32px',
+            textAlign: 'center',
+          }}
+        >
+          <GlobalOutlined style={{ fontSize: 36, color: '#0284c7', marginBottom: 16 }} />
+          <Title level={3} style={{ margin: '0 0 12px', color: isDark ? '#ffffff' : '#0f172a', fontWeight: 700 }}>
+            Standardizing Safety & Statutory Compliance Across Coal & Metal Mines
+          </Title>
+          <Paragraph
+            style={{
+              fontSize: 15,
+              maxWidth: 720,
+              margin: '0 auto 28px',
+              color: isDark ? '#94a3b8' : '#334155',
+              lineHeight: 1.6,
+            }}
+          >
+            Built to align strictly with the Coal Mines Regulations (CMR 2017), Mines Vocational Training Rules (MVTR 1966), and DGMS Technical Circulars.
+          </Paragraph>
+          <Space size={16} wrap style={{ justifyContent: 'center' }}>
+            <Button
+              type="primary"
+              size="large"
+              onClick={() => navigate('/login?role=admin')}
+              style={{
+                height: 48,
+                padding: '0 28px',
+                fontWeight: 600,
+                background: '#0284c7',
+                borderColor: '#0284c7',
+                borderRadius: 8,
+              }}
+            >
+              Launch Operations Console
             </Button>
-            <Button type="link" onClick={() => navigate('/contact')} style={{ color: isDark ? '#a1a1aa' : '#71717a', padding: 0 }}>
-              Contact
+            <Button
+              size="large"
+              onClick={() => navigate('/about')}
+              style={{
+                height: 48,
+                padding: '0 24px',
+                fontWeight: 600,
+                borderRadius: 8,
+                background: cardBg,
+                borderColor,
+                color: textColor,
+              }}
+            >
+              About the Architecture
             </Button>
           </Space>
-          <Text type="secondary" style={{ fontSize: 12, color: isDark ? '#a1a1aa' : '#71717a' }}>
-            Branch: <Text code>malli</Text> · Module 1 AI Compliance and Risk Engine
-          </Text>
         </div>
       </section>
+
+      {/* ── FOOTER ────────────────────────────────────────────────── */}
+      <footer
+        style={{
+          borderTop: `1px solid ${borderColor}`,
+          padding: '36px 32px',
+          background: isDark ? '#09090b' : '#f4f4f5',
+          fontSize: 13,
+          color: secondaryTextColor,
+        }}
+      >
+        <div
+          style={{
+            maxWidth: 1160,
+            margin: '0 auto',
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            flexWrap: 'wrap',
+            gap: 16,
+          }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+            <img src={logo} alt="Logo" style={{ width: 22, height: 22 }} />
+            <span style={{ fontWeight: 600, color: textColor }}>AI MineGuard</span>
+            <span>— Mining Safety & Operational Intelligence</span>
+          </div>
+
+          <Space size={20}>
+            <Button type="link" size="small" onClick={() => navigate('/about')} style={{ color: secondaryTextColor, padding: 0 }}>
+              About
+            </Button>
+            <Button type="link" size="small" onClick={() => navigate('/contact')} style={{ color: secondaryTextColor, padding: 0 }}>
+              Safety Desk
+            </Button>
+            <Button type="link" size="small" onClick={() => navigate('/login?role=worker')} style={{ color: secondaryTextColor, padding: 0 }}>
+              Worker Portal
+            </Button>
+            <Button type="link" size="small" onClick={() => navigate('/login?role=admin')} style={{ color: secondaryTextColor, padding: 0 }}>
+              Admin Portal
+            </Button>
+          </Space>
+
+          <div>
+            DGMS CMR 2017 Statutory Compliance Engine · Enterprise Production Release
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };

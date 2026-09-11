@@ -137,7 +137,7 @@ export const OfflineSyncPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <Title level={3} style={{ margin: 0 }}>⚡ Offline-First Synchronization Command Center (Module 2)</Title>
+          <Title level={3} style={{ margin: 0 }}>⚡ Offline-First Synchronization Command Center</Title>
           <Text type="secondary">Guaranteed packet delivery for subterranean / non-cellular pit zones with cryptographic conflict resolution.</Text>
         </div>
         <Space>

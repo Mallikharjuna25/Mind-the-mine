@@ -199,7 +199,7 @@ export const RemediationPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <Title level={3} style={{ margin: 0 }}>🛡️ Remediation Verification & CAPA Tracker (Module 2)</Title>
+          <Title level={3} style={{ margin: 0 }}>🛡️ Remediation Verification & CAPA Tracker</Title>
           <Text type="secondary">Statutory multi-stage corrective & preventive action lifecycle, before/after evidence validation.</Text>
         </div>
         <Space>

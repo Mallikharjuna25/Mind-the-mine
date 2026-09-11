@@ -226,7 +226,7 @@ export const FieldInspectionsPage: React.FC = () => {
       {/* Header Banner */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <Title level={3} style={{ margin: 0 }}>📋 Field Operations & Inspection Management (Module 2)</Title>
+          <Title level={3} style={{ margin: 0 }}>📋 Field Operations & Inspection Management</Title>
           <Text type="secondary">Execute statutory DGMS checklists, log pre-shift equipment audits, and enforce CAPA remediations.</Text>
         </div>
         <Space>

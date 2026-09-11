@@ -169,7 +169,7 @@ export const GISMapPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <Title level={3} style={{ margin: 0 }}>🗺️ GIS Spatial Intelligence & Mine Geofencing (Module 2)</Title>
+          <Title level={3} style={{ margin: 0 }}>🗺️ GIS Spatial Intelligence & Mine Geofencing</Title>
           <Text type="secondary">Real-time geospatial mapping of active pit benches, haulage corridors, hazard pins, and inspector tracks.</Text>
         </div>
         <Space>

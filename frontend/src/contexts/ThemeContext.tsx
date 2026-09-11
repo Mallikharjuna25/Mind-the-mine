@@ -21,10 +21,12 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     localStorage.setItem('mineguard_theme', isDark ? 'dark' : 'light');
     if (isDark) {
       document.documentElement.classList.add('dark');
+      document.body.classList.add('dark');
       document.body.style.backgroundColor = '#050505';
       document.body.style.color = 'rgba(255, 255, 255, 0.88)';
     } else {
       document.documentElement.classList.remove('dark');
+      document.body.classList.remove('dark');
       document.body.style.backgroundColor = '#fafafa';
       document.body.style.color = '#18181b';
     }
@@ -91,9 +93,27 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             Tooltip: {},
             Checkbox: {},
             Radio: {},
+            Table: {
+              colorBgContainer: '#111111',
+              headerBg: '#141416',
+              headerColor: '#ffffff',
+              rowHoverBg: '#182234',
+              borderColor: '#27272a',
+            },
+            Descriptions: {
+              labelBg: '#141416',
+              titleColor: '#ffffff',
+              contentColor: 'rgba(255, 255, 255, 0.9)',
+            },
+            Dropdown: {
+              colorBgElevated: '#18181b',
+            },
             Select: {
               colorBgContainer: '#111111',
+              colorBgElevated: '#18181b',
               colorBorder: '#27272a',
+              optionSelectedBg: 'rgba(22, 119, 255, 0.25)',
+              optionActiveBg: 'rgba(255, 255, 255, 0.08)',
             },
             Input: {
               colorBgContainer: '#111111',
@@ -146,6 +166,13 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             itemSelectedBg: '#f4f4f5',
             itemSelectedColor: '#18181b',
             subMenuItemBg: 'transparent',
+          },
+          Table: {
+            colorBgContainer: '#ffffff',
+            headerBg: '#f8fafc',
+            headerColor: '#0f172a',
+            rowHoverBg: '#f1f5f9',
+            borderColor: '#e2e8f0',
           },
           Card: {
             colorBgContainer: '#ffffff',

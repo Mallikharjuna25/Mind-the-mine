@@ -18,14 +18,14 @@ import { RiskEnginePage } from './pages/RiskEnginePage';
 import { WorkflowsPage } from './pages/WorkflowsPage';
 import { CompliancePage } from './pages/CompliancePage';
 
-// Module 2 Pages
+// Field Operations & Inspections
 import { FieldInspectionsPage } from './pages/FieldInspectionsPage';
 import { FieldHazardsPage } from './pages/FieldHazardsPage';
 import { RemediationPage } from './pages/RemediationPage';
 import { GISMapPage } from './pages/GISMapPage';
 import { OfflineSyncPage } from './pages/OfflineSyncPage';
 
-// Module 3 Pages
+// Contractor & Worker Governance
 import { ContractorsPage } from './pages/ContractorsPage';
 import { WorkersPage } from './pages/WorkersPage';
 import { TrainingPage } from './pages/TrainingPage';
@@ -33,13 +33,13 @@ import { GovernancePage } from './pages/GovernancePage';
 import { WorkerPortalPage } from './pages/WorkerPortalPage';
 
 const PROTECTED_ROUTES = [
-  // Overview
+  // Central Overview & Portal
   { path: '/', element: <DashboardPage /> },
   { path: '/dashboard', element: <DashboardPage /> },
   { path: '/worker-portal', element: <WorkerPortalPage /> },
   { path: '/digital-twin', element: <DigitalTwinPage /> },
 
-  // Module 1: AI Risk & Surveillance
+  // AI Safety & Environmental Surveillance
   { path: '/cctv', element: <CCTVMonitoringPage /> },
   { path: '/equipment', element: <EquipmentOCRPage /> },
   { path: '/environmental', element: <EnvironmentalPage /> },
@@ -47,20 +47,18 @@ const PROTECTED_ROUTES = [
   { path: '/workflows', element: <WorkflowsPage /> },
   { path: '/compliance', element: <CompliancePage /> },
 
-  // Module 2: Field Operations & Inspection Management
+  // Field Operations & Inspection Management
   { path: '/inspections', element: <FieldInspectionsPage /> },
   { path: '/field-hazards', element: <FieldHazardsPage /> },
   { path: '/remediation', element: <RemediationPage /> },
   { path: '/gis-map', element: <GISMapPage /> },
   { path: '/offline-sync', element: <OfflineSyncPage /> },
-  { path: '/module-2', element: <Navigate to="/inspections" replace /> },
 
-  // Module 3: Contractor & Worker Compliance Governance
+  // Contractor & Worker Compliance Governance
   { path: '/contractors', element: <ContractorsPage /> },
   { path: '/workers', element: <WorkersPage /> },
   { path: '/training', element: <TrainingPage /> },
   { path: '/governance', element: <GovernancePage /> },
-  { path: '/module-3', element: <Navigate to="/contractors" replace /> },
 ];
 
 const AppRoutes: React.FC = () => {
@@ -90,16 +88,30 @@ const AppRoutes: React.FC = () => {
 
   const isWorker = user.role === 'WORKER';
 
-  // When logged in:
+  // Role-specific routing:
+  // Workers only have access to Worker Portal and Central Dashboard
+  if (isWorker) {
+    return (
+      <Routes>
+        <Route path="/landing" element={<LandingPage />} />
+        <Route path="/about" element={<AboutPage />} />
+        <Route path="/contact" element={<ContactPage />} />
+        <Route path="/login" element={<Navigate to="/worker-portal" replace />} />
+        <Route path="/" element={<AppLayout><WorkerPortalPage /></AppLayout>} />
+        <Route path="/worker-portal" element={<AppLayout><WorkerPortalPage /></AppLayout>} />
+        <Route path="/dashboard" element={<AppLayout><DashboardPage /></AppLayout>} />
+        <Route path="*" element={<Navigate to="/worker-portal" replace />} />
+      </Routes>
+    );
+  }
+
+  // Admin routing: full access to operational and governance suites
   return (
     <Routes>
       <Route path="/landing" element={<LandingPage />} />
       <Route path="/about" element={<AboutPage />} />
       <Route path="/contact" element={<ContactPage />} />
-      <Route path="/login" element={<Navigate to={isWorker ? '/worker-portal' : '/'} replace />} />
-      {isWorker && (
-        <Route path="/" element={<AppLayout><WorkerPortalPage /></AppLayout>} />
-      )}
+      <Route path="/login" element={<Navigate to="/dashboard" replace />} />
       {PROTECTED_ROUTES.map((r) => (
         <Route
           key={r.path}
@@ -107,7 +119,7 @@ const AppRoutes: React.FC = () => {
           element={<AppLayout>{r.element}</AppLayout>}
         />
       ))}
-      <Route path="*" element={<Navigate to={isWorker ? '/worker-portal' : '/'} replace />} />
+      <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
 };

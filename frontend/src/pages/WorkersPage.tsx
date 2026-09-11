@@ -277,7 +277,7 @@ export const WorkersPage: React.FC = () => {
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 12 }}>
         <div>
-          <Title level={3} style={{ margin: 0 }}>👷 Worker Credentialing & Biometric Verification (Module 3)</Title>
+          <Title level={3} style={{ margin: 0 }}>👷 Worker Credentialing & Biometric Verification</Title>
           <Text type="secondary">RFID biometric authentication, statutory underground entry permits, and automated PPE issuance tracking.</Text>
         </div>
         <Space>

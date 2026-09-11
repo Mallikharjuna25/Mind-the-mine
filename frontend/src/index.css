@@ -23,6 +23,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+body.dark,
+html.dark {
+  color: rgba(255, 255, 255, 0.88);
+  background: #050505;
+}
+
 /* Leaflet map fix inside card */
 .leaflet-container {
   font-family: var(--font-sans) !important;
@@ -32,6 +38,11 @@ body {
 /* Ant Design override — remove default body bg */
 .ant-layout {
   background: #fafafa;
+}
+
+.dark .ant-layout,
+html.dark .ant-layout {
+  background: #050505;
 }
 
 /* Custom scrollbar */
@@ -50,6 +61,19 @@ body {
   background: #a3a3a3;
 }
 
+.dark ::-webkit-scrollbar-track,
+html.dark ::-webkit-scrollbar-track {
+  background: #18181b;
+}
+.dark ::-webkit-scrollbar-thumb,
+html.dark ::-webkit-scrollbar-thumb {
+  background: #3f3f46;
+}
+.dark ::-webkit-scrollbar-thumb:hover,
+html.dark ::-webkit-scrollbar-thumb:hover {
+  background: #52525b;
+}
+
 /* Smooth page transitions */
 .ant-layout-content > div {
   animation: fadeIn 0.2s ease-out;
@@ -60,13 +84,92 @@ body {
   to   { opacity: 1; transform: translateY(0); }
 }
 
-/* Table row hover */
-.ant-table-tbody > tr:hover > td {
-  background: #fafafa !important;
+/* ==========================================================================
+   Table Row & Box Hover Fixes (Ensures high contrast & readable text)
+   ========================================================================== */
+
+/* Light mode table hover */
+.ant-table-tbody > tr:hover > td,
+.ant-table-tbody > tr.ant-table-row:hover > td {
+  background: #f4f4f5 !important;
+  color: #18181b !important;
+}
+
+/* Dark mode table hover — eliminates white-out text bug */
+.dark .ant-table-tbody > tr:hover > td,
+.dark .ant-table-tbody > tr.ant-table-row:hover > td,
+html.dark .ant-table-tbody > tr:hover > td,
+html.dark .ant-table-tbody > tr.ant-table-row:hover > td {
+  background: #182234 !important; /* Dark navy slate highlight */
+  color: #ffffff !important;
+}
+
+.dark .ant-table-tbody > tr:hover > td *,
+.dark .ant-table-tbody > tr.ant-table-row:hover > td *,
+html.dark .ant-table-tbody > tr:hover > td *,
+html.dark .ant-table-tbody > tr.ant-table-row:hover > td * {
+  color: #ffffff !important;
+}
+
+.dark .ant-table-tbody > tr:hover > td .ant-tag,
+html.dark .ant-table-tbody > tr:hover > td .ant-tag {
+  color: inherit !important;
+}
+
+/* Dark mode table base styling */
+.dark .ant-table {
+  background: transparent !important;
+  color: rgba(255, 255, 255, 0.88) !important;
+}
+
+.dark .ant-table-thead > tr > th,
+html.dark .ant-table-thead > tr > th {
+  background: #141417 !important;
+  color: rgba(255, 255, 255, 0.95) !important;
+  border-bottom: 1px solid #27272a !important;
+}
+
+.dark .ant-table-tbody > tr > td,
+html.dark .ant-table-tbody > tr > td {
+  border-bottom: 1px solid #1f1f23 !important;
+  color: rgba(255, 255, 255, 0.85);
+}
+
+/* Dark mode Card & Descriptions readability */
+.dark .ant-card,
+html.dark .ant-card {
+  background: #111111;
+  border-color: #27272a;
+}
+
+.dark .ant-card-head-title,
+html.dark .ant-card-head-title {
+  color: #ffffff !important;
+}
+
+.dark .ant-descriptions-bordered .ant-descriptions-item-label,
+html.dark .ant-descriptions-bordered .ant-descriptions-item-label {
+  background-color: #141416 !important;
+  color: rgba(255, 255, 255, 0.75) !important;
+  border-color: #27272a !important;
+}
+
+.dark .ant-descriptions-bordered .ant-descriptions-item-content,
+html.dark .ant-descriptions-bordered .ant-descriptions-item-content {
+  background-color: #111111 !important;
+  color: rgba(255, 255, 255, 0.9) !important;
+  border-color: #27272a !important;
 }
 
 /* Recharts tooltip */
 .recharts-tooltip-wrapper {
   border-radius: 8px !important;
   box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1) !important;
+}
+
+.dark .recharts-default-tooltip,
+html.dark .recharts-default-tooltip {
+  background-color: #18181b !important;
+  border: 1px solid #27272a !important;
+  color: #ffffff !important;
 }

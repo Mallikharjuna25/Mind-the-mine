@@ -17,6 +17,15 @@ interface AuthContextType {
   token: string | null;
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<boolean>;
+  register: (payload: {
+    email: string;
+    password: string;
+    full_name: string;
+    role: string;
+    designation?: string;
+    phone_number?: string;
+    mine_id?: string;
+  }) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
 }
@@ -61,6 +70,32 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
+  const register = async (payload: {
+    email: string;
+    password: string;
+    full_name: string;
+    role: string;
+    designation?: string;
+    phone_number?: string;
+    mine_id?: string;
+  }): Promise<boolean> => {
+    try {
+      await authApi.register(payload);
+      notification.success({
+        message: 'Account Created',
+        description: 'Registration successful! Logging you in...',
+      });
+      return await login(payload.email, payload.password);
+    } catch (err: unknown) {
+      const axiosErr = err as { response?: { data?: { detail?: string } } };
+      notification.error({
+        message: 'Registration Failed',
+        description: axiosErr?.response?.data?.detail || 'Could not register user. Please check your details.',
+      });
+      return false;
+    }
+  };
+
   const logout = () => {
     localStorage.removeItem('access_token');
     setToken(null);
@@ -70,7 +105,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const isAdmin = Boolean(user && (user.role === 'SUPER_ADMIN' || user.role === 'ADMIN'));
 
   return (
-    <AuthContext.Provider value={{ user, token, isAdmin, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, token, isAdmin, login, register, logout, isLoading }}>
       {children}
     </AuthContext.Provider>
   );

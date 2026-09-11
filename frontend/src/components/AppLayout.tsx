@@ -105,63 +105,71 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
     { key: 'logout', icon: <LogoutOutlined />, label: 'Logout', danger: true },
   ];
 
-  // Sidebar Menu items including Module 1, Module 2, and Module 3
-  const menuItems: MenuProps['items'] = [
-    { key: '/worker-portal', icon: <UserOutlined style={{ color: '#10b981' }} />, label: '👷 Worker Portal & Pass' },
-    { key: '/', icon: <DashboardOutlined />, label: 'Central Executive Dashboard' },
-    { key: '/digital-twin', icon: <GlobalOutlined />, label: 'GIS Digital Twin' },
-    {
-      key: 'module1_group',
-      label: (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 8 }}>
-          <span>Module 1 — AI Compliance</span>
-          <Tag color="green" style={{ fontSize: 9, margin: 0, padding: '0 4px', lineHeight: '16px' }}>ACTIVE</Tag>
-        </div>
-      ),
-      type: 'group',
-      children: [
-        { key: '/cctv', icon: <CameraOutlined />, label: 'CCTV Vision AI' },
-        { key: '/equipment', icon: <ToolOutlined />, label: 'Equipment & OCR' },
-        { key: '/environmental', icon: <AreaChartOutlined />, label: 'Gas IoT Telemetry' },
-        { key: '/risk-engine', icon: <ThunderboltOutlined />, label: 'Risk Matrix Engine' },
-        { key: '/workflows', icon: <AlertOutlined />, label: 'Statutory Alerts & SLA' },
-        { key: '/compliance', icon: <FileProtectOutlined />, label: 'DGMS Act Compliance' },
-      ],
-    },
-    {
-      key: 'module2_group',
-      label: (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 8 }}>
-          <span>Module 2 — Field Operations</span>
-          <Tag color="blue" style={{ fontSize: 9, margin: 0, padding: '0 4px', lineHeight: '16px' }}>ACTIVE</Tag>
-        </div>
-      ),
-      type: 'group',
-      children: [
-        { key: '/inspections', icon: <FileDoneOutlined style={{ color: '#2563eb' }} />, label: 'Statutory Checklists' },
-        { key: '/field-hazards', icon: <AlertOutlined style={{ color: '#ea580c' }} />, label: 'Hazards & AI Voice' },
-        { key: '/remediation', icon: <SafetyCertificateOutlined style={{ color: '#059669' }} />, label: 'CAPA Remediation' },
-        { key: '/gis-map', icon: <GlobalOutlined style={{ color: '#3b82f6' }} />, label: 'GIS Spatial Mine Map' },
-        { key: '/offline-sync', icon: <SyncOutlined style={{ color: '#7c3aed' }} />, label: 'Offline Sync Center' },
-      ],
-    },
-    {
-      key: 'module3_group',
-      label: (
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 8 }}>
-          <span>Module 3 — Contractor & Worker</span>
-          <Tag color="purple" style={{ fontSize: 9, margin: 0, padding: '0 4px', lineHeight: '16px' }}>ACTIVE</Tag>
-        </div>
-      ),
-      type: 'group',
-      children: [
-        { key: '/contractors', icon: <HomeOutlined style={{ color: '#9333ea' }} />, label: 'Contractor Directory' },
-        { key: '/workers', icon: <UserOutlined style={{ color: '#2563eb' }} />, label: 'Workers & RFID Pass' },
-        { key: '/training', icon: <AuditOutlined style={{ color: '#16a34a' }} />, label: 'DGMS Safety Induction' },
-        { key: '/governance', icon: <FileProtectOutlined style={{ color: '#dc2626' }} />, label: 'Grievances & Approvals' },
-      ],
-    },
-  ];
+  const isWorker = user?.role === 'WORKER';
+
+  // Role-specific sidebar navigation:
+  // - Worker sees ONLY Worker Portal & Central Dashboard
+  // - Admin sees all operational subsystems WITHOUT the worker portal pass bar
+  const menuItems: MenuProps['items'] = isWorker
+    ? [
+        { key: '/worker-portal', icon: <UserOutlined style={{ color: '#10b981' }} />, label: '👷 Worker Portal & Pass' },
+        { key: '/dashboard', icon: <DashboardOutlined />, label: 'Central Dashboard' },
+      ]
+    : [
+        { key: '/dashboard', icon: <DashboardOutlined />, label: 'Central Executive Dashboard' },
+        { key: '/digital-twin', icon: <GlobalOutlined />, label: 'GIS Digital Twin' },
+        {
+          key: 'module1_group',
+          label: (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 8 }}>
+              <span>AI Safety & Surveillance</span>
+              <Tag color="green" style={{ fontSize: 9, margin: 0, padding: '0 4px', lineHeight: '16px' }}>ACTIVE</Tag>
+            </div>
+          ),
+          type: 'group',
+          children: [
+            { key: '/cctv', icon: <CameraOutlined />, label: 'CCTV Vision AI' },
+            { key: '/equipment', icon: <ToolOutlined />, label: 'Equipment & OCR' },
+            { key: '/environmental', icon: <AreaChartOutlined />, label: 'Gas IoT Telemetry' },
+            { key: '/risk-engine', icon: <ThunderboltOutlined />, label: 'Risk Matrix Engine' },
+            { key: '/workflows', icon: <AlertOutlined />, label: 'Statutory Alerts & SLA' },
+            { key: '/compliance', icon: <FileProtectOutlined />, label: 'DGMS Act Compliance' },
+          ],
+        },
+        {
+          key: 'module2_group',
+          label: (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 8 }}>
+              <span>Field Operations & Audits</span>
+              <Tag color="blue" style={{ fontSize: 9, margin: 0, padding: '0 4px', lineHeight: '16px' }}>ACTIVE</Tag>
+            </div>
+          ),
+          type: 'group',
+          children: [
+            { key: '/inspections', icon: <FileDoneOutlined style={{ color: '#2563eb' }} />, label: 'Statutory Checklists' },
+            { key: '/field-hazards', icon: <AlertOutlined style={{ color: '#ea580c' }} />, label: 'Hazards & AI Voice' },
+            { key: '/remediation', icon: <SafetyCertificateOutlined style={{ color: '#059669' }} />, label: 'CAPA Remediation' },
+            { key: '/gis-map', icon: <GlobalOutlined style={{ color: '#3b82f6' }} />, label: 'GIS Spatial Mine Map' },
+            { key: '/offline-sync', icon: <SyncOutlined style={{ color: '#7c3aed' }} />, label: 'Offline Sync Center' },
+          ],
+        },
+        {
+          key: 'module3_group',
+          label: (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingRight: 8 }}>
+              <span>Workforce Governance</span>
+              <Tag color="purple" style={{ fontSize: 9, margin: 0, padding: '0 4px', lineHeight: '16px' }}>ACTIVE</Tag>
+            </div>
+          ),
+          type: 'group',
+          children: [
+            { key: '/contractors', icon: <HomeOutlined style={{ color: '#9333ea' }} />, label: 'Contractor Directory' },
+            { key: '/workers', icon: <UserOutlined style={{ color: '#2563eb' }} />, label: 'Workers & RFID Pass' },
+            { key: '/training', icon: <AuditOutlined style={{ color: '#16a34a' }} />, label: 'DGMS Safety Induction' },
+            { key: '/governance', icon: <FileProtectOutlined style={{ color: '#dc2626' }} />, label: 'Grievances & Approvals' },
+          ],
+        },
+      ];
 
   return (
     <Layout style={{ minHeight: '100vh' }}>
@@ -248,58 +256,87 @@ export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
               style={{ width: 36, height: 36 }}
             />
 
-            {/* Top Module Switcher Buttons */}
+            {/* Top Navigation Switcher Buttons */}
             <Space size={6} wrap>
-              <Button
-                size="small"
-                type={location.pathname === '/worker-portal' ? 'primary' : 'default'}
-                onClick={() => navigate('/worker-portal')}
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  borderColor: '#059669',
-                  color: location.pathname === '/worker-portal' ? '#fff' : '#059669',
-                  background: location.pathname === '/worker-portal' ? '#059669' : undefined
-                }}
-              >
-                👷 Worker Portal
-              </Button>
-              <Button
-                size="small"
-                type={['/', '/dashboard', '/digital-twin', '/cctv', '/equipment', '/environmental', '/risk-engine', '/workflows', '/compliance'].includes(location.pathname) ? 'primary' : 'default'}
-                onClick={() => navigate('/')}
-                style={{ fontSize: 11, fontWeight: 600 }}
-              >
-                Module 1: AI Compliance
-              </Button>
-              <Button
-                size="small"
-                type={['/inspections', '/field-hazards', '/remediation', '/gis-map', '/offline-sync'].includes(location.pathname) ? 'primary' : 'default'}
-                onClick={() => navigate('/inspections')}
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  borderColor: '#2563eb',
-                  color: ['/inspections', '/field-hazards', '/remediation', '/gis-map', '/offline-sync'].includes(location.pathname) ? '#fff' : '#2563eb',
-                  background: ['/inspections', '/field-hazards', '/remediation', '/gis-map', '/offline-sync'].includes(location.pathname) ? '#2563eb' : undefined
-                }}
-              >
-                Module 2: Field Ops
-              </Button>
-              <Button
-                size="small"
-                type={['/contractors', '/workers', '/training', '/governance'].includes(location.pathname) ? 'primary' : 'default'}
-                onClick={() => navigate('/contractors')}
-                style={{
-                  fontSize: 11,
-                  fontWeight: 600,
-                  borderColor: '#9333ea',
-                  color: ['/contractors', '/workers', '/training', '/governance'].includes(location.pathname) ? '#fff' : '#9333ea',
-                  background: ['/contractors', '/workers', '/training', '/governance'].includes(location.pathname) ? '#9333ea' : undefined
-                }}
-              >
-                Module 3: Contractor & Worker
-              </Button>
+              {isWorker ? (
+                <>
+                  <Button
+                    size="small"
+                    type={location.pathname === '/worker-portal' ? 'primary' : 'default'}
+                    onClick={() => navigate('/worker-portal')}
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      borderColor: '#059669',
+                      color: location.pathname === '/worker-portal' ? '#fff' : '#059669',
+                      background: location.pathname === '/worker-portal' ? '#059669' : undefined,
+                    }}
+                  >
+                    👷 Worker Portal & Pass
+                  </Button>
+                  <Button
+                    size="small"
+                    type={['/', '/dashboard'].includes(location.pathname) ? 'primary' : 'default'}
+                    onClick={() => navigate('/dashboard')}
+                    style={{ fontSize: 11, fontWeight: 600 }}
+                  >
+                    Central Dashboard
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button
+                    size="small"
+                    type={['/', '/dashboard', '/digital-twin'].includes(location.pathname) ? 'primary' : 'default'}
+                    onClick={() => navigate('/dashboard')}
+                    style={{ fontSize: 11, fontWeight: 600 }}
+                  >
+                    Central Dashboard
+                  </Button>
+                  <Button
+                    size="small"
+                    type={['/cctv', '/equipment', '/environmental', '/risk-engine', '/workflows', '/compliance'].includes(location.pathname) ? 'primary' : 'default'}
+                    onClick={() => navigate('/cctv')}
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      borderColor: '#16a34a',
+                      color: ['/cctv', '/equipment', '/environmental', '/risk-engine', '/workflows', '/compliance'].includes(location.pathname) ? '#fff' : '#16a34a',
+                      background: ['/cctv', '/equipment', '/environmental', '/risk-engine', '/workflows', '/compliance'].includes(location.pathname) ? '#16a34a' : undefined,
+                    }}
+                  >
+                    AI Safety & Surveillance
+                  </Button>
+                  <Button
+                    size="small"
+                    type={['/inspections', '/field-hazards', '/remediation', '/gis-map', '/offline-sync'].includes(location.pathname) ? 'primary' : 'default'}
+                    onClick={() => navigate('/inspections')}
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      borderColor: '#2563eb',
+                      color: ['/inspections', '/field-hazards', '/remediation', '/gis-map', '/offline-sync'].includes(location.pathname) ? '#fff' : '#2563eb',
+                      background: ['/inspections', '/field-hazards', '/remediation', '/gis-map', '/offline-sync'].includes(location.pathname) ? '#2563eb' : undefined,
+                    }}
+                  >
+                    Field Operations
+                  </Button>
+                  <Button
+                    size="small"
+                    type={['/contractors', '/workers', '/training', '/governance'].includes(location.pathname) ? 'primary' : 'default'}
+                    onClick={() => navigate('/contractors')}
+                    style={{
+                      fontSize: 11,
+                      fontWeight: 600,
+                      borderColor: '#9333ea',
+                      color: ['/contractors', '/workers', '/training', '/governance'].includes(location.pathname) ? '#fff' : '#9333ea',
+                      background: ['/contractors', '/workers', '/training', '/governance'].includes(location.pathname) ? '#9333ea' : undefined,
+                    }}
+                  >
+                    Workforce & Contractors
+                  </Button>
+                </>
+              )}
             </Space>
           </div>
 
